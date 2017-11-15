@@ -108,7 +108,7 @@ shinyUI <- fluidPage(
     )
   ),
 
-    ##############################################################################
+  ##############################################################################
   conditionalPanel(
     condition = "(input.view == 'stoi') && (output.showHelp == false)",
     fluidRow(column(12, uiOutput("uiElem.stoiSpecs"))),
@@ -118,20 +118,28 @@ shinyUI <- fluidPage(
 
   ##############################################################################
   conditionalPanel(
+    condition = "(input.view == 'pros') && (output.showHelp == false)",
+    fluidRow(column(12, uiOutput("uiElem.prosSpecs"))),
+    hr(),
+    fluidRow(column(12, htmlOutput("processes")))
+  ),
+  
+  ##############################################################################
+  conditionalPanel(
     condition = "(input.view == 'scenDesc') && (output.showHelp == false)",
-    fluidRow(column(12, tableOutput("scenShowDesc")))
+    fluidRow(column(12, htmlOutput("scenShowDesc")))
   ),
 
     ##############################################################################
   conditionalPanel(
     condition = "(input.view == 'scenVars') && (output.showHelp == false)",
-    fluidRow(column(12, tableOutput("scenShowVars")))
+    fluidRow(column(12, htmlOutput("scenShowVars")))
   ),
 
   ##############################################################################
   conditionalPanel(
     condition = "(input.view == 'scenPars') && (output.showHelp == false)",
-    fluidRow(column(12, tableOutput("scenShowPars")))
+    fluidRow(column(12, htmlOutput("scenShowPars")))
   ),
 
   ##############################################################################

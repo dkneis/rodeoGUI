@@ -40,6 +40,8 @@ translate <- rbind(
   done = c(EN="Done", DE="Fertig"),
   description = c(EN="Description", DE="Beschreibung"),
   dynamics = c(EN="Dynamics", DE="Dynamik"),
+  expression = c(EN="Expression", DE="Ausdruck"),
+  factor = c(EN="Factor", DE="Faktor"),
   identifier = c(EN="Short name", DE="Bezeichnung"),
   initialValues = c(EN="Initial values", DE="Anfangswerte"),
   needsUpdate = c(EN="Please (re)run", DE="Bitte (neu)berechnen"),  
@@ -54,6 +56,7 @@ translate <- rbind(
   scenario = c(EN="Scenario", DE="Szenario"),
   scenarios = c(EN="Scenarios", DE="Szenarios"),
   selectView = c(EN="Select view", DE="Ansicht wählen"),
+  showStoichiometryFactorFor = c(EN="Show stoichiometric factor for", DE="Zeige Stöchiometriefaktor für"),  
   simulation = c(EN="Simulation", DE="Simulation"),
   introduction = c(EN="Introduction", DE="Einführung"),
   steadystate = c(EN="Steady state", DE="Gleichgewicht"),
@@ -194,12 +197,32 @@ stoiAsHTML <- function(model, selectedVars, selectedPros, lang) {
   m <- model$stoichiometry(box=1, time=0)[selectedPros,selectedVars,drop=FALSE]
   tbl <- cbind(data.frame(process=rownames(m), stringsAsFactors=FALSE),
     as.data.frame(m, check.names=FALSE))
-  html <- exportDF(x=tbl, tex=FALSE,
+  exportDF(x=tbl, tex=FALSE,
     align=setNames(rep("center", ncol(m)), colnames(m)),
     colnames= setNames(translate["process",lang], "process"),
     funCell= setNames(replicate(ncol(m), colorNumber), colnames(m))
   )
-  paste("<html>", html, "</html>", sep="\n")
+}
+
+########################################################################
+# Returns the process rates as a HTML table including stoi. factors for a single variable
+
+prosTable <- function(model, selectedVar, lang) {
+  tbl <- merge(x=model$getProsTable()[,c("name","unit","description","expression")],
+    y=data.frame(process=rownames(model$stoichiometry()),
+      factor=model$stoichiometry()[,selectedVar], stringsAsFactors=FALSE),
+    by.x="name", by.y="process")
+  italic <- function(x) {paste0('<div style="font-style:italic;">',
+    x,'</div>')}
+  exportDF(x=tbl, tex=FALSE,
+    width=setNames(c(15,10,30,30,15), c("name","unit","description","expression","factor")),
+    align=setNames(rep("left", ncol(tbl)), colnames(tbl)),
+    colnames= c(name=translate["process",lang], unit=translate["unit",lang],
+      description=translate["description",lang],
+      expression=translate["expression",lang],
+      factor=translate["factor",lang]),
+    funCell= setNames(replicate(2, italic), c("expression", "factor"))
+  )
 }
 
 ########################################################################

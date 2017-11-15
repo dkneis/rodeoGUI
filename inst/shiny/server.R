@@ -16,8 +16,8 @@ shinyServer <- function(input, output) {
   # Generate input field to select a view
   output$uiElem.view <- renderUI({
     lst <- list(
-      overview= setNames(c("intro","stoi"),
-        translate[c("introduction","stoichiometry"),input$language]),
+      overview= setNames(c("intro","pros","stoi"),
+        translate[c("introduction","processes","stoichiometry"),input$language]),
       scenarios= setNames(c("scenDesc","scenPars","scenVars"),
         translate[c("description","parameters","initialValues"),input$language]),
       simulation= setNames(c("dyn","std"),
@@ -86,7 +86,18 @@ shinyServer <- function(input, output) {
     code <- paste0("tagList(list(",code, "))")
     eval(parse(text=code))
   })
-  
+
+  # Generate fields control presentation of process rates
+  output$uiElem.prosSpecs <- renderUI({
+    code <- ""
+    code <- paste0(code, "selectInput(inputId=\'varPros', label=\'",
+      translate["showStoichiometryFactorFor",input$language],"\', multiple=FALSE, choices=c(",
+      paste(paste0("'",model$namesVars(),"'"), collapse=","),")",
+      ",selected='",model$namesVars()[1],"', selectize=FALSE)")
+    code <- paste0("tagList(list(",code, "))")
+    eval(parse(text=code))
+  })
+    
   # Generate selectors for items to be displayed on left/right axes
   output$uiElem.displayLeft <- renderUI({
     tagList(
@@ -304,7 +315,7 @@ shinyServer <- function(input, output) {
   })
 
   ##############################################################################
-  # Start page and stoichiometry matrix
+  # Intro page, process table, stoichiometry matrix
   ##############################################################################
 
   output$intro <- renderText({
@@ -318,6 +329,11 @@ shinyServer <- function(input, output) {
     v <- if(is.null(input$varsStoi)) model$namesVars()[1] else input$varsStoi
     p <- if(is.null(input$prosStoi)) model$namesPros()[1] else input$prosStoi
     stoiAsHTML(model, selectedVars=v, selectedPros=p, lang=input$language)
+  })
+
+  output$processes <- renderText({
+    v <- if(is.null(input$varPros)) model$namesVars()[1] else input$varPros
+    prosTable(model, selectedVar=v, lang=input$language)
   })
 
   ##############################################################################
