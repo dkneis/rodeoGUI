@@ -1,0 +1,16 @@
+	s1	s2
+
+bM	1	1
+bS	1	1
+sM	1	1
+sS	1	1
+
+vol	100	100
+fS	0.5	0.5
+qM	2	2
+qS	0.1	1
+bX	1	1
+sX	10	10
+mu	0.9	0.9
+yield	0.1	0.1
+half	5	5

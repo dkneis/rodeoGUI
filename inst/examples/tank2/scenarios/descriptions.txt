@@ -1,0 +1,3 @@
+	EN	DE
+s1	Exchange rate is high. 	Austauschrate ist hoch.
+s2	Exchange rate is low. 	Austauschrate ist gering.

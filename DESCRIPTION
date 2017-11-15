@@ -1,0 +1,13 @@
+Package: rodeoGUI
+Type: Package
+Title: Generic GUI for rodeo-based models
+Version: 0.1
+Date: 2017-11-14
+Author: David Kneis <david.kneis@tu-dresden.de>
+Maintainer: David Kneis <david.kneis@tu-dresden.de>
+Description: Generic, GUI for rodeo-based models using shiny technology.
+License: GPL (>= 2)
+Imports:
+    rodeo,
+    shiny
+RoxygenNote: 6.0.1

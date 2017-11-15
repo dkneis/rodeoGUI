@@ -1,0 +1,3 @@
+	EN	DE
+s1	High exchange	Starker Austausch
+s2	Low exchange	Schwacher Austausch
