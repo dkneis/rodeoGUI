@@ -320,6 +320,14 @@ help <- rbind(
     EN="English help page still missing.",
     DE= readHelp("DE_introduction.html")
   ),
+  stoi= c(
+    EN="English help page still missing.",
+    DE= readHelp("DE_stoichiometry.html")
+  ),
+  pros= c(
+    EN="English help page still missing.",
+    DE= readHelp("DE_tableOfProcesses.html")
+  ),
   scenDesc= c(
     EN="English help page still missing.",
     DE= readHelp("DE_tableOfScenarios.html")
@@ -331,10 +339,6 @@ help <- rbind(
   scenPars= c(
     EN="English help page still missing.",
     DE= readHelp("DE_tableOfParameters.html")
-  ),
-  stoi= c(
-    EN="English help page still missing.",
-    DE= readHelp("DE_stoichiometry.html")
   ),
   dyn= c(
     EN="English help page still missing.",
