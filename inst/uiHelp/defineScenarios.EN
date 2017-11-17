@@ -1,0 +1,9 @@
+<h3>Scenarios</h3>
+
+<p>Each scenario is characterized by a unique set of (1) parameters and (2) initial values of the state variables. The user interface allows multiple scenarios to be compared with respect to model inputs and outputs. The desired number of scenarios must be chosen by the user prior to simulation. By default, a single scenario is activated.</p>
+
+<h3>Defining scenarios</h3>
+
+<p>Default values for the parameters and initial values are available for each scenario. A set of default values is activated when the respective scenario is selected from the drop down menu. To inspect the default values for all scenarios select the view <i>Scenarios &rarr; Variables</i> or <i>Scenarios &rarr; Parameters</i>, respectively.</p>
+
+<p>Selected default values can optionally be overwritten with user-supplied values. To edit a particular scenario, enter an assignment expression of the form <i>"NAME = VALUE"</i> in the respective text field. Example: <i>"x = 1"</i>. Multiple defaults can be overwritten by using a comma between assignment statements like so: <i>"x = 0.5, y = 2"</i>. The text after the equal sign is interpreted as a mathematical expression, hence one could enter <i>"x = 1/2"</i>, for example.</p>

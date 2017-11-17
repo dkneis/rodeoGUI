@@ -1,0 +1,3 @@
+<h3>Description of the table</h3>
+
+<p>The table displays all state variables of the model including the initial values for all scenarios. If the scenarios differ with respect to the initial values of a certain variable, the corresponding row is highlighted in orange color.</p>

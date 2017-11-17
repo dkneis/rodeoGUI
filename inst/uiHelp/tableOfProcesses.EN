@@ -1,0 +1,3 @@
+<h3>Description of the table</h3>
+
+<p>The table gives an overview on all processes considered in the model including the used mathematical expressions. Additionally, the stoichiometric factors are shown for a single state variable (to be selected via the drop down menu). The process rate multiplied by the stoichiometric factor represents the right hand side of the ordinary differential equation for the selected variable and the respective process.</p>

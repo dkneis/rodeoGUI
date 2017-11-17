@@ -1,0 +1,13 @@
+<h3>Selection of a scenario</h3>
+
+<p>The pre-defined defaults for parameters and initial values typically vary between scenarios. The stoichiometry matrix, however, is generally displayed for a particular scenario to be selected from drop down menu.</p>
+
+<h3>Choosing displayed processes and state variables</h3>
+
+<p>The stoichiometry matrix of complex models consists of many rows and columns (1 row for each process, 1 column per variable). Therefore, the actually displayed rows and columns must be chosen from the drop down menu. Use the shift and control keys to select multiple rows and/or columns.</p>
+
+<h3>Interpretation of the output matrix</h3>
+
+<p>The values of stoichiometric factors are displayed in scientific notation with a fixed number of sigificant digits. The background color of individual cells is governed by the sign of the respective factor (orange: positive, blue: negative).</p>
+
+<p>A positive (i.e. orange) stoichiometric factor indicates that the corresponding  process (determined by the row) increases the value of the state variable (determined by the respective column). If the stoichiometric factor appears on blue background, the value of the state variable is reduced in response to the action of the process.</p>

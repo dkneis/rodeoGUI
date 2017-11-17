@@ -1,6 +1,6 @@
 <h3>Einstellungen für die dynamische Simulation</h3>
 
-<p>Für die dynamische Simulation ist das Zeitfenster vorzugeben, innerhalb dessen die Differentialgleichungen integriert werden sollen. Weiterhin ist die zeitliche Auflösung anzugeben, mit der Berechnungsergebnisse gespeichert bzw. angezeigt werden.</p>
+<p>Für die dynamische Simulation ist das Zeitfenster vorzugeben, innerhalb dessen die Differentialgleichungen integriert werden sollen. Weiterhin ist die zeitliche Auflösung anzugeben.</p>
 
 <p>Wichtig: Die einstellbare zeitliche Auflösung bestimmt in welchem zeitlichen Abstand die Werte der Zustandsvariablen gespeichert und dargestellt werden. Gleichzeitig wird sichergestellt, dass die Werte zeitlich variabler Randbedingungen (sofern vorhanden) mindestens in dieser zeitlichen Auflösung aktualisiert werden. Die einstellbare zeitliche Auflösung ist nicht zu verwechseln mit der vom numerischen Lösungsalgorithmus intern verwendeten Schrittweite der Integration. Letztere wird automatisch gesteuert und ist vom Anwender nicht einstellbar.</p>
 

@@ -281,53 +281,29 @@ symbolHelpClose <- paste0('
 ########################################################################
 # Read help pages
 
-readHelp <- function(basename) {
-  paste(readLines(paste0(system.file("uiHelp", package="rodeoGUI"),"/",basename)), collapse="\n")
+readHelp <- function(lang, topics) {
+  out <- ""
+  for (top in topics) {
+    out <- paste(out,
+      paste(readLines(paste0(system.file("uiHelp", package="rodeoGUI"),"/",
+      top,".",lang)), collapse="\n"), collapse="\n")
+  }
+  out
 }
+
+langs <- c("EN","DE")
 
 help <- rbind(
   missing= c(
     EN="A help page is currently not available for the selected view.",
     DE="Für die gewählte Ansicht ist noch keine Hilfe verfügbar."
   ),
-  intro= c(
-    EN="English help page still missing.",
-    DE= readHelp("DE_introduction.html")
-  ),
-  stoi= c(
-    EN="English help page still missing.",
-    DE= readHelp("DE_stoichiometry.html")
-  ),
-  pros= c(
-    EN="English help page still missing.",
-    DE= readHelp("DE_tableOfProcesses.html")
-  ),
-  scenDesc= c(
-    EN="English help page still missing.",
-    DE= readHelp("DE_tableOfScenarios.html")
-  ),
-  scenVars= c(
-    EN="English help page still missing.",
-    DE= readHelp("DE_tableOfVariables.html")
-  ),
-  scenPars= c(
-    EN="English help page still missing.",
-    DE= readHelp("DE_tableOfParameters.html")
-  ),
-  dyn= c(
-    EN="English help page still missing.",
-    DE= paste(
-      readHelp("DE_defineScenarios.html"),
-      readHelp("DE_startComputation.html"),
-      readHelp("DE_detailsDynamic.html"),
-      collapse="\n")
-  ),
-  std= c(
-    EN="English help page still missing.",
-    DE= paste(
-      readHelp("DE_defineScenarios.html"),
-      readHelp("DE_startComputation.html"),
-      readHelp("DE_detailsSteady.html"),
-      collapse="\n")
-  )
+  intro= sapply(langs, readHelp, "introduction"),
+  stoi= sapply(langs, readHelp, "stoichiometry"),
+  pros= sapply(langs, readHelp, "tableOfProcesses"),
+  scenDesc= sapply(langs, readHelp, "tableOfScenarios"),
+  scenVars= sapply(langs, readHelp, "tableOfVariables"),
+  scenPars= sapply(langs, readHelp, "tableOfParameters"),
+  dyn= sapply(langs, readHelp, c("defineScenarios","startComputation","detailsDynamic")),
+  std= sapply(langs, readHelp, c("defineScenarios","startComputation","detailsSteady"))
 )

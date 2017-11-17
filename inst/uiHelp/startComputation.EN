@@ -1,0 +1,5 @@
+<h3>Starting a simulation</h3>
+
+<p>Klick the <i>Run</i> button to start a simulation. Depending on the set of equations, the selected number of scenarios, as well as the particular parameters and initial values, the numerical computations may take some time. This is especially so if one deals with a 'stiff' system of differential equations.</p>
+
+<p>Very long computation times, e.g. exceeding 10 seconds, typically indicate improper parameter values, badly chosen initial values, or mistakes in the system of differential equations (ill-formed model).</p>

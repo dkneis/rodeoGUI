@@ -1,0 +1,7 @@
+<h3>Results of a steady state simulation</h3>
+
+<p>The results of a steady state simulation are displayed in tabular form. If the results of multiple scenarios are being compared, differences with respect to scenario 1 (leftmost column) are highlighted through background colors. If the steady-state value of a state variable in scenario 'i' (i > 1) has increased in comparison to scenario 1, the background of the respecive cells appears in orange color. A decrease is indicated by a blue background.</p>
+
+<h3>If a steady state does not exist</h3>
+
+<p>The existance of a steady state (or multiple steady states) is dependend on the set of differential equations, the parameter values and, possibly, the state variables' initial values. It is quite common that one or more state variable(s) do not converge towards a particular value even though integration is performed over a very long time. This is likely due to the fact that a steady state solution does not exist for the given parametrization. In such a case the respecitive column(s) of the result table is filled with "NA" values.

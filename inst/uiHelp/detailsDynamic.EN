@@ -1,0 +1,8 @@
+<h3>Setting up a dynamic simulation</h3>
+
+<p>First, the user needs to define the time interval over which the set of differential equation is to be simulated. Second, the desired temporal resolution must be specified.</p>
+
+<p>Important: The temporal resolution (step size) controls at which time interval the computed values of the state variables are saved and plotted. At the same time it is guaranteed that the values of time-variable external forcings (if existing) are updated at a frequency corresponding to the chosen resolution.
+However, the user-defined step size must not be confused with the internal step size used by the numerical integration algorithm. The latter is controlled automatically and cannot be adjusted.</p>
+
+<p>Displaying of results for an initial period of time can be supressed. This options is useful, for example, if the initial values of the state variables had to be guessed and the simulated values only become meaningful after a certain 'warm-up' period.</p>

@@ -2,7 +2,7 @@
 
 <p>Ein Szenario wird durch einen Satz von Parametern einerseits sowie die Anfangswerte der Zustandsvariablen andererseits charakterisiert. Die Oberfläche ermöglicht es, mehrere Szenarios bzgl. der Modellausgaben und der Eingangsdaten miteinander zu vergleichen. Hierfür ist zunächst die Anzahl der Szenarios im entsprechenden Eingabefeld auszuwählen. Standardmäßig ist zunächst nur ein einziges Szenario aktiviert.</p>
 
-<h3>Setzen von Standardwerten</h3>
+<h3>Szenarios definieren</h3>
 
 <p>Für jedes Szenario sind Standardwerte für die Parameter bzw. Anfagswerte der Zustandsvariablen hinterlegt. Sie werden durch Anklicken eines konkreten Szenarios aus der Auswahlliste aktiviert. Die konkreten Standardwerte für alle Szenarios sind in der Ansicht <i>Szenarios &rarr; Variablen</i> bzw. <i>Szenarios &rarr; Parameter</i> einsehbar.</p>
 

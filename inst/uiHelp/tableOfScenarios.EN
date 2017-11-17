@@ -1,0 +1,3 @@
+<h3>Description of the table</h3>
+
+<p>This table list the short identifiers of all scenarios together with a brief description. The actual defaults for parameters and initial values corresponding to the scenarios can be accessed via the view <i>Scenarios &rarr; Variables</i> or <i>Scenarios &rarr; Parameters</i>, respectively.</p>
