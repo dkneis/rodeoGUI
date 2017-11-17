@@ -291,26 +291,27 @@ shinyServer <- function(input, output) {
     if (!upToDate[["std"]]) {
       translate["needsUpdate",input$language]
     } else {
-      m <- computeSteady()
-      if (ncol(m) >= 2) {
-        tmp <- NULL
-        for (i in 1:(ncol(m)-1)) {
-          tmp <- cbind(tmp, m[,i])
-          colnames(tmp)[ncol(tmp)] <- colnames(m)[i]
-          tmp <- cbind(tmp, comparisonSymbols(m[,i], m[,i+1]))
-          colnames(tmp)[ncol(tmp)] <- " "
-        }
-        tmp <- cbind(tmp, m[,ncol(m)])
-        colnames(tmp)[ncol(tmp)] <- colnames(m)[ncol(m)]
-        m <- tmp
-      } else {
-        m <- apply(m, 1:2, as.character)
-      }
-      tbl <- cbind(rownames(m), data.frame(m, check.names=FALSE))
-      names(tbl)[1] <- translate["variable",input$language]
-      exportDF(tbl, align=setNames(c("left", "right", rep(c("center", "right"),
-        max(0,(ncol(tbl)-2)/2))), names(tbl)),
-        tex=FALSE)
+      steadyTable(m=computeSteady(), lang=input$language)
+#      m <- computeSteady()
+#      if (ncol(m) >= 2) {
+#        tmp <- NULL
+#        for (i in 1:(ncol(m)-1)) {
+#          tmp <- cbind(tmp, m[,i])
+#          colnames(tmp)[ncol(tmp)] <- colnames(m)[i]
+#          tmp <- cbind(tmp, comparisonSymbols(m[,i], m[,i+1]))
+#          colnames(tmp)[ncol(tmp)] <- " "
+#        }
+#        tmp <- cbind(tmp, m[,ncol(m)])
+#        colnames(tmp)[ncol(tmp)] <- colnames(m)[ncol(m)]
+#        m <- tmp
+#      } else {
+#        m <- apply(m, 1:2, as.character)
+#      }
+#      tbl <- cbind(rownames(m), data.frame(m, check.names=FALSE))
+#      names(tbl)[1] <- translate["variable",input$language]
+#      exportDF(tbl, align=setNames(c("left", "right", rep(c("center", "right"),
+#        max(0,(ncol(tbl)-2)/2))), names(tbl)),
+#        tex=FALSE)
     }
   })
 

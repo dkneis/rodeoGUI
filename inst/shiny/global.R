@@ -186,21 +186,20 @@ visualizeDynamic <- function (
 # Returns the stoichiometry matrix as colored HTML table 
 
 stoiAsHTML <- function(model, selectedVars, selectedPros, lang) {
-  colorNumber <- function(x) {
+  signAsColor <- function(x) {
     if (as.numeric(x) > 0) return(paste0('<div style="background-color:',guiColors["orange"],';">',
       formatC(as.numeric(x), digits=2, format="e"),'</div>'))
     if (as.numeric(x) < 0) return(paste0('<div style="background-color:',guiColors["blue"],';">',
       formatC(as.numeric(x), digits=2, format="e"),'</div>'))
     return("")
   }
-
   m <- model$stoichiometry(box=1, time=0)[selectedPros,selectedVars,drop=FALSE]
   tbl <- cbind(data.frame(process=rownames(m), stringsAsFactors=FALSE),
     as.data.frame(m, check.names=FALSE))
   exportDF(x=tbl, tex=FALSE,
     align=setNames(rep("center", ncol(m)), colnames(m)),
     colnames= setNames(translate["process",lang], "process"),
-    funCell= setNames(replicate(ncol(m), colorNumber), colnames(m))
+    funCell= setNames(replicate(ncol(m), signAsColor), colnames(m))
   )
 }
 
@@ -261,14 +260,30 @@ scenDescrTable <- function(scenTitles, scenDefaults, model, lang, what=c("variab
 }
 
 ########################################################################
-# Returns the appropriate icon for a comparison of x and y
+# HTML table with steady state results
 
-comparisonSymbols <- function(x, y) {
-  stopifnot(length(x) == length(y))
-  out <- rep(" ", length(x))
-  out[is.finite(x) & is.finite(y) & (x > y)] <- symbolDecrease
-  out[is.finite(x) & is.finite(y) & (x < y)] <- symbolIncrease
-  out
+steadyTable <- function(m, lang) {
+  if (ncol(m) >= 2) {
+    tmp <- m
+    tmp <- apply(tmp, 1:2, as.character)
+    for (i in 2:ncol(m)) {
+      greater <- which(m[,i] > m[,1])
+      if (length(greater) > 0)
+        tmp[greater, i] <- paste0('<div style="background-color:',
+          guiColors["orange"],';">',tmp[greater,i],'</div>')
+      smaller <- which(m[,i] < m[,1])
+      if (length(smaller) > 0)
+        tmp[smaller, i] <- paste0('<div style="background-color:',
+          guiColors["blue"],';">',tmp[smaller,i],'</div>')
+    }
+    m <- tmp
+  } else {
+    m <- apply(m, 1:2, as.character)
+  }
+  tbl <- cbind(rownames(m), data.frame(m, check.names=FALSE))
+  names(tbl)[1] <- translate["variable",lang]
+  exportDF(tbl, align=setNames(c("left", rep("right", ncol(tbl)-1)),names(tbl)),
+    tex=FALSE)
 }
 
 ########################################################################
@@ -288,20 +303,6 @@ symbolHelpClose <- paste0('
       '" stroke="',guiColors["blueDark"],'" stroke-width="5"/>
   <path d="M 20,55 75,30 75,80 z" fill="white" stroke="none"/>
   </svg>
-')
-
-# Icons to visually compare numeric values
-symbolIncrease <- paste0('
-<svg viewBox="0 0 100 100" height="15px">
-  <circle cx="50" cy="50" r="50" fill="',guiColors["orangeDark"],'" stroke="none"/>
-  <path d="M 75,25 15,50 50,85 z" fill="white" stroke="none"/>
-</svg>
-')
-symbolDecrease <- paste0('
-<svg viewBox="0 0 100 100" height="15px">
-  <circle cx="50" cy="50" r="50" fill="',guiColors["blueDark"],'" stroke="none"/>
-  <path d="M 75,75 15,50 50,15 z" fill="white" stroke="none"/>
-</svg>
 ')
 
 ########################################################################
