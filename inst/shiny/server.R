@@ -74,13 +74,15 @@ shinyServer <- function(input, output) {
     code <- paste0(code, "selectInput(inputId=\'varsStoi', label=\'",
       translate["variables",input$language],"\', multiple=TRUE, choices=c(",
       paste(paste0("'",model$namesVars(),"'"), collapse=","),")",
-      ",selected='",model$namesVars()[1],"', selectize=FALSE),")
+      ",selected=c('",paste(model$namesVars()[1:min(5,model$lenVars())],
+        collapse="','"),"'), selectize=FALSE),")
     code <- paste0(code, "HTML('</div>'),")
     code <- paste0(code, "HTML('<div style=\"width:33%; float:left\">'),")
     code <- paste0(code, "selectInput(inputId=\'prosStoi', label=\'",
       translate["processes",input$language],"\', multiple=TRUE, choices=c(",
       paste(paste0("'",model$namesPros(),"'"), collapse=","),")",
-      ",selected='",model$namesPros()[1],"', selectize=FALSE),")
+      ",selected=c('",paste(model$namesPros()[1:min(5:model$lenPros())],
+        collapse="','"),"'), selectize=FALSE),")
     code <- paste0(code, "HTML('</div>'),")
     code <- paste0(code, "HTML('</div>')")
     code <- paste0("tagList(list(",code, "))")
