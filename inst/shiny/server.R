@@ -98,19 +98,13 @@ shinyServer <- function(input, output) {
     eval(parse(text=code))
   })
     
-  # Generate selectors for items to be displayed on left/right axes
-  output$uiElem.displayLeft <- renderUI({
+  # Generate selectors for items to be displayed in dynamics plot
+  output$uiElem.dynVars <- renderUI({
     tagList(
-      selectInput(inputId="displayLeft",
-        label=translate["onLeftAxis",input$language], multiple=TRUE,
-        choices=model$namesVars(), selected=model$namesVars()[1], selectize=FALSE)
-    )
-  })
-  output$uiElem.displayRight <- renderUI({
-    tagList(
-      selectInput(inputId="displayRight",
-        label=translate["onRightAxis",input$language], multiple=TRUE,
-        choices=model$namesVars(), selected=NULL, selectize=FALSE)
+      selectInput(inputId="dynVars",
+        label=translate["variables",input$language], multiple=TRUE,
+        choices=model$namesVars(),
+        selected=model$namesVars()[1:min(4,model$lenVars())], selectize=FALSE)
     )
   })
 
@@ -229,6 +223,7 @@ shinyServer <- function(input, output) {
       this <- deSolve::ode(y=model$getVars(), parms=model$getPars(),
         times=seq(from=as.numeric(input$tStart), to=as.numeric(input$tFinal),
           by=as.numeric(input$tStep)),
+        hmax=as.numeric(input$tStep),
         func=model$libFunc(),
         dllname=basename(lib),
         nout=model$lenPros(),          # works for 0D model only
@@ -249,8 +244,8 @@ shinyServer <- function(input, output) {
       plot(0, 0, type="n", axes=FALSE, ann=FALSE)
       legend("center", bty="n", legend=translate["needsUpdate",input$language])
     } else {
-      visualizeDynamic(computeDynamic(),
-        display=list(L=input$displayLeft, R=input$displayRight), model$getVarsTable())
+      visualizeDynamic(out=computeDynamic(),
+        vars=input$dynVars, lang=input$language)
     }
   })
 
@@ -292,26 +287,6 @@ shinyServer <- function(input, output) {
       translate["needsUpdate",input$language]
     } else {
       steadyTable(m=computeSteady(), lang=input$language)
-#      m <- computeSteady()
-#      if (ncol(m) >= 2) {
-#        tmp <- NULL
-#        for (i in 1:(ncol(m)-1)) {
-#          tmp <- cbind(tmp, m[,i])
-#          colnames(tmp)[ncol(tmp)] <- colnames(m)[i]
-#          tmp <- cbind(tmp, comparisonSymbols(m[,i], m[,i+1]))
-#          colnames(tmp)[ncol(tmp)] <- " "
-#        }
-#        tmp <- cbind(tmp, m[,ncol(m)])
-#        colnames(tmp)[ncol(tmp)] <- colnames(m)[ncol(m)]
-#        m <- tmp
-#      } else {
-#        m <- apply(m, 1:2, as.character)
-#      }
-#      tbl <- cbind(rownames(m), data.frame(m, check.names=FALSE))
-#      names(tbl)[1] <- translate["variable",input$language]
-#      exportDF(tbl, align=setNames(c("left", "right", rep(c("center", "right"),
-#        max(0,(ncol(tbl)-2)/2))), names(tbl)),
-#        tex=FALSE)
     }
   })
 

@@ -76,19 +76,14 @@ shinyUI <- fluidPage(
   conditionalPanel(
     condition = "(input.view == 'dyn') && (output.showHelp == false)",
     fluidRow(
-      column(10,
-        plotOutput("resultsDynamic")
-      ),
-      column(2,
-        fluidRow(column(12, uiOutput("uiElem.displayLeft"))),
-        fluidRow(column(12, uiOutput("uiElem.displayRight")))
-      )
-    ),
-    fluidRow(
       column(2, uiOutput("uiElem.tStart")),
       column(2, uiOutput("uiElem.tFinal")),
       column(2, uiOutput("uiElem.tStep")),
-      column(2, uiOutput("uiElem.tShow"))
+      column(2, uiOutput("uiElem.tShow")),
+      column(2, uiOutput("uiElem.dynVars"))
+    ),
+    fluidRow(
+      column(12, plotOutput("resultsDynamic"))
     )
   ),
 

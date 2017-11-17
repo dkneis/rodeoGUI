@@ -45,8 +45,6 @@ translate <- rbind(
   identifier = c(EN="Short name", DE="Bezeichnung"),
   initialValues = c(EN="Initial values", DE="Anfangswerte"),
   needsUpdate = c(EN="Please (re)run", DE="Bitte (neu)berechnen"),  
-  onLeftAxis = c(EN="On left axis", DE="Auf linker Achse"),
-  onRightAxis = c(EN="On right axis", DE="Auf rechter Achse"),
   overview = c(EN="Overview", DE="Übersicht"),
   parameter = c(EN="Parameter", DE="Parameter"),
   parameters = c(EN="Parameters", DE="Parameter"),  
@@ -119,63 +117,38 @@ updateInputs <- function(
 }
 
 ########################################################################
-# Plots dymanic outputs
+# Plots dynamic outputs
 
 visualizeDynamic <- function (
-  out,       # data frame as output by dynamic solver with additional column 'scenario'
-  display,   # list with elements 'L' and 'R', each holding a vector of variable names to show on left/right axis
-  varsTable  # table of state variables as returned by model$getVarsTable()
+  out,    # data frame as output by dynamic solver with additional column 'scenario'
+  vars,   # vector of variable names whose values are to be displayed
+  lang    # language
 ) {
-  # Constants
-  const <- list(
-    addAxisSpace = 0.5,
-    multAxisSpace = 3.5
-  )
-  # Color function
-  if ("color" %in% names(varsTable)) {
-    clr <- function(x) {
-      as.character(varsTable[match(x,varsTable[,"name"]),"color"])
-    }
-  } else {
-    clrVect <- colorRampPalette(c("royalblue4","cyan","seagreen","red4"))(nrow(varsTable))
-    clr <- function(x) {
-      clrVect[match(x,varsTable[,"name"])]
-    }
-  }
+  nScen <- length(unique(out[,"scenario"]))
   # Split display
-  layout(matrix(1:2, nrow=2), heights=c(0.08, 0.92))
+  nc <- if (length(vars) == 1) 1 else 2
+  nr <- ceiling(length(vars) / nc)
+  m <- matrix(c(rep(1, nc), 1+(1:(nc*nr))), nrow=nr+1, ncol=nc, byrow=TRUE)
+  h <- c(0.1, rep(0.9/nr, nr))
+  layout(m, heights=h)
+  par(cex=1)
   omar <- par("mar")
+  clr <- colorRampPalette(c("royalblue4", "seagreen", "darkred"))(nScen)
   # Legend
-  par(mar=c(0.2,max(4, 4*length(display[["L"]])),0.2,max(4, 4*length(display[["R"]]))))
+  par(mar=c(0,3,0,1))
   plot(x=0, y=0, type="n", bty="n", axes=FALSE, ann=FALSE)
-  rect(xleft=par("usr")[1], ybottom=par("usr")[3], xright=par("usr")[2], ytop=par("usr")[4],
-    col="#F7F6E7", border="lightgrey")
-  dispAll <- unique(c(display[["L"]], display[["R"]]))
-  if (length(dispAll) > 0) {
-    legend("topleft", bty="n", horiz=TRUE, fill=clr(dispAll), legend=dispAll)
-  }
-  # Base of actual plot
-  par(mar=c(4,max(4, 4*length(display[["L"]])),0.2,max(4, 4*length(display[["R"]]))))
-  plot(range(out[,"time"]), c(-1,1), bty="n", type="n", axes=FALSE, ann=FALSE)
-  rect(xleft=par("usr")[1], ybottom=par("usr")[3], xright=par("usr")[2], ytop=par("usr")[4],
-    col="#F7F6E7", border="lightgrey")
-  axis(side=1, line=const[["addAxisSpace"]])
-  # Individual graphs
-  for (ax in c("L","R")) {
-    if (length(display[[ax]]) > 0) {
-      for (k in 1:length(display[[ax]])) {
-        par(new=TRUE)
-        plot(range(out[,"time"]), range(out[,display[[ax]][k]]), type="n",
-          axes=FALSE, ann=FALSE)
-        axis(side=c(L=2,R=4)[ax], line=(k-1) * const[["multAxisSpace"]] + const[["addAxisSpace"]],
-          col=clr(display[[ax]][k]))
-        for (is in 1:length(unique(out[,"scenario"]))) {
-          rows <- which(out[,"scenario"] == is)
-          lines(out[rows,"time"], out[rows,display[[ax]][k]], lty=is,
-            col=clr(display[[ax]][k]))
-        }
-      }
-    }
+  legend("topleft", bty="n", horiz=TRUE, lty=1:nScen, col=clr,
+    legend=paste(translate["scenario",lang], 1:nScen))
+  # Actual plots
+  par(mar=c(4,3,1,1))
+  for (v in vars) {
+    x <- reshape2::dcast(data=as.data.frame(out), formula=time ~ scenario, value.var=v)
+    if (!identical(colnames(x)[2:ncol(x)], as.character(1:nScen)))
+      stop("Unexpected column names. This is a bug.")
+    matplot(x[,"time"], x[,2:ncol(x)], xlim=range(x[,"time"])*c(1,1.1),
+      bty="L", type="l", lty=1:nScen, col=clr,
+      xlab="Time", ylab="")
+    legend("topright", bty="n", legend=v)
   }
   # Reset
   par(mar=omar)
