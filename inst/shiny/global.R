@@ -3,6 +3,8 @@ library(deSolve)
 library(rootSolve)
 library(xtable)
 
+plotHeight <- 300
+
 ########################################################################
 
 # Load data created by runGUI
@@ -58,7 +60,8 @@ translate <- rbind(
   simulation = c(EN="Simulation", DE="Simulation"),
   introduction = c(EN="Introduction", DE="Einführung"),
   steadystate = c(EN="Steady state", DE="Gleichgewicht"),
-  stoichiometry = c(EN="Stoichiometry", DE="Stöchiometrie"),  
+  stoichiometry = c(EN="Stoichiometry", DE="Stöchiometrie"),
+  time = c(EN="Time", DE="Zeit"),
   tStart = c(EN="From time", DE="Beginn"),
   tFinal = c(EN="To time", DE="Ende"),
   tStep = c(EN="Time step", DE="Zeitschritt"),
@@ -121,38 +124,23 @@ updateInputs <- function(
 
 visualizeDynamic <- function (
   out,    # data frame as output by dynamic solver with additional column 'scenario'
-  vars,   # vector of variable names whose values are to be displayed
+  var,    # variable to be displayed
   lang    # language
 ) {
   nScen <- length(unique(out[,"scenario"]))
   # Split display
-  nc <- if (length(vars) == 1) 1 else 2
-  nr <- ceiling(length(vars) / nc)
-  m <- matrix(c(rep(1, nc), 1+(1:(nc*nr))), nrow=nr+1, ncol=nc, byrow=TRUE)
-  h <- c(0.1, rep(0.9/nr, nr))
-  layout(m, heights=h)
-  par(cex=1)
   omar <- par("mar")
   clr <- colorRampPalette(c("royalblue4", "seagreen", "darkred"))(nScen)
-  # Legend
-  par(mar=c(0,3,0,1))
-  plot(x=0, y=0, type="n", bty="n", axes=FALSE, ann=FALSE)
-  legend("topleft", bty="n", horiz=TRUE, lty=1:nScen, col=clr,
+  par(mar=c(4.5,3,0.1,1))
+  x <- reshape2::dcast(data=as.data.frame(out), formula=time ~ scenario, value.var=var)
+  if (!identical(colnames(x)[2:ncol(x)], as.character(1:nScen)))
+    stop("Unexpected column names. This is a bug.")
+  matplot(x[,"time"], x[,2:ncol(x)], xlim=range(x[,"time"]),
+    bty="L", type="l", lty=1:nScen, col=clr,
+    xlab=translate["time",lang], ylab="")
+  legend("right", bty="n", horiz=FALSE, lty=1:nScen, col=clr,
     legend=paste(translate["scenario",lang], 1:nScen))
-  # Actual plots
-  par(mar=c(4,3,1,1))
-  for (v in vars) {
-    x <- reshape2::dcast(data=as.data.frame(out), formula=time ~ scenario, value.var=v)
-    if (!identical(colnames(x)[2:ncol(x)], as.character(1:nScen)))
-      stop("Unexpected column names. This is a bug.")
-    matplot(x[,"time"], x[,2:ncol(x)], xlim=range(x[,"time"])*c(1,1.1),
-      bty="L", type="l", lty=1:nScen, col=clr,
-      xlab="Time", ylab="")
-    legend("topright", bty="n", legend=v)
-  }
-  # Reset
   par(mar=omar)
-  layout(1)
 }
 
 ########################################################################

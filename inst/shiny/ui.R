@@ -76,14 +76,31 @@ shinyUI <- fluidPage(
   conditionalPanel(
     condition = "(input.view == 'dyn') && (output.showHelp == false)",
     fluidRow(
-      column(2, uiOutput("uiElem.tStart")),
-      column(2, uiOutput("uiElem.tFinal")),
-      column(2, uiOutput("uiElem.tStep")),
-      column(2, uiOutput("uiElem.tShow")),
-      column(2, uiOutput("uiElem.dynVars"))
+      column(3, uiOutput("uiElem.tStart")),
+      column(3, uiOutput("uiElem.tFinal")),
+      column(3, uiOutput("uiElem.tStep")),
+      column(3, uiOutput("uiElem.tShow"))
+    ),
+    hr(),
+    fluidRow(
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar1"))),
+        fluidRow(column(12, plotOutput("resultDyn1", height=paste0(plotHeight,"px"))))
+      ),
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar2"))),
+        fluidRow(column(12, plotOutput("resultDyn2", height=paste0(plotHeight,"px"))))
+      )
     ),
     fluidRow(
-      column(12, plotOutput("resultsDynamic"))
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar3"))),
+        fluidRow(column(12, plotOutput("resultDyn3", height=paste0(plotHeight,"px"))))
+      ),
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar4"))),
+        fluidRow(column(12, plotOutput("resultDyn4", height=paste0(plotHeight,"px"))))
+      )
     )
   ),
 

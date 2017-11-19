@@ -101,39 +101,35 @@ shinyServer <- function(input, output) {
   })
     
   # Generate selectors for items to be displayed in dynamics plot
-  output$uiElem.dynVars <- renderUI({
-    tagList(
-      selectInput(inputId="dynVars",
-        label=translate["variables",input$language], multiple=TRUE,
-        choices=model$namesVars(),
-        selected=model$namesVars()[1:min(4,model$lenVars())], selectize=FALSE)
-    )
+  output$uiElem.dynVar1 <- renderUI({
+    tagList(selectInput(inputId="dynVar1", label=NULL, multiple=FALSE,
+      choices=model$namesVars(), selected=model$namesVars()[min(1,model$lenVars())], selectize=FALSE))
+  })
+  output$uiElem.dynVar2 <- renderUI({
+    tagList(selectInput(inputId="dynVar2", label=NULL, multiple=FALSE,
+      choices=model$namesVars(), selected=model$namesVars()[min(2,model$lenVars())], selectize=FALSE))
+  })
+  output$uiElem.dynVar3 <- renderUI({
+    tagList(selectInput(inputId="dynVar3", label=NULL, multiple=FALSE,
+      choices=model$namesVars(), selected=model$namesVars()[min(3,model$lenVars())], selectize=FALSE))
+  })
+  output$uiElem.dynVar4 <- renderUI({
+    tagList(selectInput(inputId="dynVar4", label=NULL, multiple=FALSE,
+      choices=model$namesVars(), selected=model$namesVars()[min(4,model$lenVars())], selectize=FALSE))
   })
 
   # Generate input fields for time control
   output$uiElem.tStart <- renderUI({
-    tagList(
-      textInput(inputId='tStart',
-        label=translate["tStart",input$language], value=0)
-    )
+    tagList(textInput(inputId='tStart', label=translate["tStart",input$language], value=0))
   })
   output$uiElem.tFinal <- renderUI({
-    tagList(
-      textInput(inputId='tFinal',
-        label=translate["tFinal",input$language], value=10)
-    )
+    tagList(textInput(inputId='tFinal', label=translate["tFinal",input$language], value=10))
   })
   output$uiElem.tStep <- renderUI({
-    tagList(
-      textInput(inputId='tStep',
-        label=translate["tStep",input$language], value=.1)
-    )
+    tagList(textInput(inputId='tStep', label=translate["tStep",input$language], value=.1))
   })
   output$uiElem.tShow <- renderUI({
-    tagList(
-      textInput(inputId='tShow',
-        label=translate["tShow",input$language], value=0)
-    )
+    tagList(textInput(inputId='tShow', label=translate["tShow",input$language], value=0))
   })
 
   # Generate run buttons
@@ -241,14 +237,26 @@ shinyServer <- function(input, output) {
   })
 
   # Render dynamic results
-  output$resultsDynamic <- renderPlot({
-    if (!upToDate[["dyn"]]) {
-      plot(0, 0, type="n", axes=FALSE, ann=FALSE)
-      legend("center", bty="n", legend=translate["needsUpdate",input$language])
-    } else {
-      visualizeDynamic(out=computeDynamic(),
-        vars=input$dynVars, lang=input$language)
-    }
+  empty <- function() {
+    plot(0, 0, type="n", axes=FALSE, ann=FALSE)
+    legend("center", bty="n", legend=translate["needsUpdate",input$language])
+    NULL
+  }
+  output$resultDyn1 <- renderPlot({
+    if (!upToDate[["dyn"]]) empty() else visualizeDynamic(out=computeDynamic(),
+      var=input$dynVar1, lang=input$language)
+  })
+  output$resultDyn2 <- renderPlot({
+    if (!upToDate[["dyn"]]) empty() else visualizeDynamic(out=computeDynamic(),
+      var=input$dynVar2, lang=input$language)
+  })
+  output$resultDyn3 <- renderPlot({
+    if (!upToDate[["dyn"]]) empty() else visualizeDynamic(out=computeDynamic(),
+      var=input$dynVar3, lang=input$language)
+  })
+  output$resultDyn4 <- renderPlot({
+    if (!upToDate[["dyn"]]) empty() else visualizeDynamic(out=computeDynamic(),
+      var=input$dynVar4, lang=input$language)
   })
 
   ##############################################################################
