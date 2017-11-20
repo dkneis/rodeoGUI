@@ -19,11 +19,11 @@ for (d in dirs) {
   }
 }
 if (!loaded)
-  stop(paste0("GUI initialization file '",f,
+  stop(paste0("file '",f,
     "' not found in folder(s): '",paste(dirs,collapse="', '"),"'"))
 
 # Load R functions possibly needed to run model$stoichiometry()
-source(XDATA$funsR)
+eval(parse(text=XDATA$rCode))
 
 ########################################################################
 

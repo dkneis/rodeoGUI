@@ -1,21 +1,25 @@
-#' Run/create GUI for a rodeo-based model
+#' Prepare files needed by the GUI
 #'
-#' Run GUI for a rodeo-based model or prepare GUI for use on server.
+#' Prepare files needed to run a rodeo-based model in the shiny GUI.
 #'
 #' @param dirRodeo Directory containing the model definition. See notes.
 #' @param dirScenarios Directory containing scenario definitions. See notes.
 #' @param dirIntro Directory containing material for the model's 
 #'   introduction page. See notes.
 #' @param colsep Column separator used in delimited text files.
-#' @param lib File path for the generated shared library. If \code{NULL}
-#    this will be a file with a random name in R's temporary folder.
-#' @param serverMode Defaults to \code{FALSE}. If set to \code{TRUE}, data
-#'   required by the GUI are saved to disk but the shiny app is
-#'   \emph{not} run.
+#' @param useTemp If \code{TRUE} (default), the produced files are created in
+#'   the session's temporary folder. If \code{FALSE}, the files are creared in
+#'   the current working directory (which is rarely useful if the GUI is to be
+#'   run on the local machine).
 #'
-#' @return If \code{serverMode} is \code{FALSE}, the function returns
-#'   \code{NULL}. Otherwise it returns the name of the file holding all
-#'   information needed to run the GUI.
+#' @return The function does not return anything but it creates two files in the
+#'   current working directory. The first file with the fixed name
+#'   'rodeoGuiData.rda' holds various data needed by the GUI. The second file is
+#'   a system-specific shared library. The file name starts with 'rodeo'
+#'   followed by a random pattern and the extension according to the
+#'   \code{dynlib.ext} component of \code{\link[base]{.Platform}}.
+#'   
+#' @note Detailed help text still missing.
 #'
 #' @author David Kneis \email{david.kneis@@tu-dresden.de}
 #'
@@ -23,24 +27,22 @@
 #'
 #' @examples
 #' \dontrun{
-#'   library(rodeoGUI)
-#' runGUI(
-#' dirRodeo=system.file("examples/tank2/rodeo", package="rodeoGUI"),
+#' library(rodeoGUI)
+#' preGUI(
+#'   dirRodeo=system.file("examples/tank2/rodeo", package="rodeoGUI"),
 #'   dirScenarios=system.file("examples/tank2/scenarios", package="rodeoGUI"),
-#'   dirIntro=system.file("examples/tank2/intro", package="rodeoGUI")
+#'   dirIntro=system.file("examples/tank2/intro", package="rodeoGUI"),
+#'   colsep="\t"
 #' )
 #' }
 
-runGUI <- function(
+preGUI <- function(
   dirRodeo = "./rodeo",
   dirScenarios = "./scenarios",
-  dirIntro = "./startpages",
+  dirIntro = "./intro",
   colsep="\t",
-  lib=NULL,
-  serverMode=FALSE
+  useTemp = TRUE
 ) {
-
-  ##############################################################################
 
   # Set/check file names
   chkDir <- function(d) {
@@ -74,6 +76,12 @@ runGUI <- function(
     stop("no file with R functions supplied, need a dummy file at least")
   if (!file.exists(funsR))
     stop("file with function definitions in R not found ('",funsR,"')")
+  rCode <- paste(readLines(funsR), collapse="\n")
+  tryCatch({
+    parse(text=rCode)
+  }, error = function(e) {
+    stop(paste("attempt to parse contents of file '",funsR,"' failed: ",e))
+  })
   if (length(funsF) == 0)
     stop("no Fortran file supplied, need a dummy file with module 'functions' at least")
   if (!all(file.exists(funsF)))
@@ -87,12 +95,10 @@ runGUI <- function(
     dim=c(1))  # GUI handles 0D models only
 
   # Build library
-  if (is.null(lib)) {
-    libFile <- tempfile(pattern="rodeo")
+  if (useTemp) {
+    libFile <- tempfile(pattern="rodeo", tmpdir=gsub(x=tempdir(), pattern="\\", replacement="/", fixed=TRUE))
   } else {
-    libFile <- gsub(pattern="\\", replacement="/",
-        x=suppressWarnings(normalizePath(lib)), fixed=TRUE)
-    libFile <- paste(dirname(libFile), tolower(basename(libFile)), sep="/")
+    libFile <- tempfile(pattern="rodeo", tmpdir=".")
   }
   model$compile(sources=funsF, lib=libFile)
 
@@ -100,7 +106,7 @@ runGUI <- function(
 
   # Read scenario files
   files <- c(titles="titles.txt", descriptions="descriptions.txt", defaults="defaults.txt")
-  files <- setNames(paste(dirScenarios, files, sep="/"), names(files))
+  files <- stats::setNames(paste(dirScenarios, files, sep="/"), names(files))
   for (i in 1:length(files)) {
     if (!file.exists(files[i]))
       stop(paste("file with scenario ",names(files)[i]," ('",files[i],"') not found"))
@@ -154,25 +160,68 @@ runGUI <- function(
   # Save data in .rda file to be loaded in server/ui
   XDATA <- list(
     model= model,
-    lib= if (serverMode) basename(libFile) else libFile,
-    funsR= if (serverMode) basename(funsR) else funsR,
+    lib= if (useTemp) libFile else basename(libFile),
+    rCode= rCode,
     intro= intro,
     scenTitles= scenTitles,
     scenDescriptions= scenDescriptions,
     scenDefaults= scenDefaults
   )
 
-  # NOTE: File/path name must be consistent with path at top of 'global.R'
-  filename <- paste0(gsub(pattern="\\", replacement="/", x=tempdir(),
-    fixed=TRUE), "/rodeoGuiData.rda")
-  save(XDATA, file=filename, ascii=FALSE)
-  rm(XDATA)
-
-  # Start shiny app
-  if (serverMode) {
-    return(filename)
+  # NOTE: File name must be consistent with path at top of 'global.R'
+  if (useTemp) {
+    rdaFile <- paste0(gsub(x=tempdir(), pattern="\\", replacement="/", fixed=TRUE),"/rodeoGuiData.rda")
   } else {
-    shiny::runApp(system.file("shiny", package="rodeoGUI"))
-    return(invisible(NULL))
+    rdaFile <- "rodeoGuiData.rda"
   }
+  save(XDATA, file=rdaFile, ascii=FALSE)
+
+  invisible(NULL)
+}
+
+
+#' Locally run rodeo-based model in GUI
+#'
+#' Locally run a rodeo-based model in a specialized shiny GUI.
+#' 
+#' @param useTemp If \code{TRUE} (default), the function expects to find the
+#'   two files created by \code{preGUI} in the sessions's temporary folder. If
+#'   \code{FALSE}, the function attempts to find the files in the
+#'   current working directory.
+#'
+#' @return \code{NULL}
+#' 
+#'
+#' @author David Kneis \email{david.kneis@@tu-dresden.de}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' library(rodeoGUI)
+#' preGUI(
+#'   dirRodeo=system.file("examples/tank2/rodeo", package="rodeoGUI"),
+#'   dirScenarios=system.file("examples/tank2/scenarios", package="rodeoGUI"),
+#'   dirIntro=system.file("examples/tank2/intro", package="rodeoGUI"),
+#'   colsep="\t"
+#' )
+#' runGUI()
+#' }
+
+runGUI <- function(
+  useTemp = TRUE
+) {
+  if (useTemp) {
+    rdaFile <- paste0(gsub(x=tempdir(), pattern="\\", replacement="/", fixed=TRUE),"/rodeoGuiData.rda")
+  } else {
+    rdaFile <- "rodeoGuiData.rda"
+  }
+  if (!file.exists(rdaFile))
+    stop("file '",rdaFile,"' not found")
+  load(rdaFile)
+  lib <- paste0(XDATA$lib,.Platform$dynlib.ext)
+  if (!file.exists(lib))
+    stop(paste0("file '",lib,"' not found in working directory"))
+  rm(XDATA)
+  shiny::runApp(system.file("shiny", package="rodeoGUI"))
 }

@@ -2,44 +2,32 @@
 % Please edit documentation in R/runGUI.R
 \name{runGUI}
 \alias{runGUI}
-\title{Run/create GUI for a rodeo-based model}
+\title{Locally run rodeo-based model in GUI}
 \usage{
-runGUI(dirRodeo = "./rodeo", dirScenarios = "./scenarios",
-  dirIntro = "./startpages", colsep = "\\t", lib = NULL,
-  serverMode = FALSE)
+runGUI(useTemp = TRUE)
 }
 \arguments{
-\item{dirRodeo}{Directory containing the model definition. See notes.}
-
-\item{dirScenarios}{Directory containing scenario definitions. See notes.}
-
-\item{dirIntro}{Directory containing material for the model's 
-introduction page. See notes.}
-
-\item{colsep}{Column separator used in delimited text files.}
-
-\item{lib}{File path for the generated shared library. If \code{NULL}}
-
-\item{serverMode}{Defaults to \code{FALSE}. If set to \code{TRUE}, data
-required by the GUI are saved to disk but the shiny app is
-\emph{not} run.}
+\item{useTemp}{If \code{TRUE} (default), the function expects to find the
+two files created by \code{preGUI} in the sessions's temporary folder. If
+\code{FALSE}, the function attempts to find the files in the
+current working directory.}
 }
 \value{
-If \code{serverMode} is \code{FALSE}, the function returns
-  \code{NULL}. Otherwise it returns the name of the file holding all
-  information needed to run the GUI.
+\code{NULL}
 }
 \description{
-Run GUI for a rodeo-based model or prepare GUI for use on server.
+Locally run a rodeo-based model in a specialized shiny GUI.
 }
 \examples{
 \dontrun{
-  library(rodeoGUI)
-runGUI(
-dirRodeo=system.file("examples/tank2/rodeo", package="rodeoGUI"),
+library(rodeoGUI)
+preGUI(
+  dirRodeo=system.file("examples/tank2/rodeo", package="rodeoGUI"),
   dirScenarios=system.file("examples/tank2/scenarios", package="rodeoGUI"),
-  dirIntro=system.file("examples/tank2/intro", package="rodeoGUI")
+  dirIntro=system.file("examples/tank2/intro", package="rodeoGUI"),
+  colsep="\\t"
 )
+runGUI()
 }
 }
 \author{
