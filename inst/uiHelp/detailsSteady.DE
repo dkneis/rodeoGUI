@@ -4,4 +4,6 @@
 
 <h3>Wenn kein Gleichgewichtszustand existiert</h3>
 
-<p>Die Existenz eines Gleichgewichtszustands (oder mehrerer solcher Zustände) ist abhängig von den Modellgleichungen, der Parametrisierung und ggf. auch von den Anfangswerten der Zustandsvariablen. Es kann vorkommen, das die Werte der Zustandsvariablen trotz Integration über einen sehr langen Zeitraum nicht gegen einen bestimmten Wert konvergieren. Das System besitzt dann für die gegebene Parametrisierung keinen Gleichgewichtszustand. In diesem Fall sind in der ausgegebenen Tabelle alle Werte auf "NA" gesetzt.
+<p>Die Existenz eines Gleichgewichtszustands (oder mehrerer solcher Zustände) ist abhängig von den Modellgleichungen, der Parametrisierung und ggf. auch von den Anfangswerten der Zustandsvariablen. Es kann vorkommen, das die Werte der Zustandsvariablen trotz Integration über einen sehr langen Zeitraum nicht gegen einen bestimmten Wert konvergieren. Das System besitzt dann für die gegebene Parametrisierung keinen Gleichgewichtszustand. In diesem Fall sind in der ausgegebenen Tabelle alle Werte auf "NA" gesetzt.</p>
+
+<p>Schlägt die Berechnung einer Gleichgewichtslösung unerwartet fehl, sollte zunächst eine dynamische Simulation durchgeführt werden. Wird die Dynamik über einein längeren Zeitraum betrachtet, zeigt sich, welche der Zustandsvariablen nicht gegen einen festen Wert konvergiert.</p>

@@ -1,5 +1,11 @@
 shinyServer <- function(input, output) {
 
+  ##############################################################################
+  ##############################################################################
+  # PART 1: ELEMENTS OF THE DYNAMIC UI
+  ##############################################################################
+  ##############################################################################
+  
   # Text strings appearing in the UI
   output$uiHTML.selectView <- renderText({
     paste("<b>",translate["selectView",input$language],"</b>")
@@ -13,15 +19,18 @@ shinyServer <- function(input, output) {
       " <a href='https://CRAN.R-project.org/package=shiny'>shiny</a>")
   })
 
-  # Generate input field to select a view
+  ##############################################################################
+  # CONTROLS FOR SELECTING THE VIEW
+  ##############################################################################
+
   output$uiElem.view <- renderUI({
     lst <- list(
       overview= setNames(c("intro","pros","stoi"),
         translate[c("introduction","processes","stoichiometry"),input$language]),
       scenarios= setNames(c("scenDesc","scenPars","scenVars"),
         translate[c("description","parameters","initialValues"),input$language]),
-      simulation= setNames(c("dyn","std"),
-        translate[c("dynamics", "steadystate"),input$language])
+      simulation= setNames(c("dyn","std","eff"),
+        translate[c("dynamics", "steadystate", "effectOnSteadyState"),input$language])
     )
     for (n in names(lst))
       names(lst)[names(lst)==n] <- translate[n,input$language]
@@ -31,35 +40,10 @@ shinyServer <- function(input, output) {
     )
   })
 
-  # Generate input fields for number of scenarios
-  output$uiElem.nScen <- renderUI({
-    tagList(
-      numericInput(inputId='nScen',
-        label=translate["scenarios",input$language], value=1, min=1, max=3, step=1)
-    )
-  })
+  ##############################################################################
+  # CONTROLS FOR THE PRESENTATION OF THE STOICHIOMETRY MATRIX
+  ##############################################################################
 
-  # Generate input fields for scenarios
-  output$uiElem.scenSpecs <- renderUI({
-    nScen <- if (is.null(input$nScen)) 1 else input$nScen
-    code <- ""
-    code <- paste0(code, "HTML('<div style=\"width:100%; overflow:hidden;\">'),")
-    for (i in 1:nScen) {
-      code <- paste0(code, "HTML('<div style=\"width:",floor(100/nScen) ,"%; float:left\">'),")
-      code <- paste0(code, "selectInput(inputId=\'scenDefaultId.",i,"\', label=\'",
-        translate["scenario",input$language]," ",i,"\', multiple=FALSE, choices=setNames(",
-        "c(",paste(paste0("'",rownames(scenTitles),"'"), collapse=","),"),",
-        "c(",paste(paste0("'",scenTitles[,input$language],"'"), collapse=","),")",
-        "), selected='",rownames(scenTitles)[1],"', selectize=FALSE),")
-      code <- paste0(code, "textInput(inputId=\'scenEdits.",i,"\', label=NULL, value=\'\'),")
-      code <- paste0(code, "HTML('</div>'),")
-    }
-    code <- paste0(code, "HTML('</div>')")
-    code <- paste0("tagList(list(",code, "))")
-    eval(parse(text=code))
-  })
-
-  # Generate fields control plotting of the stoichiometry matrix
   output$uiElem.stoiSpecs <- renderUI({
     code <- ""
     code <- paste0(code, "HTML('<div style=\"width:100%; overflow:hidden;\">'),")
@@ -89,7 +73,10 @@ shinyServer <- function(input, output) {
     eval(parse(text=code))
   })
 
-  # Generate fields control presentation of process rates
+  ##############################################################################
+  # CONTROLS FOR THE PRESENTATION OF PROCESS RATES
+  ##############################################################################
+
   output$uiElem.prosSpecs <- renderUI({
     code <- ""
     code <- paste0(code, "selectInput(inputId=\'varPros', label=\'",
@@ -99,8 +86,58 @@ shinyServer <- function(input, output) {
     code <- paste0("tagList(list(",code, "))")
     eval(parse(text=code))
   })
-    
-  # Generate selectors for items to be displayed in dynamics plot
+  
+  ##############################################################################
+  # COMMON CONTROLS FOR DYNAMIC AND STEADY STATE SIMULATION
+  ##############################################################################
+
+  # Generate input fields for number of scenarios in dynamic/steady comp.
+  output$uiElem.nScen <- renderUI({
+    tagList(
+      numericInput(inputId='nScen',
+        label=translate["scenarios",input$language], value=1, min=1, max=3, step=1)
+    )
+  })
+
+  # Generate input fields for scenarios in dynamic/steady comp.
+  output$uiElem.scenSpecs <- renderUI({
+    nScen <- if (is.null(input$nScen)) 1 else input$nScen
+    code <- ""
+    code <- paste0(code, "HTML('<div style=\"width:100%; overflow:hidden;\">'),")
+    for (i in 1:nScen) {
+      code <- paste0(code, "HTML('<div style=\"width:",floor(100/nScen) ,"%; float:left\">'),")
+      code <- paste0(code, "selectInput(inputId=\'scenDefaultId.",i,"\', label=\'",
+        translate["scenario",input$language]," ",i,"\', multiple=FALSE, choices=setNames(",
+        "c(",paste(paste0("'",rownames(scenTitles),"'"), collapse=","),"),",
+        "c(",paste(paste0("'",scenTitles[,input$language],"'"), collapse=","),")",
+        "), selected='",rownames(scenTitles)[1],"', selectize=FALSE),")
+      code <- paste0(code, "textInput(inputId=\'scenEdits.",i,"\', label=NULL, value=\'\'),")
+      code <- paste0(code, "HTML('</div>'),")
+    }
+    code <- paste0(code, "HTML('</div>')")
+    code <- paste0("tagList(list(",code, "))")
+    eval(parse(text=code))
+  })
+
+  ##############################################################################
+  # SPECIFIC CONTROLS FOR DYNAMIC SIMULATION
+  ##############################################################################
+
+  # Time control
+  output$uiElem.tStart <- renderUI({
+    tagList(textInput(inputId='tStart', label=translate["tStart",input$language], value=0))
+  })
+  output$uiElem.tFinal <- renderUI({
+    tagList(textInput(inputId='tFinal', label=translate["tFinal",input$language], value=10))
+  })
+  output$uiElem.tStep <- renderUI({
+    tagList(textInput(inputId='tStep', label=translate["tStep",input$language], value=.1))
+  })
+  output$uiElem.tShow <- renderUI({
+    tagList(textInput(inputId='tShow', label=translate["tShow",input$language], value=0))
+  })
+  
+  # Variables to be displayed
   output$uiElem.dynVar1 <- renderUI({
     tagList(selectInput(inputId="dynVar1", label=NULL, multiple=FALSE,
       choices=model$namesVars(), selected=model$namesVars()[min(1,model$lenVars())], selectize=FALSE))
@@ -118,27 +155,18 @@ shinyServer <- function(input, output) {
       choices=model$namesVars(), selected=model$namesVars()[min(4,model$lenVars())], selectize=FALSE))
   })
 
-  # Generate input fields for time control
-  output$uiElem.tStart <- renderUI({
-    tagList(textInput(inputId='tStart', label=translate["tStart",input$language], value=0))
-  })
-  output$uiElem.tFinal <- renderUI({
-    tagList(textInput(inputId='tFinal', label=translate["tFinal",input$language], value=10))
-  })
-  output$uiElem.tStep <- renderUI({
-    tagList(textInput(inputId='tStep', label=translate["tStep",input$language], value=.1))
-  })
-  output$uiElem.tShow <- renderUI({
-    tagList(textInput(inputId='tShow', label=translate["tShow",input$language], value=0))
-  })
-
-  # Generate run buttons
+  # Run button
   output$uiElem.runDyn <- renderUI({
     tagList(
       actionButton(inputId="runDyn", translate["run",input$language],
         style=paste0("color: white; background-color: ",guiColors["blueDark"]))
     )
   })
+
+  ##############################################################################
+  # SPECIFIC CONTROLS FOR STEADY STATE SIMULATION
+  ##############################################################################
+
   output$uiElem.runStd <- renderUI({
     tagList(
       actionButton(inputId="runStd", translate["run",input$language],
@@ -146,6 +174,60 @@ shinyServer <- function(input, output) {
     )
   })
 
+  ##############################################################################
+  # CONTROLS FOR EFFECT ANALYSIS
+  ##############################################################################
+  
+  # Scenario, varied item, list of values
+  output$uiElem.effScen <- renderUI({
+    tagList(selectInput(inputId="effScen", label=translate["scenario",input$language],
+      multiple=FALSE, choices=setNames(rownames(scenTitles),scenTitles[,input$language]),
+      selected=rownames(scenTitles)[1], selectize=FALSE))
+  })
+  output$uiElem.effItem <- renderUI({
+    tagList(selectInput(inputId="effItem", label=translate["variedItem",input$language],
+      multiple=FALSE, choices=c(model$namesPars(), model$namesVars()),
+      selected=model$namesPars()[1], selectize=FALSE))
+  })
+  output$uiElem.effValues <- renderUI({
+    tagList(textInput(inputId="effValues", label=translate["values",input$language],
+      value="0.5, 1, 2"))
+  })
+  output$uiElem.effMultiply <- renderUI({
+    tagList(checkboxInput(inputId="effMultiply", label=translate["useAsMultipliers",input$language],
+      value=TRUE))
+  })
+
+  # Variables to be displayed
+  output$uiElem.effVar1 <- renderUI({
+    tagList(selectInput(inputId="effVar1", label=NULL, multiple=FALSE,
+      choices=model$namesVars(), selected=model$namesVars()[min(1,model$lenVars())], selectize=FALSE))
+  })
+  output$uiElem.effVar2 <- renderUI({
+    tagList(selectInput(inputId="effVar2", label=NULL, multiple=FALSE,
+      choices=model$namesVars(), selected=model$namesVars()[min(2,model$lenVars())], selectize=FALSE))
+  })
+  output$uiElem.effVar3 <- renderUI({
+    tagList(selectInput(inputId="effVar3", label=NULL, multiple=FALSE,
+      choices=model$namesVars(), selected=model$namesVars()[min(3,model$lenVars())], selectize=FALSE))
+  })
+  output$uiElem.effVar4 <- renderUI({
+    tagList(selectInput(inputId="effVar4", label=NULL, multiple=FALSE,
+      choices=model$namesVars(), selected=model$namesVars()[min(4,model$lenVars())], selectize=FALSE))
+  })
+  
+  # Run button
+  output$uiElem.runEff <- renderUI({
+    tagList(
+      actionButton(inputId="runEff", translate["run",input$language],
+        style=paste0("color: white; background-color: ",guiColors["blueDark"]))
+    )
+  })
+  
+  ##############################################################################
+  # CONTROLS TO SHOW/HIDE HELP
+  ##############################################################################
+  
   # Generate help open/close buttons
   output$uiElem.helpOpen <- renderUI({
     tagList(actionLink(inputId="helpOpen", label=HTML(symbolHelpOpen)))
@@ -154,11 +236,8 @@ shinyServer <- function(input, output) {
     tagList(actionLink(inputId="helpClose", label=HTML(symbolHelpClose)))
   })
 
-  ##############################################################################
   # Controls display of help pages using conditionalPanel
   # https://stackoverflow.com/questions/38895710/passing-reactive-values-to-conditionalpanel-condition
-  ##############################################################################
-
   output$showHelp <- reactive({
     if (is.null(input$helpClose) || is.null(input$helpOpen))
       return(FALSE)
@@ -171,37 +250,45 @@ shinyServer <- function(input, output) {
   ##############################################################################
   # Controls display of computed results
   ##############################################################################
-  
-  upToDate <- reactiveValues(dyn=FALSE, std=FALSE)
-  # Mark as valid after computation
-  observeEvent(input$runDyn, {
-    upToDate$dyn <- TRUE
-  })
-  observeEvent(input$runStd, {
-    upToDate$std <- TRUE
-  })
-  # Mark as invalid if number of scenarios was changed
-  observeEvent(input$nScen, {
-    upToDate$dyn <- FALSE
-    upToDate$std <- FALSE
-  })
-  # Mark as invalid if scenario data were changed
-  scenarioSettings <- reactive({
+
+  # Initialize  
+  upToDate <- reactiveValues(dyn=FALSE, std=FALSE, eff=FALSE)
+
+  # Mark as up-to-date after computation
+  observeEvent(input$runDyn, {upToDate$dyn <- TRUE})
+  observeEvent(input$runStd, {upToDate$std <- TRUE})
+  observeEvent(input$runEff, {upToDate$eff <- TRUE})
+
+  # Dynamics and steady state: Mark as outdated if inputs were changed
+  inputs_dyn_std <- reactive({
 #    tmp <- unlist(reactiveValuesToList(input))
 #    tmp[grepl(x=names(tmp), pattern="^scenDefaultId[.][0123456789]+$")]
     # possibly one can use the leading dot with reactiveValuesToList
     # THIS IS A WORKAROUND: TO BE ON THE SAVE SIDE, WE QUERY THE SETTINGS FOR
     # MORE SCENARIOS THAN THE USER CAN ACTUALLY SELECT
-    c(input$scenDefaultId.1,input$scenDefaultId.2,input$scenDefaultId.3,
+    c(input$nScen,
+      input$scenDefaultId.1,input$scenDefaultId.2,input$scenDefaultId.3,
       input$scenDefaultId.4,input$scenDefaultId.5,input$scenDefaultId.6,
       input$scenEdits.1,input$scenEdits.2,input$scenEdits.3,
-      input$scenEdits.4,input$scenEdits.5,input$scenEdits.6)
+      input$scenEdits.4,input$scenEdits.5,input$scenEdits.6
+    )
   })
-  observeEvent(scenarioSettings(), {
+  observeEvent(inputs_dyn_std(), {
     upToDate$dyn <- FALSE
     upToDate$std <- FALSE
   })
-
+  
+  # Effect analysis: Mark as outdated if inputs were changed
+  inputs_eff <- reactive({
+    c(input$effScen,
+      input$effItem,
+      input$effValues,
+      input$effMultiply
+    )
+  })
+  observeEvent(inputs_eff(), {
+    upToDate$eff <- FALSE
+  })
 
   ##############################################################################
   # Dynamic computation / results
@@ -300,6 +387,65 @@ shinyServer <- function(input, output) {
     }
   })
 
+  ##############################################################################
+  # Single-effect computation / results
+  ##############################################################################
+  
+  # Compute effect of parameter on steady state when button was pressed
+  computeEffect <- eventReactive(input$runEff, {
+    dyn.load(paste0(lib, .Platform$dynlib.ext))
+    out <- NULL
+    tryCatch({
+      values <- eval(parse(text=paste("c(",input$effValues,")")))
+    }, error = function(e) {
+      stop(paste0("Invalid set of values: '",input$effValues,"'"))
+    })
+    if (input$effMultiply) {
+      values <- values * scenDefaults[input$effItem, input$effScen]
+    }
+    for (i in 1:length(values)) {
+      # get inputs for current scenario
+      inp <- reactiveValuesToList(input)
+      updateInputs(model, scenDefaults=scenDefaults,
+        scenDefaultId=input$effScen,
+        scenEdits=paste0(input$effItem,"=",values[i]))
+      # run model
+      this <- rootSolve::runsteady(y=model$getVars(), times=c(0,Inf), func=model$libFunc(),
+        parms=model$getPars(), dllname=basename(lib), nout=model$lenPros(),
+        outnames=model$namesPros())
+      if (!attr(this, "steady")) {
+        this <- rep(NA,length(this$y))
+      } else {
+        this <- signif(this$y, 3)
+      }
+      # add to results
+      out <- cbind(out, this)
+      colnames(out)[ncol(out)] <- as.character(values[i])
+    }
+    dyn.unload(paste0(lib, .Platform$dynlib.ext))
+    rownames(out) <- model$namesVars()
+    out
+  })
+  
+  # Render effect results
+  output$resultEff1 <- renderPlot({
+    if (!upToDate[["eff"]]) empty() else visualizeEffect(out=computeEffect(),
+      var=input$effVar1, lang=input$language)
+  })
+  output$resultEff2 <- renderPlot({
+    if (!upToDate[["eff"]]) empty() else visualizeEffect(out=computeEffect(),
+      var=input$effVar2, lang=input$language)
+  })
+  output$resultEff3 <- renderPlot({
+    if (!upToDate[["eff"]]) empty() else visualizeEffect(out=computeEffect(),
+      var=input$effVar3, lang=input$language)
+  })
+  output$resultEff4 <- renderPlot({
+    if (!upToDate[["eff"]]) empty() else visualizeEffect(out=computeEffect(),
+      var=input$effVar4, lang=input$language)
+  })
+
+  
   ##############################################################################
   # Intro page, process table, stoichiometry matrix
   ##############################################################################

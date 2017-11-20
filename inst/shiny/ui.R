@@ -114,6 +114,41 @@ shinyUI <- fluidPage(
 
   ##############################################################################
   conditionalPanel(
+    condition = "(input.view == 'eff') && (output.showHelp == false)",
+    fluidRow(
+      column(3, uiOutput("uiElem.effItem")),
+      column(6, uiOutput("uiElem.effValues")),
+      column(6, uiOutput("uiElem.effMultiply"))
+    ),
+    fluidRow(
+      column(3, uiOutput("uiElem.effScen")),
+      column(9, uiOutput("uiElem.runEff"))
+    ),
+    hr(),
+    fluidRow(
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar1"))),
+        fluidRow(column(12, plotOutput("resultEff1", height=paste0(plotHeight,"px"))))
+      ),
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar2"))),
+        fluidRow(column(12, plotOutput("resultEff2", height=paste0(plotHeight,"px"))))
+      )
+    ),
+    fluidRow(
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar3"))),
+        fluidRow(column(12, plotOutput("resultEff3", height=paste0(plotHeight,"px"))))
+      ),
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar4"))),
+        fluidRow(column(12, plotOutput("resultEff4", height=paste0(plotHeight,"px"))))
+      )
+    )
+  ),
+
+  ##############################################################################
+  conditionalPanel(
     condition = "(input.view == 'intro') && (output.showHelp == false)",
     fluidRow(
       column(12, htmlOutput("intro"))
@@ -155,6 +190,7 @@ shinyUI <- fluidPage(
   ),
 
   ##############################################################################
+  # Show help page for the currently selected view
   conditionalPanel(
     condition = "output.showHelp == true",
     fluidRow(column(12, htmlOutput("helpText")))

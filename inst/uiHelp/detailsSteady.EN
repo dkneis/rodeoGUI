@@ -4,4 +4,6 @@
 
 <h3>If a steady state does not exist</h3>
 
-<p>The existance of a steady state (or multiple steady states) is dependend on the set of differential equations, the parameter values and, possibly, the state variables' initial values. It is quite common that one or more state variable(s) do not converge towards a particular value even though integration is performed over a very long time. This is likely due to the fact that a steady state solution does not exist for the given parametrization. In such a case the respecitive column(s) of the result table is filled with "NA" values.
+<p>The existance of a steady state (or multiple steady states) is dependend on the set of differential equations, the parameter values and, possibly, the state variables' initial values. It is quite common that one or more state variable(s) do not converge towards a particular value even though integration is performed over a very long time. This is likely due to the fact that a steady state solution does not exist for the given parametrization. In such a case the respecitive column(s) of the result table is filled with "NA" values.</p>
+
+<p>If the steady state computation fails, the reason can often be identified from the output of a dynamic simulation. A look at the dynamic solution over a longer period of time reveals which state variables are subject to continuous growth or shrinkage rather than convergence.</p>

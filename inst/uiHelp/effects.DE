@@ -1,0 +1,7 @@
+<h3>Effekt eines Parameters oder Anfangswerts</h3>
+
+<p>In dieser Ansicht wird der Einfluss eines einzelnen Parameters oder Anfangswertes auf die Gleichgewichts-Lösung dargestellt.</p>
+
+<p>Aus der Auswahlliste ist zunächst der Parameter bzw. die Variable auszuwählen, dessen/deren Effekt untersucht werden soll. Im Textfeld ist dann eine Liste numerischer Werte anzugeben, wobei die Werte durch Komma zu trennen sind (Beispiel: <it>0.5, 1, 2</it>). Durch Setzen des Häkchens im entsprechenden Feld wird vereinbart, wie die Werte in die Berechnung eingehen. Sie können entweder direkt eingesetzt werden oder aber als Multiplikatoren für den hinterlegten Standardwert dienen.</p>
+
+<p>Der hinterlegte Standardwert für die variierte Größe hängt im Allgemeinen vom aktivierten Szenario ab (einstellbar über die entsprechende Auswahlliste). Für alle übrigen, nicht variierten Parameter oder Anfangswerte werden die Standards des aktivierten Szenarios übernommen.</p>

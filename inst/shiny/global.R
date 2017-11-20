@@ -39,9 +39,10 @@ rm(rodeoGuiData)
 # Labels in GUI
 translate <- rbind(
   and = c(EN="and", DE="und"),
-  done = c(EN="Done", DE="Fertig"),
+#  done = c(EN="Done", DE="Fertig"),
   description = c(EN="Description", DE="Beschreibung"),
   dynamics = c(EN="Dynamics", DE="Dynamik"),
+  effectOnSteadyState = c(EN="Effect on steady st.", DE="Effekt auf Gleichgew."),
   expression = c(EN="Expression", DE="Ausdruck"),
   factor = c(EN="Factor", DE="Faktor"),
   identifier = c(EN="Short name", DE="Bezeichnung"),
@@ -67,9 +68,12 @@ translate <- rbind(
   tStep = c(EN="Time step", DE="Zeitschritt"),
   tShow = c(EN="Display from", DE="Zeige ab"),
   unit = c(EN="Unit", DE="Einheit"),
+  useAsMultipliers = c(EN="Multiply with default", DE="Multipliziere mit Standard"),
   usesTheRPackages = c(EN="uses the R-packages", DE="nutzt die R-Pakete"),
+  values = c(EN="Values", DE="Werte"),
   variable = c(EN="Variable", DE="Variable"),
-  variables = c(EN="Variables", DE="Variablen")
+  variables = c(EN="Variables", DE="Variablen"),
+  variedItem = c(EN="Varied item", DE="Variierte Größe")
 )
 
 # Colors used for labels, bottons, etc
@@ -128,10 +132,9 @@ visualizeDynamic <- function (
   lang    # language
 ) {
   nScen <- length(unique(out[,"scenario"]))
-  # Split display
   omar <- par("mar")
   clr <- colorRampPalette(c("royalblue4", "seagreen", "darkred"))(nScen)
-  par(mar=c(4.5,3,0.1,1))
+  par(mar=c(4.5,3,0.5,1))
   x <- reshape2::dcast(data=as.data.frame(out), formula=time ~ scenario, value.var=var)
   if (!identical(colnames(x)[2:ncol(x)], as.character(1:nScen)))
     stop("Unexpected column names. This is a bug.")
@@ -140,6 +143,20 @@ visualizeDynamic <- function (
     xlab=translate["time",lang], ylab="")
   legend("right", bty="n", horiz=FALSE, lty=1:nScen, col=clr,
     legend=paste(translate["scenario",lang], 1:nScen))
+  par(mar=omar)
+}
+
+########################################################################
+# Plots dynamic outputs
+
+visualizeEffect <- function (
+  out,    # matrix; each column is for another value of the varied item
+  var,    # variable to be displayed
+  lang    # language
+) {
+  omar <- par("mar")
+  par(mar=c(4.5,3,0.5,1))
+  barplot(height=out[var,], names.arg=colnames(out), col=guiColors["greyLight"])
   par(mar=omar)
 }
 
@@ -293,5 +310,6 @@ help <- rbind(
   scenVars= sapply(langs, readHelp, "tableOfVariables"),
   scenPars= sapply(langs, readHelp, "tableOfParameters"),
   dyn= sapply(langs, readHelp, c("defineScenarios","startComputation","detailsDynamic")),
-  std= sapply(langs, readHelp, c("defineScenarios","startComputation","detailsSteady"))
+  std= sapply(langs, readHelp, c("defineScenarios","startComputation","detailsSteady")),
+  eff= sapply(langs, readHelp, "effects")
 )

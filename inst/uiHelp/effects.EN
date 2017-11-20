@@ -1,0 +1,7 @@
+<h3>Effect of a single parameter or initial value</h3>
+
+<p>This view allows to visualize the effect of a single parameter or initial value on the steady state solution.</p>
+
+<p>The user must choose a parameter or variable whose effect is to be analyzed from the drop down menu. In the corresponding text field, a set of numerical values must be supplied as a comma-delimited list (Example: <it>0.5, 1, 2</it>). The actual use of the supplied values is controlled through the checkbox. The values can either be used directly or the they can be treated as multipliers for the default value of the respective item.</p>
+
+<p>The default value for the varied item is given by the active scenario (choose from drop down menu). The defaults for all parameters and initial values not being subject to variation are copied from the active scenario as well.</p>
