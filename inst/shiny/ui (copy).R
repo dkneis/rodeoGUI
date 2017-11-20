@@ -4,28 +4,13 @@ styleDefs <- paste0('
     border: 2px solid white;
   }
   th {
-    font-weight: normal;
     color: ',guiColors["greyDark"],';
     background-color: white;
   }
   td {
     background-color: ',guiColors["greyLight"],';
   }
-  h2 {
-    color: ',guiColors["blueDark"],';
-  }
-  h3 {
-    color: ',guiColors["greyDark"],';
-  }
-  label {
-    font-weight: normal;
-    margin-bottom: 2px;
-    color: ',guiColors["blueDark"],';
-  }
 ')
-
-widthSide <- 3
-widthMain <- 9
 
 shinyUI <- fluidPage(
   HTML(paste0("<style>",styleDefs,"</style>")),
@@ -36,7 +21,7 @@ shinyUI <- fluidPage(
   
   fluidRow(
     column(6,
-      HTML("<h2> rodeoGUI </h2>"),
+      HTML(paste0("<h2><font color='",guiColors["blueDark"],"'>","rodeoGUI","</font></h2>")),
       htmlOutput("uiHTML.usedPackages")
     ),
     conditionalPanel(
@@ -74,47 +59,52 @@ shinyUI <- fluidPage(
   ##############################################################################
   conditionalPanel(
     condition = "(input.view == 'dyn' || input.view == 'std') && (output.showHelp == false)" ,
-    column(widthSide,
-      uiOutput("uiElem.nScen"),
-      uiOutput("uiElem.scenSpecs"),
-      conditionalPanel(
-        condition = "input.view == 'dyn'",
-        uiOutput("uiElem.tStart"),
-        uiOutput("uiElem.tFinal"),
-        uiOutput("uiElem.tStep"),
-        uiOutput("uiElem.tShow"),
-        uiOutput("uiElem.runDyn")
-      ),
-      conditionalPanel(
-        condition = "input.view == 'std'",
-        uiOutput("uiElem.runStd")
+    fluidRow(
+      column(2, uiOutput("uiElem.nScen")),
+      column(8, uiOutput("uiElem.scenSpecs")),
+      column(2,      
+        conditionalPanel(
+          condition = "input.view == 'dyn'",
+          fluidRow(column(12, br(), uiOutput("uiElem.runDyn")))
+        ),
+        conditionalPanel(
+          condition = "input.view == 'std'",
+          fluidRow(column(12, br
+            (), uiOutput("uiElem.runStd")))
+        )
       )
-    )
+    ),
+    hr()
   ),
   
   ##############################################################################
   conditionalPanel(
     condition = "(input.view == 'dyn') && (output.showHelp == false)",
-    column(widthMain,
-      fluidRow(
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar1"))),
-          fluidRow(column(12, plotOutput("resultDyn1", height=paste0(plotHeight,"px"))))
-        ),
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar2"))),
-          fluidRow(column(12, plotOutput("resultDyn2", height=paste0(plotHeight,"px"))))
-        )
+    fluidRow(
+      column(3, uiOutput("uiElem.tStart")),
+      column(3, uiOutput("uiElem.tFinal")),
+      column(3, uiOutput("uiElem.tStep")),
+      column(3, uiOutput("uiElem.tShow"))
+    ),
+    hr(),
+    fluidRow(
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar1"))),
+        fluidRow(column(12, plotOutput("resultDyn1", height=paste0(plotHeight,"px"))))
       ),
-      fluidRow(
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar3"))),
-          fluidRow(column(12, plotOutput("resultDyn3", height=paste0(plotHeight,"px"))))
-        ),
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar4"))),
-          fluidRow(column(12, plotOutput("resultDyn4", height=paste0(plotHeight,"px"))))
-        )
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar2"))),
+        fluidRow(column(12, plotOutput("resultDyn2", height=paste0(plotHeight,"px"))))
+      )
+    ),
+    fluidRow(
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar3"))),
+        fluidRow(column(12, plotOutput("resultDyn3", height=paste0(plotHeight,"px"))))
+      ),
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar4"))),
+        fluidRow(column(12, plotOutput("resultDyn4", height=paste0(plotHeight,"px"))))
       )
     )
   ),
@@ -122,41 +112,42 @@ shinyUI <- fluidPage(
   ##############################################################################
   conditionalPanel(
     condition = "(input.view == 'std') && (output.showHelp == false)",
-    column(widthMain,
-      tableOutput("resultsSteady")
+    fluidRow(
+      column(10, tableOutput("resultsSteady"))
     )
   ),
 
   ##############################################################################
   conditionalPanel(
     condition = "(input.view == 'eff') && (output.showHelp == false)",
-    column(widthSide,
-      uiOutput("uiElem.effScen"),
-      uiOutput("uiElem.effItem"),
-      uiOutput("uiElem.effValues"),
-      uiOutput("uiElem.effMultiply"),
-      uiOutput("uiElem.runEff")
+    fluidRow(
+      column(3, uiOutput("uiElem.effItem")),
+      column(6, uiOutput("uiElem.effValues")),
+      column(6, uiOutput("uiElem.effMultiply"))
     ),
-    column(widthMain,
-      fluidRow(
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar1"))),
-          fluidRow(column(12, plotOutput("resultEff1", height=paste0(plotHeight,"px"))))
-        ),
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar2"))),
-          fluidRow(column(12, plotOutput("resultEff2", height=paste0(plotHeight,"px"))))
-        )
+    fluidRow(
+      column(3, uiOutput("uiElem.effScen")),
+      column(9, uiOutput("uiElem.runEff"))
+    ),
+    hr(),
+    fluidRow(
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar1"))),
+        fluidRow(column(12, plotOutput("resultEff1", height=paste0(plotHeight,"px"))))
       ),
-      fluidRow(
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar3"))),
-          fluidRow(column(12, plotOutput("resultEff3", height=paste0(plotHeight,"px"))))
-        ),
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar4"))),
-          fluidRow(column(12, plotOutput("resultEff4", height=paste0(plotHeight,"px"))))
-        )
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar2"))),
+        fluidRow(column(12, plotOutput("resultEff2", height=paste0(plotHeight,"px"))))
+      )
+    ),
+    fluidRow(
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar3"))),
+        fluidRow(column(12, plotOutput("resultEff3", height=paste0(plotHeight,"px"))))
+      ),
+      column(6,
+        fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar4"))),
+        fluidRow(column(12, plotOutput("resultEff4", height=paste0(plotHeight,"px"))))
       )
     )
   ),
@@ -172,21 +163,17 @@ shinyUI <- fluidPage(
   ##############################################################################
   conditionalPanel(
     condition = "(input.view == 'stoi') && (output.showHelp == false)",
-    column(widthSide,
-      uiOutput("uiElem.stoiScen"),
-      uiOutput("uiElem.stoiVars"),
-      uiOutput("uiElem.stoiPros")
-    ),
-    column(widthMain,
-      htmlOutput("stoichiometry")
-    )
+    fluidRow(column(12, uiOutput("uiElem.stoiSpecs"))),
+    hr(),
+    fluidRow(column(12, htmlOutput("stoichiometry")))
   ),
 
   ##############################################################################
   conditionalPanel(
     condition = "(input.view == 'pros') && (output.showHelp == false)",
-    uiOutput("uiElem.prosVar"),
-    htmlOutput("processes")
+    fluidRow(column(12, uiOutput("uiElem.prosSpecs"))),
+    hr(),
+    fluidRow(column(12, htmlOutput("processes")))
   ),
   
   ##############################################################################

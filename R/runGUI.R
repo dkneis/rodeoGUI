@@ -152,7 +152,7 @@ runGUI <- function(
   ##############################################################################
 
   # Save data in .rda file to be loaded in server/ui
-  rodeoGuiData <- list(
+  XDATA <- list(
     model= model,
     lib= if (serverMode) basename(libFile) else libFile,
     funsR= if (serverMode) basename(funsR) else funsR,
@@ -162,15 +162,15 @@ runGUI <- function(
     scenDefaults= scenDefaults
   )
 
-  # NOTE: File/path name must be consistent with server/ui
-  rodeoGuiDataFile <- paste0(gsub(pattern="\\", replacement="/", x=tempdir(),
+  # NOTE: File/path name must be consistent with path at top of 'global.R'
+  filename <- paste0(gsub(pattern="\\", replacement="/", x=tempdir(),
     fixed=TRUE), "/rodeoGuiData.rda")
-  save(rodeoGuiData, file=rodeoGuiDataFile, ascii=FALSE)
-  rm(rodeoGuiData)
+  save(XDATA, file=filename, ascii=FALSE)
+  rm(XDATA)
 
   # Start shiny app
   if (serverMode) {
-    return(rodeoGuiDataFile)
+    return(filename)
   } else {
     shiny::runApp(system.file("shiny", package="rodeoGUI"))
     return(invisible(NULL))

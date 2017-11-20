@@ -7,7 +7,7 @@ plotHeight <- 300
 
 ########################################################################
 
-# Load data created by runGUI
+# Load XDATA list object from file with expected name
 dirs <- c(".",gsub(pattern="\\", replacement="/", x=tempdir(), fixed=TRUE))
 f <- "rodeoGuiData.rda"
 loaded <- FALSE
@@ -22,17 +22,8 @@ if (!loaded)
   stop(paste0("GUI initialization file '",f,
     "' not found in folder(s): '",paste(dirs,collapse="', '"),"'"))
 
-# Load R functions
-source(rodeoGuiData$funsR)
-
-# Dissolve list
-model <- rodeoGuiData$model
-lib <- rodeoGuiData$lib
-intro <- rodeoGuiData$intro
-scenTitles <- rodeoGuiData$scenTitles
-scenDescriptions <- rodeoGuiData$scenDescriptions
-scenDefaults <- rodeoGuiData$scenDefaults
-rm(rodeoGuiData)
+# Load R functions possibly needed to run model$stoichiometry()
+source(XDATA$funsR)
 
 ########################################################################
 
@@ -48,6 +39,7 @@ translate <- rbind(
   identifier = c(EN="Short name", DE="Bezeichnung"),
   initialValues = c(EN="Initial values", DE="Anfangswerte"),
   needsUpdate = c(EN="Please (re)run", DE="Bitte (neu)berechnen"),  
+  numberOfScenarios = c(EN="Number of scenarios", DE="Anzahl Szenarios"),
   overview = c(EN="Overview", DE="Übersicht"),
   parameter = c(EN="Parameter", DE="Parameter"),
   parameters = c(EN="Parameters", DE="Parameter"),  
@@ -227,6 +219,7 @@ scenDescrTable <- function(scenTitles, scenDefaults, model, lang, what=c("variab
   }
   val <- cbind(item=items, val)
   out <- merge(x=out, y=val, by.x="name", by.y="item")
+  out <- data.frame(lapply(out, as.character),stringsAsFactors=FALSE)
   names(out)[1] <- translate[what,lang]
   names(out)[2:3] <- c(translate["unit",lang],translate["description",lang])
   exportDF(out,

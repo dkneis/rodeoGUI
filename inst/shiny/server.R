@@ -12,11 +12,11 @@ shinyServer <- function(input, output) {
   })
   output$uiHTML.usedPackages <- renderText({
     paste0(translate["usesTheRPackages",input$language],
-      " <a href='https://CRAN.R-project.org/package=rodeo'>rodeo</a>,",
-      " <a href='https://CRAN.R-project.org/package=deSolve'>deSolve</a>,",
-      " <a href='https://CRAN.R-project.org/package=rootSolve'>rootSolve</a> ",
+      " <a href='https://CRAN.R-project.org/package=rodeo'><u>rodeo</u></a>,",
+      " <a href='https://CRAN.R-project.org/package=deSolve'><u>deSolve</u></a>,",
+      " <a href='https://CRAN.R-project.org/package=rootSolve'><u>rootSolve</u></a> ",
       translate["and",input$language],
-      " <a href='https://CRAN.R-project.org/package=shiny'>shiny</a>")
+      " <a href='https://CRAN.R-project.org/package=shiny'><u>shiny</u></a>")
   })
 
   ##############################################################################
@@ -44,47 +44,25 @@ shinyServer <- function(input, output) {
   # CONTROLS FOR THE PRESENTATION OF THE STOICHIOMETRY MATRIX
   ##############################################################################
 
-  output$uiElem.stoiSpecs <- renderUI({
-    code <- ""
-    code <- paste0(code, "HTML('<div style=\"width:100%; overflow:hidden;\">'),")
-    code <- paste0(code, "HTML('<div style=\"width:33%; float:left\">'),")
-    code <- paste0(code, "selectInput(inputId=\'scenStoi', label=\'",
-      translate["scenario",input$language],"\', multiple=FALSE, choices=setNames(",
-      "c(",paste(paste0("'",rownames(scenTitles),"'"), collapse=","),"),",
-      "c(",paste(paste0("'",scenTitles[,input$language],"'"), collapse=","),")",
-      "), selected='",rownames(scenTitles)[1],"', selectize=FALSE),")
-    code <- paste0(code, "HTML('</div>'),")
-    code <- paste0(code, "HTML('<div style=\"width:33%; float:left\">'),")
-    code <- paste0(code, "selectInput(inputId=\'varsStoi', label=\'",
-      translate["variables",input$language],"\', multiple=TRUE, choices=c(",
-      paste(paste0("'",model$namesVars(),"'"), collapse=","),")",
-      ",selected=c('",paste(model$namesVars()[1:min(5,model$lenVars())],
-        collapse="','"),"'), selectize=FALSE),")
-    code <- paste0(code, "HTML('</div>'),")
-    code <- paste0(code, "HTML('<div style=\"width:33%; float:left\">'),")
-    code <- paste0(code, "selectInput(inputId=\'prosStoi', label=\'",
-      translate["processes",input$language],"\', multiple=TRUE, choices=c(",
-      paste(paste0("'",model$namesPros(),"'"), collapse=","),")",
-      ",selected=c('",paste(model$namesPros()[1:min(5:model$lenPros())],
-        collapse="','"),"'), selectize=FALSE),")
-    code <- paste0(code, "HTML('</div>'),")
-    code <- paste0(code, "HTML('</div>')")
-    code <- paste0("tagList(list(",code, "))")
-    eval(parse(text=code))
-  })
+  output$uiElem.stoiScen <- renderUI({ tagList(selectInput(inputId="stoiScen",
+    label=translate["scenario",input$language], multiple=FALSE,
+    choices=setNames(rownames(XDATA$scenTitles),XDATA$scenTitles[,input$language]),
+    selected=rownames(XDATA$scenTitles)[1], selectize=FALSE)) })
+  output$uiElem.stoiVars <- renderUI({ tagList(selectInput(inputId="stoiVars",
+    label=translate["variables",input$language], multiple=TRUE, choices=XDATA$model$namesVars(),
+    selected=XDATA$model$namesVars()[1:min(5,XDATA$model$lenVars())], selectize=FALSE)) })
+  output$uiElem.stoiPros <- renderUI({ tagList(selectInput(inputId="stoiPros",
+    label=translate["processes",input$language], multiple=TRUE, choices=XDATA$model$namesPros(),
+    selected=XDATA$model$namesPros()[1:min(5:XDATA$model$lenPros())], selectize=FALSE)) })
 
   ##############################################################################
   # CONTROLS FOR THE PRESENTATION OF PROCESS RATES
   ##############################################################################
 
-  output$uiElem.prosSpecs <- renderUI({
-    code <- ""
-    code <- paste0(code, "selectInput(inputId=\'varPros', label=\'",
-      translate["showStoichiometryFactorFor",input$language],"\', multiple=FALSE, choices=c(",
-      paste(paste0("'",model$namesVars(),"'"), collapse=","),")",
-      ",selected='",model$namesVars()[1],"', selectize=FALSE)")
-    code <- paste0("tagList(list(",code, "))")
-    eval(parse(text=code))
+  output$uiElem.prosVar <- renderUI({
+    tagList(selectInput(inputId="prosVar",
+      label=translate["showStoichiometryFactorFor",input$language], multiple=FALSE,
+      choices=XDATA$model$namesVars(), selected=XDATA$model$namesVars()[1], selectize=FALSE))
   })
   
   ##############################################################################
@@ -92,29 +70,23 @@ shinyServer <- function(input, output) {
   ##############################################################################
 
   # Generate input fields for number of scenarios in dynamic/steady comp.
-  output$uiElem.nScen <- renderUI({
-    tagList(
-      numericInput(inputId='nScen',
-        label=translate["scenarios",input$language], value=1, min=1, max=3, step=1)
-    )
-  })
+  output$uiElem.nScen <- renderUI({ tagList(numericInput(inputId='nScen',
+    label=translate["numberOfScenarios",input$language], value=1, min=1, max=3, step=1)) })
 
   # Generate input fields for scenarios in dynamic/steady comp.
   output$uiElem.scenSpecs <- renderUI({
     nScen <- if (is.null(input$nScen)) 1 else input$nScen
     code <- ""
-    code <- paste0(code, "HTML('<div style=\"width:100%; overflow:hidden;\">'),")
     for (i in 1:nScen) {
-      code <- paste0(code, "HTML('<div style=\"width:",floor(100/nScen) ,"%; float:left\">'),")
       code <- paste0(code, "selectInput(inputId=\'scenDefaultId.",i,"\', label=\'",
         translate["scenario",input$language]," ",i,"\', multiple=FALSE, choices=setNames(",
-        "c(",paste(paste0("'",rownames(scenTitles),"'"), collapse=","),"),",
-        "c(",paste(paste0("'",scenTitles[,input$language],"'"), collapse=","),")",
-        "), selected='",rownames(scenTitles)[1],"', selectize=FALSE),")
-      code <- paste0(code, "textInput(inputId=\'scenEdits.",i,"\', label=NULL, value=\'\'),")
-      code <- paste0(code, "HTML('</div>'),")
+        "c(",paste(paste0("'",rownames(XDATA$scenTitles),"'"), collapse=","),"),",
+        "c(",paste(paste0("'",XDATA$scenTitles[,input$language],"'"), collapse=","),")",
+        "), selected='",rownames(XDATA$scenTitles)[min(i, nrow(XDATA$scenTitles))],"', selectize=FALSE),")
+      code <- paste0(code, "textInput(inputId=\'scenEdits.",i,"\', label=NULL, value=\'\')")
+      if (i < nScen)
+        code <- paste0(code, ",")
     }
-    code <- paste0(code, "HTML('</div>')")
     code <- paste0("tagList(list(",code, "))")
     eval(parse(text=code))
   })
@@ -124,44 +96,33 @@ shinyServer <- function(input, output) {
   ##############################################################################
 
   # Time control
-  output$uiElem.tStart <- renderUI({
-    tagList(textInput(inputId='tStart', label=translate["tStart",input$language], value=0))
-  })
-  output$uiElem.tFinal <- renderUI({
-    tagList(textInput(inputId='tFinal', label=translate["tFinal",input$language], value=10))
-  })
-  output$uiElem.tStep <- renderUI({
-    tagList(textInput(inputId='tStep', label=translate["tStep",input$language], value=.1))
-  })
-  output$uiElem.tShow <- renderUI({
-    tagList(textInput(inputId='tShow', label=translate["tShow",input$language], value=0))
-  })
+  output$uiElem.tStart <- renderUI({ tagList(textInput(inputId='tStart',
+    label=translate["tStart",input$language], value=0)) })
+  output$uiElem.tFinal <- renderUI({ tagList(textInput(inputId='tFinal',
+    label=translate["tFinal",input$language], value=10))})
+  output$uiElem.tStep <- renderUI({ tagList(textInput(inputId='tStep',
+    label=translate["tStep",input$language], value=.1)) })
+  output$uiElem.tShow <- renderUI({ tagList(textInput(inputId='tShow',
+    label=translate["tShow",input$language], value=0)) })
   
   # Variables to be displayed
-  output$uiElem.dynVar1 <- renderUI({
-    tagList(selectInput(inputId="dynVar1", label=NULL, multiple=FALSE,
-      choices=model$namesVars(), selected=model$namesVars()[min(1,model$lenVars())], selectize=FALSE))
-  })
-  output$uiElem.dynVar2 <- renderUI({
-    tagList(selectInput(inputId="dynVar2", label=NULL, multiple=FALSE,
-      choices=model$namesVars(), selected=model$namesVars()[min(2,model$lenVars())], selectize=FALSE))
-  })
-  output$uiElem.dynVar3 <- renderUI({
-    tagList(selectInput(inputId="dynVar3", label=NULL, multiple=FALSE,
-      choices=model$namesVars(), selected=model$namesVars()[min(3,model$lenVars())], selectize=FALSE))
-  })
-  output$uiElem.dynVar4 <- renderUI({
-    tagList(selectInput(inputId="dynVar4", label=NULL, multiple=FALSE,
-      choices=model$namesVars(), selected=model$namesVars()[min(4,model$lenVars())], selectize=FALSE))
-  })
+  output$uiElem.dynVar1 <- renderUI({ tagList(selectInput(inputId="dynVar1",
+    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
+    selected=XDATA$model$namesVars()[min(1,XDATA$model$lenVars())], selectize=FALSE)) })
+  output$uiElem.dynVar2 <- renderUI({ tagList(selectInput(inputId="dynVar2",
+    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
+    selected=XDATA$model$namesVars()[min(2,XDATA$model$lenVars())], selectize=FALSE)) })
+  output$uiElem.dynVar3 <- renderUI({ tagList(selectInput(inputId="dynVar3",
+    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
+    selected=XDATA$model$namesVars()[min(3,XDATA$model$lenVars())], selectize=FALSE)) })
+  output$uiElem.dynVar4 <- renderUI({ tagList(selectInput(inputId="dynVar4",
+    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
+    selected=XDATA$model$namesVars()[min(4,XDATA$model$lenVars())], selectize=FALSE)) })
 
   # Run button
-  output$uiElem.runDyn <- renderUI({
-    tagList(
-      actionButton(inputId="runDyn", translate["run",input$language],
-        style=paste0("color: white; background-color: ",guiColors["blueDark"]))
-    )
-  })
+  output$uiElem.runDyn <- renderUI({ tagList(actionButton(inputId="runDyn",
+    translate["run",input$language],
+    style=paste0("color: white; background-color: ",guiColors["blueDark"]))) })
 
   ##############################################################################
   # SPECIFIC CONTROLS FOR STEADY STATE SIMULATION
@@ -179,62 +140,47 @@ shinyServer <- function(input, output) {
   ##############################################################################
   
   # Scenario, varied item, list of values
-  output$uiElem.effScen <- renderUI({
-    tagList(selectInput(inputId="effScen", label=translate["scenario",input$language],
-      multiple=FALSE, choices=setNames(rownames(scenTitles),scenTitles[,input$language]),
-      selected=rownames(scenTitles)[1], selectize=FALSE))
-  })
-  output$uiElem.effItem <- renderUI({
-    tagList(selectInput(inputId="effItem", label=translate["variedItem",input$language],
-      multiple=FALSE, choices=c(model$namesPars(), model$namesVars()),
-      selected=model$namesPars()[1], selectize=FALSE))
-  })
-  output$uiElem.effValues <- renderUI({
-    tagList(textInput(inputId="effValues", label=translate["values",input$language],
-      value="0.5, 1, 2"))
-  })
-  output$uiElem.effMultiply <- renderUI({
-    tagList(checkboxInput(inputId="effMultiply", label=translate["useAsMultipliers",input$language],
-      value=TRUE))
-  })
+  output$uiElem.effScen <- renderUI({ tagList(selectInput(inputId="effScen",
+    label=translate["scenario",input$language], multiple=FALSE,
+    choices=setNames(rownames(XDATA$scenTitles),XDATA$scenTitles[,input$language]),
+    selected=rownames(XDATA$scenTitles)[1], selectize=FALSE)) })
+  output$uiElem.effItem <- renderUI({ tagList(selectInput(inputId="effItem",
+    label=translate["variedItem",input$language], multiple=FALSE,
+    choices=c(XDATA$model$namesPars(), XDATA$model$namesVars()),
+    selected=XDATA$model$namesPars()[1], selectize=FALSE)) })
+  output$uiElem.effValues <- renderUI({ tagList(textInput(inputId="effValues",
+    label=translate["values",input$language], value="0.5, 1, 2")) })
+  output$uiElem.effMultiply <- renderUI({ tagList(checkboxInput(inputId="effMultiply",
+    label=translate["useAsMultipliers",input$language], value=TRUE)) })
 
   # Variables to be displayed
-  output$uiElem.effVar1 <- renderUI({
-    tagList(selectInput(inputId="effVar1", label=NULL, multiple=FALSE,
-      choices=model$namesVars(), selected=model$namesVars()[min(1,model$lenVars())], selectize=FALSE))
-  })
-  output$uiElem.effVar2 <- renderUI({
-    tagList(selectInput(inputId="effVar2", label=NULL, multiple=FALSE,
-      choices=model$namesVars(), selected=model$namesVars()[min(2,model$lenVars())], selectize=FALSE))
-  })
-  output$uiElem.effVar3 <- renderUI({
-    tagList(selectInput(inputId="effVar3", label=NULL, multiple=FALSE,
-      choices=model$namesVars(), selected=model$namesVars()[min(3,model$lenVars())], selectize=FALSE))
-  })
-  output$uiElem.effVar4 <- renderUI({
-    tagList(selectInput(inputId="effVar4", label=NULL, multiple=FALSE,
-      choices=model$namesVars(), selected=model$namesVars()[min(4,model$lenVars())], selectize=FALSE))
-  })
+  output$uiElem.effVar1 <- renderUI({ tagList(selectInput(inputId="effVar1",
+    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
+    selected=XDATA$model$namesVars()[min(1,XDATA$model$lenVars())], selectize=FALSE)) })
+  output$uiElem.effVar2 <- renderUI({ tagList(selectInput(inputId="effVar2",
+    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
+    selected=XDATA$model$namesVars()[min(2,XDATA$model$lenVars())], selectize=FALSE)) })
+  output$uiElem.effVar3 <- renderUI({ tagList(selectInput(inputId="effVar3",
+    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
+    selected=XDATA$model$namesVars()[min(3,XDATA$model$lenVars())], selectize=FALSE)) })
+  output$uiElem.effVar4 <- renderUI({ tagList(selectInput(inputId="effVar4",
+    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
+    selected=XDATA$model$namesVars()[min(4,XDATA$model$lenVars())], selectize=FALSE)) })
   
   # Run button
-  output$uiElem.runEff <- renderUI({
-    tagList(
-      actionButton(inputId="runEff", translate["run",input$language],
-        style=paste0("color: white; background-color: ",guiColors["blueDark"]))
-    )
-  })
+  output$uiElem.runEff <- renderUI({ tagList( actionButton(inputId="runEff",
+    translate["run",input$language],
+    style=paste0("color: white; background-color: ",guiColors["blueDark"]))) })
   
   ##############################################################################
   # CONTROLS TO SHOW/HIDE HELP
   ##############################################################################
   
   # Generate help open/close buttons
-  output$uiElem.helpOpen <- renderUI({
-    tagList(actionLink(inputId="helpOpen", label=HTML(symbolHelpOpen)))
-  })
-  output$uiElem.helpClose <- renderUI({
-    tagList(actionLink(inputId="helpClose", label=HTML(symbolHelpClose)))
-  })
+  output$uiElem.helpOpen <- renderUI({ tagList(actionLink(inputId="helpOpen",
+    label=HTML(symbolHelpOpen))) })
+  output$uiElem.helpClose <- renderUI({ tagList(actionLink(inputId="helpClose",
+    label=HTML(symbolHelpClose))) })
 
   # Controls display of help pages using conditionalPanel
   # https://stackoverflow.com/questions/38895710/passing-reactive-values-to-conditionalpanel-condition
@@ -248,7 +194,13 @@ shinyServer <- function(input, output) {
 
 
   ##############################################################################
-  # Controls display of computed results
+  ##############################################################################
+  # PART 2: ACTUAL SERVER CODE
+  ##############################################################################
+  ##############################################################################
+
+  ##############################################################################
+  # Track state of computed outputs in relation to inputs
   ##############################################################################
 
   # Initialize  
@@ -296,29 +248,29 @@ shinyServer <- function(input, output) {
   
   # Compute dynamics when button was pressed
   computeDynamic <- eventReactive(input$runDyn, {
-    dyn.load(paste0(lib, .Platform$dynlib.ext))
+    dyn.load(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- NULL
     for (is in 1:input$nScen) {
       # get inputs for current scenario
       inp <- reactiveValuesToList(input)
-      updateInputs(model, scenDefaults=scenDefaults,
+      updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
         scenDefaultId=inp[[paste0("scenDefaultId.",is)]],
         scenEdits=inp[[paste0("scenEdits.",is)]])
       # run model
-      this <- deSolve::ode(y=model$getVars(), parms=model$getPars(),
+      this <- deSolve::ode(y=XDATA$model$getVars(), parms=XDATA$model$getPars(),
         times=seq(from=as.numeric(input$tStart), to=as.numeric(input$tFinal),
           by=as.numeric(input$tStep)),
         hmax=as.numeric(input$tStep),
-        func=model$libFunc(),
-        dllname=basename(lib),
-        nout=model$lenPros(),          # works for 0D model only
-        outnames=model$namesPros()     # works for 0D model only
+        func=XDATA$model$libFunc(),
+        dllname=basename(XDATA$lib),
+        nout=XDATA$model$lenPros(),          # works for 0D model only
+        outnames=XDATA$model$namesPros()     # works for 0D model only
       )
       this <- cbind(scenario=rep(is, nrow(this)) ,this)
       # add to results of other scenarios
       out <- rbind(out, this)
     }
-    dyn.unload(paste0(lib, .Platform$dynlib.ext))
+    dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- out[out[,"time"] >= min(as.numeric(input$tShow), max(out[,"time"])), ,drop=FALSE]
     out
   })
@@ -352,18 +304,18 @@ shinyServer <- function(input, output) {
   
   # Compute steady state when button was pressed
   computeSteady <- eventReactive(input$runStd, {
-    dyn.load(paste0(lib, .Platform$dynlib.ext))
+    dyn.load(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- NULL
     for (is in 1:input$nScen) {
       # get inputs for current scenario
       inp <- reactiveValuesToList(input)
-      updateInputs(model, scenDefaults=scenDefaults,
+      updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
         scenDefaultId=inp[[paste0("scenDefaultId.",is)]],
         scenEdits=inp[[paste0("scenEdits.",is)]])
       # run model
-      this <- rootSolve::runsteady(y=model$getVars(), times=c(0,Inf), func=model$libFunc(),
-        parms=model$getPars(), dllname=basename(lib), nout=model$lenPros(),
-        outnames=model$namesPros())
+      this <- rootSolve::runsteady(y=XDATA$model$getVars(), times=c(0,Inf), func=XDATA$model$libFunc(),
+        parms=XDATA$model$getPars(), dllname=basename(XDATA$lib), nout=XDATA$model$lenPros(),
+        outnames=XDATA$model$namesPros())
       if (!attr(this, "steady")) {
         this <- rep(NA,length(this$y))
       } else {
@@ -373,8 +325,8 @@ shinyServer <- function(input, output) {
       out <- cbind(out, this)
       colnames(out)[ncol(out)] <- paste(translate["scenario",input$language],is)
     }
-    dyn.unload(paste0(lib, .Platform$dynlib.ext))
-    rownames(out) <- model$namesVars()
+    dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
+    rownames(out) <- XDATA$model$namesVars()
     out
   })
   
@@ -393,7 +345,7 @@ shinyServer <- function(input, output) {
   
   # Compute effect of parameter on steady state when button was pressed
   computeEffect <- eventReactive(input$runEff, {
-    dyn.load(paste0(lib, .Platform$dynlib.ext))
+    dyn.load(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- NULL
     tryCatch({
       values <- eval(parse(text=paste("c(",input$effValues,")")))
@@ -401,18 +353,18 @@ shinyServer <- function(input, output) {
       stop(paste0("Invalid set of values: '",input$effValues,"'"))
     })
     if (input$effMultiply) {
-      values <- values * scenDefaults[input$effItem, input$effScen]
+      values <- values * eval(parse(text=XDATA$scenDefaults[input$effItem, input$effScen]))
     }
     for (i in 1:length(values)) {
       # get inputs for current scenario
       inp <- reactiveValuesToList(input)
-      updateInputs(model, scenDefaults=scenDefaults,
+      updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
         scenDefaultId=input$effScen,
         scenEdits=paste0(input$effItem,"=",values[i]))
       # run model
-      this <- rootSolve::runsteady(y=model$getVars(), times=c(0,Inf), func=model$libFunc(),
-        parms=model$getPars(), dllname=basename(lib), nout=model$lenPros(),
-        outnames=model$namesPros())
+      this <- rootSolve::runsteady(y=XDATA$model$getVars(), times=c(0,Inf), func=XDATA$model$libFunc(),
+        parms=XDATA$model$getPars(), dllname=basename(XDATA$lib), nout=XDATA$model$lenPros(),
+        outnames=XDATA$model$namesPros())
       if (!attr(this, "steady")) {
         this <- rep(NA,length(this$y))
       } else {
@@ -422,8 +374,8 @@ shinyServer <- function(input, output) {
       out <- cbind(out, this)
       colnames(out)[ncol(out)] <- as.character(values[i])
     }
-    dyn.unload(paste0(lib, .Platform$dynlib.ext))
-    rownames(out) <- model$namesVars()
+    dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
+    rownames(out) <- XDATA$model$namesVars()
     out
   })
   
@@ -451,21 +403,21 @@ shinyServer <- function(input, output) {
   ##############################################################################
 
   output$intro <- renderText({
-    intro[input$language]
+    XDATA$intro[input$language]
   })
 
   output$stoichiometry <- renderText({
     # get inputs for current scenario
-    updateInputs(model, scenDefaults=scenDefaults,
-      scenDefaultId=input$scenStoi,  scenEdits="")
-    v <- if(is.null(input$varsStoi)) model$namesVars()[1] else input$varsStoi
-    p <- if(is.null(input$prosStoi)) model$namesPros()[1] else input$prosStoi
-    stoiAsHTML(model, selectedVars=v, selectedPros=p, lang=input$language)
+    updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
+      scenDefaultId=input$stoiScen,  scenEdits="")
+    v <- if(is.null(input$stoiVars)) XDATA$model$namesVars()[1] else input$stoiVars
+    p <- if(is.null(input$stoiPros)) XDATA$model$namesPros()[1] else input$stoiPros
+    stoiAsHTML(XDATA$model, selectedVars=v, selectedPros=p, lang=input$language)
   })
 
   output$processes <- renderText({
-    v <- if(is.null(input$varPros)) model$namesVars()[1] else input$varPros
-    prosTable(model, selectedVar=v, lang=input$language)
+    v <- if(is.null(input$prosVar)) XDATA$model$namesVars()[1] else input$prosVar
+    prosTable(XDATA$model, selectedVar=v, lang=input$language)
   })
 
   ##############################################################################
@@ -473,17 +425,17 @@ shinyServer <- function(input, output) {
   ##############################################################################
 
   output$scenShowDesc <- renderText({
-    x <- data.frame(title=scenTitles[,input$language],
-      descr=scenDescriptions[rownames(scenTitles),input$language],
+    x <- data.frame(title=XDATA$scenTitles[,input$language],
+      descr=XDATA$scenDescriptions[rownames(XDATA$scenTitles),input$language],
       stringsAsFactors=TRUE)
     colnames(x) <- translate[c("identifier","description"), input$language]
     exportDF(x, width=setNames(c(25,75), names(x)), tex=FALSE)
   })
   output$scenShowVars <- renderText({
-    scenDescrTable(scenTitles, scenDefaults, model, lang=input$language, what="variable")
+    scenDescrTable(XDATA$scenTitles, XDATA$scenDefaults, XDATA$model, lang=input$language, what="variable")
   })
   output$scenShowPars <- renderText({
-    scenDescrTable(scenTitles, scenDefaults, model, lang=input$language, what="parameter")
+    scenDescrTable(XDATA$scenTitles, XDATA$scenDefaults, XDATA$model, lang=input$language, what="parameter")
   })
   
   ##############################################################################
