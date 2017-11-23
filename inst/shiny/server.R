@@ -253,19 +253,38 @@ shinyServer <- function(input, output) {
     for (is in 1:input$nScen) {
       # get inputs for current scenario
       inp <- reactiveValuesToList(input)
-      updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
-        scenDefaultId=inp[[paste0("scenDefaultId.",is)]],
-        scenEdits=inp[[paste0("scenEdits.",is)]])
+      tryCatch({
+        updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
+          scenDefaultId=inp[[paste0("scenDefaultId.",is)]],
+          scenEdits=inp[[paste0("scenEdits.",is)]],
+          lang=input$language)
+      }, error = function(e) {
+        stop(paste0(e, "\n", translate["failedToSetModelInputsForScenario",input$language]," ",is,"."))
+      })
       # run model
-      this <- deSolve::ode(y=XDATA$model$getVars(), parms=XDATA$model$getPars(),
-        times=seq(from=as.numeric(input$tStart), to=as.numeric(input$tFinal),
-          by=as.numeric(input$tStep)),
-        hmax=as.numeric(input$tStep),
-        func=XDATA$model$libFunc(),
-        dllname=basename(XDATA$lib),
-        nout=XDATA$model$lenPros(),          # works for 0D model only
-        outnames=XDATA$model$namesPros()     # works for 0D model only
-      )
+      tryCatch({
+        t0 <- as.numeric(input$tStart)
+        t1 <- as.numeric(input$tFinal)
+        dt <-as.numeric(input$tStep)
+        stopifnot(t1 > t0)
+        stopifnot(dt > 0)
+        times <- seq(from=t0, to=t1, by=dt)
+      }, error = function(e) {
+        stop(paste0(translate["invalidVectorOfTimes",input$language],"."))
+      })
+      tryCatch({
+        this <- deSolve::ode(y=XDATA$model$getVars(), parms=XDATA$model$getPars(),
+          times=times,
+          hmax=as.numeric(input$tStep),
+          func=XDATA$model$libFunc(),
+          dllname=basename(XDATA$lib),
+          nout=XDATA$model$lenPros(),          # works for 0D model only
+          outnames=XDATA$model$namesPros()     # works for 0D model only
+        )
+      }, error = function(e) {
+        stop(paste0(translate["failedToComputeSolutionFor",input$language]," ",
+          translate["scenario",input$language]," ",is,"."))
+      })
       this <- cbind(scenario=rep(is, nrow(this)) ,this)
       # add to results of other scenarios
       out <- rbind(out, this)
@@ -281,22 +300,21 @@ shinyServer <- function(input, output) {
     legend("center", bty="n", legend=translate["needsUpdate",input$language])
     NULL
   }
-  output$resultDyn1 <- renderPlot({
-    if (!upToDate[["dyn"]]) empty() else visualizeDynamic(out=computeDynamic(),
-      var=input$dynVar1, lang=input$language)
-  })
-  output$resultDyn2 <- renderPlot({
-    if (!upToDate[["dyn"]]) empty() else visualizeDynamic(out=computeDynamic(),
-      var=input$dynVar2, lang=input$language)
-  })
-  output$resultDyn3 <- renderPlot({
-    if (!upToDate[["dyn"]]) empty() else visualizeDynamic(out=computeDynamic(),
-      var=input$dynVar3, lang=input$language)
-  })
-  output$resultDyn4 <- renderPlot({
-    if (!upToDate[["dyn"]]) empty() else visualizeDynamic(out=computeDynamic(),
-      var=input$dynVar4, lang=input$language)
-  })
+  resultDyn <- function(var) {
+    out <- empty()
+    if (upToDate[["dyn"]]) {
+      tryCatch({
+        out <- visualizeDynamic(out=computeDynamic(), var=var, lang=input$language)
+      }, error = function(e) {
+        validate(lastErrMsg())
+      })
+    }
+    out
+  }
+  output$resultDyn1 <- renderPlot({ resultDyn(var=input$dynVar1) })
+  output$resultDyn2 <- renderPlot({ resultDyn(var=input$dynVar2) })
+  output$resultDyn3 <- renderPlot({ resultDyn(var=input$dynVar3) })
+  output$resultDyn4 <- renderPlot({ resultDyn(var=input$dynVar4) })
 
   ##############################################################################
   # Steady state computation / results
@@ -309,13 +327,23 @@ shinyServer <- function(input, output) {
     for (is in 1:input$nScen) {
       # get inputs for current scenario
       inp <- reactiveValuesToList(input)
-      updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
-        scenDefaultId=inp[[paste0("scenDefaultId.",is)]],
-        scenEdits=inp[[paste0("scenEdits.",is)]])
+      tryCatch({
+        updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
+          scenDefaultId=inp[[paste0("scenDefaultId.",is)]],
+          scenEdits=inp[[paste0("scenEdits.",is)]],
+          lang=input$language)
+      }, error = function(e) {
+        stop(paste0(e, "\n", translate["failedToSetModelInputsForScenario",input$language]," ",is,"."))
+      })
       # run model
-      this <- rootSolve::runsteady(y=XDATA$model$getVars(), times=c(0,Inf), func=XDATA$model$libFunc(),
-        parms=XDATA$model$getPars(), dllname=basename(XDATA$lib), nout=XDATA$model$lenPros(),
-        outnames=XDATA$model$namesPros())
+      tryCatch({
+        this <- rootSolve::runsteady(y=XDATA$model$getVars(), times=c(0,Inf), func=XDATA$model$libFunc(),
+          parms=XDATA$model$getPars(), dllname=basename(XDATA$lib), nout=XDATA$model$lenPros(),
+          outnames=XDATA$model$namesPros())
+      }, error = function(e) {
+        stop(paste0(translate["failedToComputeSolutionFor",input$language],
+          " ",translate["scenario",input$language]," ",is,"."))
+      })
       if (!attr(this, "steady")) {
         this <- rep(NA,length(this$y))
       } else {
@@ -333,10 +361,15 @@ shinyServer <- function(input, output) {
   # Render steady state results
   output$resultsSteady <- renderText({
     if (!upToDate[["std"]]) {
-      translate["needsUpdate",input$language]
+      out <- translate["needsUpdate",input$language]
     } else {
-      steadyTable(m=computeSteady(), lang=input$language)
+      tryCatch({
+        out <- steadyTable(m=computeSteady(), lang=input$language)
+      }, error = function(e) {
+        validate(lastErrMsg())
+      })
     }
+    out
   })
 
   ##############################################################################
@@ -348,23 +381,32 @@ shinyServer <- function(input, output) {
     dyn.load(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- NULL
     tryCatch({
-      values <- eval(parse(text=paste("c(",input$effValues,")")))
+      values <- strsplit(input$effValues, split=",", fixed=TRUE)[[1]]
+      stopifnot(length(values) >= 1)
+      values <- as.numeric(values)
+      stopifnot(all(is.finite(values)))
+      if (input$effMultiply) {
+        values <- values * eval(parse(text=XDATA$scenDefaults[input$effItem, input$effScen]))
+      }
     }, error = function(e) {
-      stop(paste0("Invalid set of values: '",input$effValues,"'"))
+      stop(paste0(translate["invalidUserInput",input$language],": '",input$effValues,
+        "'. ",translate["expectingUnnamedVector",input$language]))
     })
-    if (input$effMultiply) {
-      values <- values * eval(parse(text=XDATA$scenDefaults[input$effItem, input$effScen]))
-    }
     for (i in 1:length(values)) {
       # get inputs for current scenario
       inp <- reactiveValuesToList(input)
       updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
         scenDefaultId=input$effScen,
-        scenEdits=paste0(input$effItem,"=",values[i]))
+        scenEdits=paste0(input$effItem,"=",values[i]),
+        lang=input$language)
       # run model
-      this <- rootSolve::runsteady(y=XDATA$model$getVars(), times=c(0,Inf), func=XDATA$model$libFunc(),
-        parms=XDATA$model$getPars(), dllname=basename(XDATA$lib), nout=XDATA$model$lenPros(),
-        outnames=XDATA$model$namesPros())
+      tryCatch({
+        this <- rootSolve::runsteady(y=XDATA$model$getVars(), times=c(0,Inf), func=XDATA$model$libFunc(),
+          parms=XDATA$model$getPars(), dllname=basename(XDATA$lib), nout=XDATA$model$lenPros(),
+          outnames=XDATA$model$namesPros())
+      }, error = function(e) {
+        stop(paste0(translate["failedToComputeSolutionFor",input$language]," ",input$effItem,"=",values[i],"."))
+      })
       if (!attr(this, "steady")) {
         this <- rep(NA,length(this$y))
       } else {
@@ -380,23 +422,21 @@ shinyServer <- function(input, output) {
   })
   
   # Render effect results
-  output$resultEff1 <- renderPlot({
-    if (!upToDate[["eff"]]) empty() else visualizeEffect(out=computeEffect(),
-      var=input$effVar1, lang=input$language)
-  })
-  output$resultEff2 <- renderPlot({
-    if (!upToDate[["eff"]]) empty() else visualizeEffect(out=computeEffect(),
-      var=input$effVar2, lang=input$language)
-  })
-  output$resultEff3 <- renderPlot({
-    if (!upToDate[["eff"]]) empty() else visualizeEffect(out=computeEffect(),
-      var=input$effVar3, lang=input$language)
-  })
-  output$resultEff4 <- renderPlot({
-    if (!upToDate[["eff"]]) empty() else visualizeEffect(out=computeEffect(),
-      var=input$effVar4, lang=input$language)
-  })
-
+  resultEff <- function(var) {
+    out <- empty()
+    if (upToDate[["eff"]]) {
+      tryCatch({
+        out <- visualizeEffect(out=computeEffect(), var=var, lang=input$language)
+      }, error = function(e) {
+        validate(lastErrMsg())
+      })
+    }
+    out
+  }
+  output$resultEff1 <- renderPlot({ resultEff(var=input$effVar1) })
+  output$resultEff2 <- renderPlot({ resultEff(var=input$effVar2) })
+  output$resultEff3 <- renderPlot({ resultEff(var=input$effVar3) })
+  output$resultEff4 <- renderPlot({ resultEff(var=input$effVar4) })
   
   ##############################################################################
   # Intro page, process table, stoichiometry matrix
@@ -409,7 +449,7 @@ shinyServer <- function(input, output) {
   output$stoichiometry <- renderText({
     # get inputs for current scenario
     updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
-      scenDefaultId=input$stoiScen,  scenEdits="")
+      scenDefaultId=input$stoiScen,  scenEdits="", lang=input$language)
     v <- if(is.null(input$stoiVars)) XDATA$model$namesVars()[1] else input$stoiVars
     p <- if(is.null(input$stoiPros)) XDATA$model$namesPros()[1] else input$stoiPros
     stoiAsHTML(XDATA$model, selectedVars=v, selectedPros=p, lang=input$language)

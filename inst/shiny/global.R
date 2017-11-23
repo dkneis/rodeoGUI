@@ -30,14 +30,23 @@ eval(parse(text=XDATA$rCode))
 # Labels in GUI
 translate <- rbind(
   and = c(EN="and", DE="und"),
-#  done = c(EN="Done", DE="Fertig"),
   description = c(EN="Description", DE="Beschreibung"),
   dynamics = c(EN="Dynamics", DE="Dynamik"),
   effectOnSteadyState = c(EN="Effect on steady st.", DE="Effekt auf Gleichgew."),
+  expectingNamedVector = c(EN="Expecting assignment statement like 'pi = 3.1415' or a comma delimited list of such statements",
+                           DE="Erwarte Zuweisung der Form 'pi = 3.1415' oder eine durch Komma getrennte Liste solcher Zuweisungen"),
+  expectingUnnamedVector = c(EN="Expecting a comma delimited list of numeric values",
+                           DE="Erwarte eine durch Komma getrennte Liste numerischer Werte"),
   expression = c(EN="Expression", DE="Ausdruck"),
   factor = c(EN="Factor", DE="Faktor"),
+  failedToSetModelInputsForScenario = c(EN="Failed to set input values for scenario", DE="Fehler beim Setzen der Eingangsdaten für Szenario"),
+  failedToComputeSolutionFor = c(EN="Failed to compute solution for", DE="Fehler beim Berechnen für"),
   identifier = c(EN="Short name", DE="Bezeichnung"),
   initialValues = c(EN="Initial values", DE="Anfangswerte"),
+  introduction = c(EN="Introduction", DE="Einführung"),
+  invalidUserInput = c(EN="Invalid user input", DE="Ungültige Eingabe"),
+  invalidVectorOfTimes = c(EN="Invalid specification of time period and/or time step",
+    DE="Ungültige Spezifikation von Zeitfenster und/oder Zeitschritt"),
   needsUpdate = c(EN="Please (re)run", DE="Bitte (neu)berechnen"),  
   numberOfScenarios = c(EN="Number of scenarios", DE="Anzahl Szenarios"),
   overview = c(EN="Overview", DE="Übersicht"),
@@ -51,7 +60,6 @@ translate <- rbind(
   selectView = c(EN="Select view", DE="Ansicht wählen"),
   showStoichiometryFactorFor = c(EN="Show stoichiometric factor for", DE="Zeige Stöchiometriefaktor für"),  
   simulation = c(EN="Simulation", DE="Simulation"),
-  introduction = c(EN="Introduction", DE="Einführung"),
   steadystate = c(EN="Steady state", DE="Gleichgewicht"),
   stoichiometry = c(EN="Stoichiometry", DE="Stöchiometrie"),
   time = c(EN="Time", DE="Zeit"),
@@ -79,6 +87,11 @@ guiColors <- c(blue="#9fbfdf", blueDark="#3973ac",
 ########################################################################
 ########################################################################
 
+lastErrMsg <- function(msg) {
+  gsub(x=geterrmessage(), pattern="Error in value[[3L]](cond): ",
+    replacement="", fixed=TRUE)
+}
+
 ########################################################################
 # Updates parameters and initial values for a specific scenario
 
@@ -86,7 +99,8 @@ updateInputs <- function(
   model,        # rodeo object
   scenDefaults, # matrix with defaults for all scenarios
   scenDefaultId,# Id of selected default scenario
-  scenEdits     # user input for this scenario (character string)
+  scenEdits,    # user input for this scenario (character string)
+  lang
 ) {
   # get default pars and vars
   if (is.null(scenDefaultId))
@@ -99,7 +113,8 @@ updateInputs <- function(
   tryCatch({
     scenEdits <- eval(parse(text=paste("c(",scenEdits,")")))
   }, error = function(e) {
-    stop(paste0("Invalid user edit: '",scenEdits,"'"))
+    stop(paste0(translate["invalidUserInput",lang],": '",
+      scenEdits,"'. ",translate["expectingNamedVector",lang],"."))
   })
   # update pars vector
   user.pars <- scenEdits[names(scenEdits) %in% names(pars)]
