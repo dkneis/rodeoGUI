@@ -30,6 +30,8 @@ eval(parse(text=XDATA$rCode))
 # Labels in GUI
 translate <- rbind(
   and = c(EN="and", DE="und"),
+  assignmentToUnknownName = c(EN="Cannot assign value to unknown parameter or variable",
+    DE="Wertzuweisung nicht möglich da Parameter oder Variable unbekannt"),
   description = c(EN="Description", DE="Beschreibung"),
   dynamics = c(EN="Dynamics", DE="Dynamik"),
   effectOnSteadyState = c(EN="Effect on steady st.", DE="Effekt auf Gleichgew."),
@@ -88,8 +90,7 @@ guiColors <- c(blue="#9fbfdf", blueDark="#3973ac",
 ########################################################################
 
 lastErrMsg <- function(msg) {
-  gsub(x=geterrmessage(), pattern="Error in value[[3L]](cond): ",
-    replacement="", fixed=TRUE)
+  gsub(x=geterrmessage(), pattern="Error in [^:]+: ", replacement="")
 }
 
 ########################################################################
@@ -111,17 +112,27 @@ updateInputs <- function(
   vars <- dflt[model$namesVars()]
   # get user inputs for this scenario
   tryCatch({
-    scenEdits <- eval(parse(text=paste("c(",scenEdits,")")))
+    val <- eval(parse(text=paste("c(",scenEdits,")")))
+    if (length(val) > 0) {
+      stopifnot(!is.null(names(val)))
+      stopifnot(all(names(val) != ""))
+    }
   }, error = function(e) {
     stop(paste0(translate["invalidUserInput",lang],": '",
       scenEdits,"'. ",translate["expectingNamedVector",lang],"."))
   })
+  if (length(val) > 0) {
+    unknown <- names(val)[!names(val) %in% c(names(pars),names(vars))]
+    if (length(unknown) > 0)
+      stop(paste0(translate["assignmentToUnknownName",lang],": '",
+        paste(unknown,collapse="', '"),"'"))
+  }
   # update pars vector
-  user.pars <- scenEdits[names(scenEdits) %in% names(pars)]
+  user.pars <- val[names(val) %in% names(pars)]
   if (length(user.pars) > 0)
     pars[names(user.pars)] <- unname(user.pars)
   # update vars vector
-  user.vars <- scenEdits[names(scenEdits) %in% names(vars)]
+  user.vars <- val[names(val) %in% names(vars)]
   if (length(user.vars) > 0)
     vars[names(user.vars)] <- unname(user.vars)
   # update in object
