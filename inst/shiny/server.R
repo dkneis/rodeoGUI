@@ -107,17 +107,17 @@ shinyServer <- function(input, output) {
   
   # Variables to be displayed
   output$uiElem.dynVar1 <- renderUI({ tagList(selectInput(inputId="dynVar1",
-    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
-    selected=XDATA$model$namesVars()[min(1,XDATA$model$lenVars())], selectize=FALSE)) })
+    label=NULL, multiple=FALSE, choices=dimnames(sim[["dyn"]])[[2]],
+    selected=dimnames(sim[["dyn"]])[[2]][min(1,dim(sim[["dyn"]])[2])], selectize=FALSE)) })
   output$uiElem.dynVar2 <- renderUI({ tagList(selectInput(inputId="dynVar2",
-    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
-    selected=XDATA$model$namesVars()[min(2,XDATA$model$lenVars())], selectize=FALSE)) })
+    label=NULL, multiple=FALSE, choices=dimnames(sim[["dyn"]])[[2]],
+    selected=dimnames(sim[["dyn"]])[[2]][min(2,dim(sim[["dyn"]])[2])], selectize=FALSE)) })
   output$uiElem.dynVar3 <- renderUI({ tagList(selectInput(inputId="dynVar3",
-    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
-    selected=XDATA$model$namesVars()[min(3,XDATA$model$lenVars())], selectize=FALSE)) })
+    label=NULL, multiple=FALSE, choices=dimnames(sim[["dyn"]])[[2]],
+    selected=dimnames(sim[["dyn"]])[[2]][min(3,dim(sim[["dyn"]])[2])], selectize=FALSE)) })
   output$uiElem.dynVar4 <- renderUI({ tagList(selectInput(inputId="dynVar4",
-    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
-    selected=XDATA$model$namesVars()[min(4,XDATA$model$lenVars())], selectize=FALSE)) })
+    label=NULL, multiple=FALSE, choices=dimnames(sim[["dyn"]])[[2]],
+    selected=dimnames(sim[["dyn"]])[[2]][min(4,dim(sim[["dyn"]])[2])], selectize=FALSE)) })
 
   # Run button
   output$uiElem.runDyn <- renderUI({ tagList(actionButton(inputId="runDyn",
@@ -155,17 +155,17 @@ shinyServer <- function(input, output) {
 
   # Variables to be displayed
   output$uiElem.effVar1 <- renderUI({ tagList(selectInput(inputId="effVar1",
-    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
-    selected=XDATA$model$namesVars()[min(1,XDATA$model$lenVars())], selectize=FALSE)) })
+    label=NULL, multiple=FALSE, choices=dimnames(sim[["eff"]])[[1]],
+    selected=dimnames(sim[["eff"]])[[1]][min(1,dim(sim[["eff"]])[1])], selectize=FALSE)) })
   output$uiElem.effVar2 <- renderUI({ tagList(selectInput(inputId="effVar2",
-    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
-    selected=XDATA$model$namesVars()[min(2,XDATA$model$lenVars())], selectize=FALSE)) })
+    label=NULL, multiple=FALSE, choices=dimnames(sim[["eff"]])[[1]],
+    selected=dimnames(sim[["eff"]])[[1]][min(2,dim(sim[["eff"]])[1])], selectize=FALSE)) })
   output$uiElem.effVar3 <- renderUI({ tagList(selectInput(inputId="effVar3",
-    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
-    selected=XDATA$model$namesVars()[min(3,XDATA$model$lenVars())], selectize=FALSE)) })
+    label=NULL, multiple=FALSE, choices=dimnames(sim[["eff"]])[[1]],
+    selected=dimnames(sim[["eff"]])[[1]][min(3,dim(sim[["eff"]])[1])], selectize=FALSE)) })
   output$uiElem.effVar4 <- renderUI({ tagList(selectInput(inputId="effVar4",
-    label=NULL, multiple=FALSE, choices=XDATA$model$namesVars(),
-    selected=XDATA$model$namesVars()[min(4,XDATA$model$lenVars())], selectize=FALSE)) })
+    label=NULL, multiple=FALSE, choices=dimnames(sim[["eff"]])[[1]],
+    selected=dimnames(sim[["eff"]])[[1]][min(4,dim(sim[["eff"]])[1])], selectize=FALSE)) })
   
   # Run button
   output$uiElem.runEff <- renderUI({ tagList( actionButton(inputId="runEff",
@@ -350,17 +350,18 @@ shinyServer <- function(input, output) {
         stop(paste0(translate["failedToComputeSolutionFor",input$language],
           " ",translate["scenario",input$language]," ",is,"."))
       })
+
       if (!attr(this, "steady")) {
-        this <- rep(NA,length(this$y))
+        this <- rep(NA,length(this$y)+length(this[[2]]))
       } else {
-        this <- signif(this$y, 3)
+        this <- signif(c(this$y, this[[2]]), 3)
       }
       # add to results of other scenarios
       out <- cbind(out, this)
       colnames(out)[ncol(out)] <- paste(translate["scenario",input$language],is)
     }
     dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
-    rownames(out) <- XDATA$model$namesVars()
+    rownames(out) <- c(XDATA$model$namesVars(), XDATA$model$namesPros())
     out
   }
   

@@ -176,7 +176,7 @@ visualizeEffect <- function (
 ) {
   omar <- par("mar")
   par(mar=c(4.5,3,0.5,1))
-  barplot(height=out[var,], names.arg=colnames(out), col=guiColors["greyLight"])
+  barplot(height=as.vector(out[var,]), names.arg=colnames(out), col=guiColors["greyLight"])
   par(mar=omar)
 }
 
