@@ -153,11 +153,8 @@ visualizeDynamic <- function (
   omar <- par("mar")
   par(mar=c(4.5,3,0.5,1))
   # cut out array slice as matrix (drop=FALSE doesn't help here)
-  if (dim(out)[3] == 1) {
-    x <- matrix(out[,var,], ncol=1, dimnames=list(rownames(out), var))
-  } else {
-    x <- out[,var,]
-  }
+  x <- matrix(out[,var,], nrow=dim(out)[1], ncol=dim(out)[3],
+    dimnames=list(dimnames(out)[[1]], dimnames(out)[[3]]))
   clr <- colorRampPalette(c("royalblue4", "seagreen", "darkred"))(ncol(x))
   matplot(as.numeric(rownames(x)), x[,1:ncol(x)], bty="L", type="l",
     lty=1:ncol(x), col=clr, xlab=translate["time",lang], ylab="")
