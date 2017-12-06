@@ -203,19 +203,23 @@ stoiAsHTML <- function(model, selectedVars, selectedPros, lang) {
 # Returns the process rates as a HTML table including stoi. factors for a single variable
 
 prosTable <- function(model, selectedVar, lang) {
-  tbl <- merge(x=model$getProsTable()[,c("name","unit","description","expression")],
+  if (!lang %in% names(model$getProsTable()))
+    stop(paste0("missing column for language ",lang))
+  tbl <- merge(x=model$getProsTable()[,c("name","unit",lang,"expression")],
     y=data.frame(process=rownames(model$stoichiometry()),
       factor=model$stoichiometry()[,selectedVar], stringsAsFactors=FALSE),
     by.x="name", by.y="process")
   italic <- function(x) {paste0('<div style="font-style:italic;">',
     x,'</div>')}
+  tbl <- data.frame(lapply(tbl, as.character),stringsAsFactors=FALSE)
   exportDF(x=tbl, tex=FALSE,
-    width=setNames(c(15,10,30,30,15), c("name","unit","description","expression","factor")),
+    width=setNames(c(15,10,30,30,15), c("name","unit",lang,"expression","factor")),
     align=setNames(rep("left", ncol(tbl)), colnames(tbl)),
-    colnames= c(name=translate["process",lang], unit=translate["unit",lang],
-      description=translate["description",lang],
-      expression=translate["expression",lang],
-      factor=translate["factor",lang]),
+    colnames= setNames(
+      c(translate["process",lang], translate["unit",lang], translate["description",lang],
+       translate["expression",lang], translate["factor",lang]),
+      c("name", "unit", lang, "expression", "factor")
+    ),
     funCell= setNames(replicate(2, italic), c("expression", "factor"))
   )
 }
@@ -233,8 +237,9 @@ scenDescrTable <- function(scenTitles, scenDefaults, model, lang, what=c("variab
   } else {
     stop("inappropriate value passed to 'what'")
   }
-  descrCol <- if (lang %in% names(tbl)) lang else "description"
-  out <- tbl[match(items, tbl[,"name"]), c("name","unit",descrCol)]
+  if (!lang %in% names(tbl))
+    stop(paste0("missing column for language ",lang))
+  out <- tbl[match(items, tbl[,"name"]), c("name","unit",lang)]
   val <- as.data.frame(scenDefaults[items,,drop=FALSE])
   val <- data.frame(lapply(val, as.character),stringsAsFactors=FALSE)
   whichDiffer <- which(apply(val, 1, function(x){!all(x == x[1])}))

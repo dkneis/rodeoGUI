@@ -4,6 +4,6 @@
 
 <h3>Szenarios definieren</h3>
 
-<p>Für jedes Szenario sind Standardwerte für die Parameter bzw. Anfagswerte der Zustandsvariablen hinterlegt. Sie werden durch Anklicken eines konkreten Szenarios aus der Auswahlliste aktiviert. Die konkreten Standardwerte für alle Szenarios sind in der Ansicht <i>Szenarios &rarr; Variablen</i> bzw. <i>Szenarios &rarr; Parameter</i> einsehbar.</p>
+<p>Für jedes Szenario sind Standardwerte für die Parameter bzw. Anfangswerte der Zustandsvariablen hinterlegt. Sie werden durch Anklicken eines konkreten Szenarios aus der Auswahlliste aktiviert. Die konkreten Standardwerte für alle Szenarios sind in der Ansicht <i>Szenarios &rarr; Variablen</i> bzw. <i>Szenarios &rarr; Parameter</i> einsehbar.</p>
 
 <p>Ausgewählte Standardwerte können optional überschrieben werden. Dazu sind im Textfeld für das jeweilige Szenario Angaben im Format <i>"NAME = WERT"</i> zu machen. Beispiel: <i>"x = 1"</i>. Um mehrere Standardwerte zu überschreiben, sind die Angaben durch Komma zu trennen. Beispiel: <i>"x = 0.5, y = 2"</i>. Der Text nach dem Gleichheitszeichen wird als mathematischer Ausdruck interpretiert, d.h. es sind auch Angaben wie <i>"x = 1/2"</i> möglich.</p>

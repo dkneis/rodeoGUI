@@ -1,5 +1,5 @@
-name	unit	description
-bM	mg/ml	Bacteria concentration in main tank
-bS	mg/ml	Bacteria concentration in sub-tank
-sM	mg/ml	Substrate concentration in main tank
-sS	mg/ml	Substrate concentration in sub-tank
+name	unit	description	EN	DE
+bM	mg/ml	Bacteria concentration in main tank	Bacteria concentration in main tank	Bakteriendichte Haupttank
+bS	mg/ml	Bacteria concentration in sub-tank	Bacteria concentration in sub-tank	Bakteriendichte Nebentank
+sM	mg/ml	Substrate concentration in main tank	Substrate concentration in main tank	Substratkonz. Haupttank
+sS	mg/ml	Substrate concentration in sub-tank	Substrate concentration in sub-tank	Substratkonz. Nebentank

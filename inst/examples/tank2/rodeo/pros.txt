@@ -1,11 +1,11 @@
-name	unit	description	expression
-bLoadX2M	mg/hour	Bacteria import to main tank	qM * bX
-bLoadM2X	mg/hour	Bacteria export from main tank	qM * bM
-bLoadM2S	mg/hour	Bacteria import to sub-tank	qS * bM
-bLoadS2M	mg/hour	Bacteria export from sub-tank	qS * bS
-sLoadX2M	mg/hour	Substrate import to main tank	qM * sX
-sLoadM2X	mg/hour	Substrate export from main tank	qM * sM
-sLoadM2S	mg/hour	Substrate import to sub-tank	qS * sM
-sLoadS2M	mg/hour	Substrate export from sub-tank	qS * sS
-bGrowthM	mg/ml/hour	Bacteria gowth in main tank	mu * sM/(sM+half) * bM
-bGrowthS	mg/ml/hour	Bacteria growth in sub-tank	mu * sS/(sS+half) * bS
+name	unit	description	expression	EN	DE
+bLoadX2M	mg/hour	Bacteria import to main tank	qM * bX	Bacteria import to main tank	Bakterienimport Haupttank
+bLoadM2X	mg/hour	Bacteria export from main tank	qM * bM	Bacteria export from main tank	Bakterienexport Haupttank
+bLoadM2S	mg/hour	Bacteria import to sub-tank	qS * bM	Bacteria import to sub-tank	Bakterienimport Nebentank
+bLoadS2M	mg/hour	Bacteria export from sub-tank	qS * bS	Bacteria export from sub-tank	Bakterienexport Nebentank
+sLoadX2M	mg/hour	Substrate import to main tank	qM * sX	Substrate import to main tank	Substratimport Haupttank
+sLoadM2X	mg/hour	Substrate export from main tank	qM * sM	Substrate export from main tank	Substratexport Haupttank
+sLoadM2S	mg/hour	Substrate import to sub-tank	qS * sM	Substrate import to sub-tank	Substratimport Nebentank
+sLoadS2M	mg/hour	Substrate export from sub-tank	qS * sS	Substrate export from sub-tank	Substratexport Nebentank
+bGrowthM	mg/ml/hour	Bacteria gowth in main tank	mu * sM/(sM+half) * bM	Bacteria gowth in main tank	Bakterienwachstum Haupttank
+bGrowthS	mg/ml/hour	Bacteria growth in sub-tank	mu * sS/(sS+half) * bS	Bacteria growth in sub-tank	Bakterienwachstum Nebentank
