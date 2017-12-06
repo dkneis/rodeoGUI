@@ -200,18 +200,40 @@ shinyServer <- function(input, output) {
   ##############################################################################
 
   ##############################################################################
-  # Track state of computed outputs in relation to inputs
+  # Compute / invalidate model outputs
   ##############################################################################
 
-  # Initialize  
-  upToDate <- reactiveValues(dyn=FALSE, std=FALSE, eff=FALSE)
+  # Initialize model outputs
+  sim <- reactiveValues(
+    dyn=NULL,
+    std=NULL,
+    eff=NULL
+  )
 
-  # Mark as up-to-date after computation
-  observeEvent(input$runDyn, {upToDate$dyn <- TRUE})
-  observeEvent(input$runStd, {upToDate$std <- TRUE})
-  observeEvent(input$runEff, {upToDate$eff <- TRUE})
+  # Update model outputs when run button was pressed
+  observeEvent(input$runDyn, {
+    tryCatch({
+      sim$dyn <- computeDynamic()
+    }, error = function(e) {
+      sim$dyn <- as.character(e)
+    })
+  })
+  observeEvent(input$runStd, {
+    tryCatch({
+      sim$std <- computeSteady()
+    }, error = function(e) {
+      sim$std <- as.character(e)
+    })
+  })
+  observeEvent(input$runEff, {
+    tryCatch({
+      sim$eff <- computeEffect()
+    }, error = function(e) {
+      sim$eff <- as.character(e)
+    })
+  })
 
-  # Dynamics and steady state: Mark as outdated if inputs were changed
+  # Dynamics and steady state: Invalidate outputs if inputs were changed
   inputs_dyn_std <- reactive({
 #    tmp <- unlist(reactiveValuesToList(input))
 #    tmp[grepl(x=names(tmp), pattern="^scenDefaultId[.][0123456789]+$")]
@@ -226,11 +248,11 @@ shinyServer <- function(input, output) {
     )
   })
   observeEvent(inputs_dyn_std(), {
-    upToDate$dyn <- FALSE
-    upToDate$std <- FALSE
+    sim$dyn <- NULL
+    sim$std <- NULL
   })
   
-  # Effect analysis: Mark as outdated if inputs were changed
+  # Effect analysis: Invalidate outputs if inputs were changed
   inputs_eff <- reactive({
     c(input$effScen,
       input$effItem,
@@ -239,7 +261,7 @@ shinyServer <- function(input, output) {
     )
   })
   observeEvent(inputs_eff(), {
-    upToDate$eff <- FALSE
+    sim$eff <- NULL
   })
 
   ##############################################################################
@@ -247,7 +269,7 @@ shinyServer <- function(input, output) {
   ##############################################################################
   
   # Compute dynamics when button was pressed
-  computeDynamic <- eventReactive(input$runDyn, {
+  computeDynamic <- function() {
     dyn.load(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- NULL
     for (is in 1:input$nScen) {
@@ -292,7 +314,7 @@ shinyServer <- function(input, output) {
     dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- out[out[,"time"] >= min(as.numeric(input$tShow), max(out[,"time"])), ,drop=FALSE]
     out
-  })
+  }
 
   # Render dynamic results
   empty <- function() {
@@ -301,10 +323,13 @@ shinyServer <- function(input, output) {
     NULL
   }
   resultDyn <- function(var) {
-    out <- empty()
-    if (upToDate[["dyn"]]) {
+    if (is.null(sim[["dyn"]])) {
+      out <- empty()
+    } else if (is.character(sim[["dyn"]])) {
+      validate(lastErrMsg())
+    } else {
       tryCatch({
-        out <- visualizeDynamic(out=computeDynamic(), var=var, lang=input$language)
+        out <- visualizeDynamic(out=sim[["dyn"]], var=var, lang=input$language)
       }, error = function(e) {
         validate(lastErrMsg())
       })
@@ -321,7 +346,7 @@ shinyServer <- function(input, output) {
   ##############################################################################
   
   # Compute steady state when button was pressed
-  computeSteady <- eventReactive(input$runStd, {
+  computeSteady <- function() {
     dyn.load(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- NULL
     for (is in 1:input$nScen) {
@@ -356,15 +381,17 @@ shinyServer <- function(input, output) {
     dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
     rownames(out) <- XDATA$model$namesVars()
     out
-  })
+  }
   
   # Render steady state results
   output$resultsSteady <- renderText({
-    if (!upToDate[["std"]]) {
+    if (is.null(sim[["std"]])) {
       out <- translate["needsUpdate",input$language]
+    } else if (is.character(sim[["std"]])) {
+      validate(lastErrMsg())
     } else {
       tryCatch({
-        out <- steadyTable(m=computeSteady(), lang=input$language)
+        out <- steadyTable(m=sim[["std"]], lang=input$language)
       }, error = function(e) {
         validate(lastErrMsg())
       })
@@ -377,7 +404,7 @@ shinyServer <- function(input, output) {
   ##############################################################################
   
   # Compute effect of parameter on steady state when button was pressed
-  computeEffect <- eventReactive(input$runEff, {
+  computeEffect <- function() {
     dyn.load(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- NULL
     tryCatch({
@@ -419,14 +446,17 @@ shinyServer <- function(input, output) {
     dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
     rownames(out) <- XDATA$model$namesVars()
     out
-  })
+  }
   
   # Render effect results
   resultEff <- function(var) {
-    out <- empty()
-    if (upToDate[["eff"]]) {
+    if (is.null(sim[["eff"]])) {
+      out <- empty()
+    } else if (is.character(sim[["eff"]])) {
+      validate(lastErrMsg())
+    } else {
       tryCatch({
-        out <- visualizeEffect(out=computeEffect(), var=var, lang=input$language)
+        out <- visualizeEffect(out=sim[["eff"]], var=var, lang=input$language)
       }, error = function(e) {
         validate(lastErrMsg())
       })
