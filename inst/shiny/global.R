@@ -2,6 +2,7 @@ library(rodeo)
 library(deSolve)
 library(rootSolve)
 library(xtable)
+library(reshape2)
 
 plotHeight <- 300
 
@@ -145,22 +146,23 @@ updateInputs <- function(
 # Plots dynamic outputs
 
 visualizeDynamic <- function (
-  out,    # data frame as output by dynamic solver with additional column 'scenario'
+  out,    # 3D array
   var,    # variable to be displayed
   lang    # language
 ) {
-  nScen <- length(unique(out[,"scenario"]))
   omar <- par("mar")
-  clr <- colorRampPalette(c("royalblue4", "seagreen", "darkred"))(nScen)
   par(mar=c(4.5,3,0.5,1))
-  x <- reshape2::dcast(data=as.data.frame(out), formula=time ~ scenario, value.var=var)
-  if (!identical(colnames(x)[2:ncol(x)], as.character(1:nScen)))
-    stop("Unexpected column names. This is a bug.")
-  matplot(x[,"time"], x[,2:ncol(x)], xlim=range(x[,"time"]),
-    bty="L", type="l", lty=1:nScen, col=clr,
-    xlab=translate["time",lang], ylab="")
-  legend("right", bty="n", horiz=FALSE, lty=1:nScen, col=clr,
-    legend=paste(translate["scenario",lang], 1:nScen))
+  # cut out array slice as matrix (drop=FALSE doesn't help here)
+  if (dim(out)[3] == 1) {
+    x <- matrix(out[,var,], ncol=1, dimnames=list(rownames(out), var))
+  } else {
+    x <- out[,var,]
+  }
+  clr <- colorRampPalette(c("royalblue4", "seagreen", "darkred"))(ncol(x))
+  matplot(as.numeric(rownames(x)), x[,1:ncol(x)], bty="L", type="l",
+    lty=1:ncol(x), col=clr, xlab=translate["time",lang], ylab="")
+  legend("right", bty="n", horiz=FALSE, lty=1:ncol(x), col=clr,
+    legend=paste(translate["scenario",lang], 1:ncol(x)))
   par(mar=omar)
 }
 

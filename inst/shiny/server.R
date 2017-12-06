@@ -204,34 +204,15 @@ shinyServer <- function(input, output) {
   ##############################################################################
 
   # Initialize model outputs
-  sim <- reactiveValues(
-    dyn=NULL,
-    std=NULL,
-    eff=NULL
-  )
+  sim <- reactiveValues(dyn=NULL, std=NULL, eff=NULL)
 
   # Update model outputs when run button was pressed
-  observeEvent(input$runDyn, {
-    tryCatch({
-      sim$dyn <- computeDynamic()
-    }, error = function(e) {
-      sim$dyn <- as.character(e)
-    })
-  })
-  observeEvent(input$runStd, {
-    tryCatch({
-      sim$std <- computeSteady()
-    }, error = function(e) {
-      sim$std <- as.character(e)
-    })
-  })
-  observeEvent(input$runEff, {
-    tryCatch({
-      sim$eff <- computeEffect()
-    }, error = function(e) {
-      sim$eff <- as.character(e)
-    })
-  })
+  observeEvent(input$runDyn, { tryCatch({ sim$dyn <- computeDynamic() },
+      error = function(e) { sim$dyn <- as.character(e) }) })
+  observeEvent(input$runStd, { tryCatch({ sim$std <- computeSteady() },
+    error = function(e) { sim$std <- as.character(e) }) })
+  observeEvent(input$runEff, { tryCatch({ sim$eff <- computeEffect() },
+    error = function(e) { sim$eff <- as.character(e) }) })
 
   # Dynamics and steady state: Invalidate outputs if inputs were changed
   inputs_dyn_std <- reactive({
@@ -254,11 +235,7 @@ shinyServer <- function(input, output) {
   
   # Effect analysis: Invalidate outputs if inputs were changed
   inputs_eff <- reactive({
-    c(input$effScen,
-      input$effItem,
-      input$effValues,
-      input$effMultiply
-    )
+    c(input$effScen, input$effItem, input$effValues, input$effMultiply)
   })
   observeEvent(inputs_eff(), {
     sim$eff <- NULL
@@ -313,6 +290,10 @@ shinyServer <- function(input, output) {
     }
     dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- out[out[,"time"] >= min(as.numeric(input$tShow), max(out[,"time"])), ,drop=FALSE]
+    # turn into array (dim1 = time, dim2 = variables, dim3 = scenarios)
+    out <- melt(data=as.data.frame(out), id.vars=c("scenario","time"),
+      variable.name="variable", value.name="value")
+    out <- acast(data=out, formula=time~variable~scenario, value.var="value")
     out
   }
 
