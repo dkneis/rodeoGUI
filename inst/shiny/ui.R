@@ -5,22 +5,22 @@ styleDefs <- paste0('
   }
   th {
     font-weight: normal;
-    color: ',guiColors["greyDark"],';
+    color: ',guiGrey(dark=TRUE),';
     background-color: white;
   }
   td {
-    background-color: ',guiColors["greyLight"],';
+    background-color: ',guiGrey(),';
   }
   h2 {
-    color: ',guiColors["blueDark"],';
+    color: ',guiBlue(dark=TRUE),';
   }
   h3 {
-    color: ',guiColors["greyDark"],';
+    color: ',guiGrey(dark=TRUE),';
   }
   label {
     font-weight: normal;
     margin-bottom: 2px;
-    color: ',guiColors["blueDark"],';
+    color: ',guiBlue(dark=TRUE),';
   }
 ')
 
@@ -96,26 +96,8 @@ shinyUI <- fluidPage(
   conditionalPanel(
     condition = "(input.view == 'dyn') && (output.showHelp == false)",
     column(widthMain,
-      fluidRow(
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar1"))),
-          fluidRow(column(12, plotOutput("resultDyn1", height=paste0(plotHeight,"px"))))
-        ),
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar2"))),
-          fluidRow(column(12, plotOutput("resultDyn2", height=paste0(plotHeight,"px"))))
-        )
-      ),
-      fluidRow(
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar3"))),
-          fluidRow(column(12, plotOutput("resultDyn3", height=paste0(plotHeight,"px"))))
-        ),
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.dynVar4"))),
-          fluidRow(column(12, plotOutput("resultDyn4", height=paste0(plotHeight,"px"))))
-        )
-      )
+      fluidRow(column(8, NULL), column(4, uiOutput("uiElem.itemDyn"))),
+      fluidRow(style="vertical-align:top;", column(12, htmlOutput("resultDyn")))
     )
   ),
 
@@ -123,7 +105,8 @@ shinyUI <- fluidPage(
   conditionalPanel(
     condition = "(input.view == 'std') && (output.showHelp == false)",
     column(widthMain,
-      tableOutput("resultsSteady")
+      fluidRow(column(8, NULL), column(4, uiOutput("uiElem.itemStd"))),
+      fluidRow(column(12, htmlOutput("resultStd")))
     )
   ),
 
@@ -138,26 +121,8 @@ shinyUI <- fluidPage(
       uiOutput("uiElem.runEff")
     ),
     column(widthMain,
-      fluidRow(
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar1"))),
-          fluidRow(column(12, plotOutput("resultEff1", height=paste0(plotHeight,"px"))))
-        ),
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar2"))),
-          fluidRow(column(12, plotOutput("resultEff2", height=paste0(plotHeight,"px"))))
-        )
-      ),
-      fluidRow(
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar3"))),
-          fluidRow(column(12, plotOutput("resultEff3", height=paste0(plotHeight,"px"))))
-        ),
-        column(6,
-          fluidRow(column(8, NULL), column(4, uiOutput("uiElem.effVar4"))),
-          fluidRow(column(12, plotOutput("resultEff4", height=paste0(plotHeight,"px"))))
-        )
-      )
+      fluidRow(column(8, NULL), column(4, uiOutput("uiElem.itemEff"))),
+      fluidRow(column(12, htmlOutput("resultEff")))
     )
   ),
 

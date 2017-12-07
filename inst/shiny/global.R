@@ -1,10 +1,9 @@
 library(rodeo)
 library(deSolve)
 library(rootSolve)
-library(xtable)
+#library(xtable)
 library(reshape2)
-
-plotHeight <- 300
+library(svglite)
 
 ########################################################################
 
@@ -79,11 +78,6 @@ translate <- rbind(
   variedItem = c(EN="Varied item", DE="Variierte Größe")
 )
 
-# Colors used for labels, bottons, etc
-guiColors <- c(blue="#9fbfdf", blueDark="#3973ac",
-  orange="#ffd480", orangeDark="#e69900",
-  greyLight="#E5E5E5", greyDark="#7F7F7F")
-
 ########################################################################
 ########################################################################
 # ORDINARY FUNCTIONS
@@ -142,49 +136,15 @@ updateInputs <- function(
   invisible(NULL)
 }
 
-########################################################################
-# Plots dynamic outputs
-
-visualizeDynamic <- function (
-  out,    # 3D array
-  var,    # variable to be displayed
-  lang    # language
-) {
-  omar <- par("mar")
-  par(mar=c(4.5,3,0.5,1))
-  # cut out array slice as matrix (drop=FALSE doesn't help here)
-  x <- matrix(out[,var,], nrow=dim(out)[1], ncol=dim(out)[3],
-    dimnames=list(dimnames(out)[[1]], dimnames(out)[[3]]))
-  clr <- colorRampPalette(c("royalblue4", "seagreen", "darkred"))(ncol(x))
-  matplot(as.numeric(rownames(x)), x[,1:ncol(x)], bty="L", type="l",
-    lty=1:ncol(x), col=clr, xlab=translate["time",lang], ylab="")
-  legend("right", bty="n", horiz=FALSE, lty=1:ncol(x), col=clr,
-    legend=paste(translate["scenario",lang], 1:ncol(x)))
-  par(mar=omar)
-}
-
-########################################################################
-# Plots dynamic outputs
-
-visualizeEffect <- function (
-  out,    # matrix; each column is for another value of the varied item
-  var,    # variable to be displayed
-  lang    # language
-) {
-  omar <- par("mar")
-  par(mar=c(4.5,3,0.5,1))
-  barplot(height=as.vector(out[var,]), names.arg=colnames(out), col=guiColors["greyLight"])
-  par(mar=omar)
-}
 
 ########################################################################
 # Returns the stoichiometry matrix as colored HTML table 
 
 stoiAsHTML <- function(model, selectedVars, selectedPros, lang) {
   signAsColor <- function(x) {
-    if (as.numeric(x) > 0) return(paste0('<div style="background-color:',guiColors["orange"],';">',
+    if (as.numeric(x) > 0) return(paste0('<div style="background-color:',guiOrange(),';">',
       formatC(as.numeric(x), digits=2, format="e"),'</div>'))
-    if (as.numeric(x) < 0) return(paste0('<div style="background-color:',guiColors["blue"],';">',
+    if (as.numeric(x) < 0) return(paste0('<div style="background-color:',guiBlue(),';">',
       formatC(as.numeric(x), digits=2, format="e"),'</div>'))
     return("")
   }
@@ -244,7 +204,7 @@ scenDescrTable <- function(scenTitles, scenDefaults, model, lang, what=c("variab
   whichDiffer <- which(apply(val, 1, function(x){!all(x == x[1])}))
   if (length(whichDiffer) > 0) {
     for (i in whichDiffer) {
-      val[i,] <- paste0('<div style="background-color:',guiColors["orange"],';">',val[i,],'</div>')
+      val[i,] <- paste0('<div style="background-color:',guiOrange(),';">',val[i,],'</div>')
     }
   }
   val <- cbind(item=items, val)
@@ -261,48 +221,21 @@ scenDescrTable <- function(scenTitles, scenDefaults, model, lang, what=c("variab
 }
 
 ########################################################################
-# HTML table with steady state results
-
-steadyTable <- function(m, lang) {
-  if (ncol(m) >= 2) {
-    tmp <- m
-    tmp <- apply(tmp, 1:2, as.character)
-    for (i in 2:ncol(m)) {
-      greater <- which(m[,i] > m[,1])
-      if (length(greater) > 0)
-        tmp[greater, i] <- paste0('<div style="background-color:',
-          guiColors["orange"],';">',tmp[greater,i],'</div>')
-      smaller <- which(m[,i] < m[,1])
-      if (length(smaller) > 0)
-        tmp[smaller, i] <- paste0('<div style="background-color:',
-          guiColors["blue"],';">',tmp[smaller,i],'</div>')
-    }
-    m <- tmp
-  } else {
-    m <- apply(m, 1:2, as.character)
-  }
-  tbl <- cbind(rownames(m), data.frame(m, check.names=FALSE))
-  names(tbl)[1] <- translate["variable",lang]
-  exportDF(tbl, align=setNames(c("left", rep("right", ncol(tbl)-1)),names(tbl)),
-    tex=FALSE)
-}
-
-########################################################################
 # SVG icons used by GUI
 
 # Help open/close button
 symbolHelpOpen <- paste0('
   <svg viewBox="0 0 110 110" height="25px">
-    <circle cx="55" cy="55" r="50" fill="',guiColors["blueDark"],
-      '" stroke="',guiColors["blueDark"],'" stroke-width="5"/>
-    <text x="37" y="77" font-size=70 fill="','white','">?</text>
+    <circle cx="55" cy="55" r="50" style="fill:',guiBlue(dark=TRUE),
+      '; stroke:',guiBlue(dark=TRUE),'; stroke-width:5;"/>
+    <text x="37" y="77" style="font-size:70px; fill:white;">?</text>
   </svg>
 ')
 symbolHelpClose <- paste0('
   <svg viewBox="0 0 110 110" height="25px">
-    <circle cx="55" cy="55" r="50" fill="',guiColors["blueDark"],
-      '" stroke="',guiColors["blueDark"],'" stroke-width="5"/>
-  <path d="M 20,55 75,30 75,80 z" fill="white" stroke="none"/>
+    <circle cx="55" cy="55" r="50" style="fill:',guiBlue(dark=TRUE),
+      '; stroke:',guiBlue(dark=TRUE),'; stroke-width:5;"/>
+  <path d="M 20,55 75,30 75,80 z" style="fill:white; stroke:none"/>
   </svg>
 ')
 

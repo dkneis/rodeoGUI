@@ -104,38 +104,29 @@ shinyServer <- function(input, output) {
     label=translate["tStep",input$language], value=.1)) })
   output$uiElem.tShow <- renderUI({ tagList(textInput(inputId='tShow',
     label=translate["tShow",input$language], value=0)) })
-  
-  # Variables to be displayed
-  output$uiElem.dynVar1 <- renderUI({ tagList(selectInput(inputId="dynVar1",
+  # Item to be displayed
+  output$uiElem.itemDyn <- renderUI({ tagList(selectInput(inputId="itemDyn",
     label=NULL, multiple=FALSE,
-    choices=if(is.numeric(sim[["dyn"]])) dimnames(sim[["dyn"]])[[2]] else "?",
-    selected=if(is.numeric(sim[["dyn"]])) dimnames(sim[["dyn"]])[[2]][min(1,dim(sim[["dyn"]])[2])] else "?", selectize=FALSE)) })
-  output$uiElem.dynVar2 <- renderUI({ tagList(selectInput(inputId="dynVar2",
-    label=NULL, multiple=FALSE,
-    choices=if(is.numeric(sim[["dyn"]])) dimnames(sim[["dyn"]])[[2]] else "?",
-    selected=if(is.numeric(sim[["dyn"]])) dimnames(sim[["dyn"]])[[2]][min(2,dim(sim[["dyn"]])[2])] else "?", selectize=FALSE)) })
-  output$uiElem.dynVar3 <- renderUI({ tagList(selectInput(inputId="dynVar3",
-    label=NULL, multiple=FALSE,
-    choices=if(is.numeric(sim[["dyn"]])) dimnames(sim[["dyn"]])[[2]] else "?",
-    selected=if(is.numeric(sim[["dyn"]])) dimnames(sim[["dyn"]])[[2]][min(3,dim(sim[["dyn"]])[2])] else "?", selectize=FALSE)) })
-  output$uiElem.dynVar4 <- renderUI({ tagList(selectInput(inputId="dynVar4",
-    label=NULL, multiple=FALSE,
-    choices=if(is.numeric(sim[["dyn"]])) dimnames(sim[["dyn"]])[[2]] else "?",
-    selected=if(is.numeric(sim[["dyn"]])) dimnames(sim[["dyn"]])[[2]][min(4,dim(sim[["dyn"]])[2])] else "?", selectize=FALSE)) })
-
+    choices=if(is.data.frame(sim[["dyn"]])) sim[["dyn"]][,"label"] else "?",
+    selected=if(is.data.frame(sim[["dyn"]])) sim[["dyn"]][1,"label"] else "?", selectize=FALSE)) })
   # Run button
   output$uiElem.runDyn <- renderUI({ tagList(actionButton(inputId="runDyn",
     translate["run",input$language],
-    style=paste0("color: white; background-color: ",guiColors["blueDark"]))) })
+    style=paste0("color: white; background-color: ",guiBlue(dark=TRUE)))) })
 
   ##############################################################################
   # SPECIFIC CONTROLS FOR STEADY STATE SIMULATION
   ##############################################################################
 
-  output$uiElem.runStd <- renderUI({
-    tagList(
-      actionButton(inputId="runStd", translate["run",input$language],
-        style=paste0("color: white; background-color: ",guiColors["blueDark"]))
+  # Item to be displayed
+  output$uiElem.itemStd <- renderUI({ tagList(selectInput(inputId="itemStd",
+    label=NULL, multiple=FALSE,
+    choices=if(is.data.frame(sim[["std"]])) sim[["std"]][,"label"] else "?",
+    selected=if(is.data.frame(sim[["std"]])) sim[["std"]][1,"label"] else "?", selectize=FALSE)) })
+  # Run button
+  output$uiElem.runStd <- renderUI({ tagList( actionButton(inputId="runStd",
+    translate["run",input$language],
+    style=paste0("color: white; background-color: ",guiBlue(dark=TRUE)))
     )
   })
 
@@ -156,29 +147,15 @@ shinyServer <- function(input, output) {
     label=translate["values",input$language], value="0.5, 1, 2")) })
   output$uiElem.effMultiply <- renderUI({ tagList(checkboxInput(inputId="effMultiply",
     label=translate["useAsMultipliers",input$language], value=TRUE)) })
-
-  # Variables to be displayed
-  output$uiElem.effVar1 <- renderUI({ tagList(selectInput(inputId="effVar1",
+  # Item to be displayed
+  output$uiElem.itemEff <- renderUI({ tagList(selectInput(inputId="itemEff",
     label=NULL, multiple=FALSE,
-    choices=if(is.numeric(sim[["eff"]])) dimnames(sim[["eff"]])[[1]] else "?",
-    selected=if(is.numeric(sim[["eff"]])) dimnames(sim[["eff"]])[[1]][min(1,dim(sim[["eff"]])[1])] else "?", selectize=FALSE)) })
-  output$uiElem.effVar2 <- renderUI({ tagList(selectInput(inputId="effVar2",
-    label=NULL, multiple=FALSE,
-    choices=if(is.numeric(sim[["eff"]])) dimnames(sim[["eff"]])[[1]] else "?",
-    selected=if(is.numeric(sim[["eff"]])) dimnames(sim[["eff"]])[[1]][min(2,dim(sim[["eff"]])[1])] else "?", selectize=FALSE)) })
-  output$uiElem.effVar3 <- renderUI({ tagList(selectInput(inputId="effVar3",
-    label=NULL, multiple=FALSE,
-    choices=if(is.numeric(sim[["eff"]])) dimnames(sim[["eff"]])[[1]] else "?",
-    selected=if(is.numeric(sim[["eff"]])) dimnames(sim[["eff"]])[[1]][min(3,dim(sim[["eff"]])[1])] else "?", selectize=FALSE)) })
-  output$uiElem.effVar4 <- renderUI({ tagList(selectInput(inputId="effVar4",
-    label=NULL, multiple=FALSE,
-    choices=if(is.numeric(sim[["eff"]])) dimnames(sim[["eff"]])[[1]] else "?",
-    selected=if(is.numeric(sim[["eff"]])) dimnames(sim[["eff"]])[[1]][min(4,dim(sim[["eff"]])[1])] else "?", selectize=FALSE)) })
-  
+    choices=if(is.data.frame(sim[["eff"]])) sim[["eff"]][,"label"] else "?",
+    selected=if(is.data.frame(sim[["eff"]])) sim[["eff"]][1,"label"] else "?", selectize=FALSE)) })
   # Run button
   output$uiElem.runEff <- renderUI({ tagList( actionButton(inputId="runEff",
     translate["run",input$language],
-    style=paste0("color: white; background-color: ",guiColors["blueDark"]))) })
+    style=paste0("color: white; background-color: ",guiBlue(dark=TRUE)))) })
   
   ##############################################################################
   # CONTROLS TO SHOW/HIDE HELP
@@ -302,33 +279,23 @@ shinyServer <- function(input, output) {
     out <- melt(data=as.data.frame(out), id.vars=c("scenario","time"),
       variable.name="variable", value.name="value")
     out <- acast(data=out, formula=time~variable~scenario, value.var="value")
-    out
+    showDynamic(out, labelScenario=translate["scenario",input$language],
+      labelTime=translate["time",input$language])
   }
 
   # Render dynamic results
-  empty <- function() {
-    plot(0, 0, type="n", axes=FALSE, ann=FALSE)
-    legend("center", bty="n", legend=translate["needsUpdate",input$language])
-    NULL
-  }
-  resultDyn <- function(var) {
+  resultDyn <- function(item) {
     if (is.null(sim[["dyn"]])) {
-      out <- empty()
+      out <- translate["needsUpdate",input$language]
     } else if (is.character(sim[["dyn"]])) {
       validate(lastErrMsg())
     } else {
-      tryCatch({
-        out <- visualizeDynamic(out=sim[["dyn"]], var=var, lang=input$language)
-      }, error = function(e) {
-        validate(lastErrMsg())
-      })
+      row <- match(item, sim[["dyn"]][,"label"])
+      out <- sim[["dyn"]][row, "content"]
     }
     out
   }
-  output$resultDyn1 <- renderPlot({ resultDyn(var=input$dynVar1) })
-  output$resultDyn2 <- renderPlot({ resultDyn(var=input$dynVar2) })
-  output$resultDyn3 <- renderPlot({ resultDyn(var=input$dynVar3) })
-  output$resultDyn4 <- renderPlot({ resultDyn(var=input$dynVar4) })
+  output$resultDyn <- renderText({ resultDyn(item=input$itemDyn) })
 
   ##############################################################################
   # Steady state computation / results
@@ -369,24 +336,22 @@ shinyServer <- function(input, output) {
     }
     dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
     rownames(out) <- c(XDATA$model$namesVars(), XDATA$model$namesPros())
-    out
+    showSteady(out)
   }
   
   # Render steady state results
-  output$resultsSteady <- renderText({
+  resultStd <- function(item) {
     if (is.null(sim[["std"]])) {
       out <- translate["needsUpdate",input$language]
     } else if (is.character(sim[["std"]])) {
       validate(lastErrMsg())
     } else {
-      tryCatch({
-        out <- steadyTable(m=sim[["std"]], lang=input$language)
-      }, error = function(e) {
-        validate(lastErrMsg())
-      })
+      row <- match(item, sim[["std"]][,"label"])
+      out <- sim[["std"]][row, "content"]
     }
     out
-  })
+  }
+  output$resultStd <- renderText({ resultStd(item=input$itemStd) })
 
   ##############################################################################
   # Single-effect computation / results
@@ -434,29 +399,23 @@ shinyServer <- function(input, output) {
     }
     dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
     rownames(out) <- c(XDATA$model$namesVars(), XDATA$model$namesPros())
-    out
+    showEffect(out)
   }
 
   # Render effect results
-  resultEff <- function(var) {
+  resultEff <- function(item) {
     if (is.null(sim[["eff"]])) {
-      out <- empty()
+      out <- translate["needsUpdate",input$language]
     } else if (is.character(sim[["eff"]])) {
       validate(lastErrMsg())
     } else {
-      tryCatch({
-        out <- visualizeEffect(out=sim[["eff"]], var=var, lang=input$language)
-      }, error = function(e) {
-        validate(lastErrMsg())
-      })
+      row <- match(item, sim[["eff"]][,"label"])
+      out <- sim[["eff"]][row, "content"]
     }
     out
   }
-  output$resultEff1 <- renderPlot({ resultEff(var=input$effVar1) })
-  output$resultEff2 <- renderPlot({ resultEff(var=input$effVar2) })
-  output$resultEff3 <- renderPlot({ resultEff(var=input$effVar3) })
-  output$resultEff4 <- renderPlot({ resultEff(var=input$effVar4) })
-  
+  output$resultEff <- renderText({ resultEff(item=input$itemEff) })
+
   ##############################################################################
   # Intro page, process table, stoichiometry matrix
   ##############################################################################
