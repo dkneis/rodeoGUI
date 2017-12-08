@@ -130,7 +130,7 @@ shinyUI <- fluidPage(
   conditionalPanel(
     condition = "(input.view == 'intro') && (output.showHelp == false)",
     fluidRow(
-      column(12, htmlOutput("intro"))
+      column(12, uiOutput("intro"))
     )
   ),
 

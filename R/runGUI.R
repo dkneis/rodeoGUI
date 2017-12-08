@@ -4,8 +4,8 @@
 #'
 #' @param dirRodeo Directory containing the model definition. See notes.
 #' @param dirScenarios Directory containing scenario definitions. See notes.
-#' @param dirIntro Directory containing material for the model's 
-#'   introduction page. See notes.
+#' @param dirIntro Directory containing material for the
+#'   model's introduction pages. See notes.
 #' @param colsep Column separator used in delimited text files.
 #' @param useTemp If \code{TRUE} (default), the produced files are created in
 #'   the session's temporary folder. If \code{FALSE}, the files are creared in
@@ -124,45 +124,12 @@ preGUI <- function(
 
   ##############################################################################
   
-  # Prepare start pages
-  filecontents <- function(f) {
-    if (!file.exists(f))
-      stop("file '",f,"' not found")
-    paste(readLines(con=f), collapse="\n")
-  }
-  intro <- c(
-    EN=filecontents(paste(dirIntro,"EN",sep="/")),
-    DE=filecontents(paste(dirIntro,"DE",sep="/"))
-  )
-  # replace <img ... src=filename.svg ...> by inline svg
-  inlineSVG <- function(html, svgDir) {
-    pattern <- "[<]img[ ][^<]+[>]"
-    out <- html
-    while (grepl(x=out, pattern=pattern)) {
-      start <- regexpr(text=out, pattern=pattern)
-      end <- start + as.integer(attr(start, "match.length")) - 1
-      tmp <- substr(out, start, end)
-      tmp <- gsub(x=tmp, pattern="^[<]img[ ].*src=\"", replacement="")
-      tmp <- gsub(x=tmp, pattern="\".*>$", replacement="")
-      svgFile <- paste0(svgDir,"/",tmp)
-      if (file.exists(svgFile))
-        out <- paste0(substr(out, 1, start-1), "\n",
-          filecontents(svgFile), "\n", substr(out, end+1, nchar(out)), "\n")
-      else
-        warning(paste0("failed to put contents of file '",svgFile,"' inline"))
-    }
-    out
-  }
-  intro <- sapply(intro, inlineSVG, svgDir=dirIntro)
-
-  ##############################################################################
-
   # Save data in .rda file to be loaded in server/ui
   XDATA <- list(
     model= model,
     lib= if (useTemp) libFile else basename(libFile),
     rCode= rCode,
-    intro= intro,
+    dirIntro= dirIntro,
     scenTitles= scenTitles,
     scenDescriptions= scenDescriptions,
     scenDefaults= scenDefaults
@@ -202,7 +169,7 @@ preGUI <- function(
 #' preGUI(
 #'   dirRodeo=system.file("examples/tank2/rodeo", package="rodeoGUI"),
 #'   dirScenarios=system.file("examples/tank2/scenarios", package="rodeoGUI"),
-#'   dirIntro=system.file("examples/tank2/intro", package="rodeoGUI"),
+#'   dirIntro= =system.file("examples/tank2/intro", package="rodeoGUI"),
 #'   colsep="\t"
 #' )
 #' runGUI()

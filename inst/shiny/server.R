@@ -36,7 +36,7 @@ shinyServer <- function(input, output) {
       names(lst)[names(lst)==n] <- translate[n,input$language]
     tagList(
       selectInput(inputId="view", label=NULL, multiple=FALSE,
-        choices=lst,  selected="start", selectize=FALSE)
+        choices=lst,  selected=NULL, selectize=FALSE)
     )
   })
 
@@ -420,8 +420,14 @@ shinyServer <- function(input, output) {
   # Intro page, process table, stoichiometry matrix
   ##############################################################################
 
-  output$intro <- renderText({
-    XDATA$intro[input$language]
+  output$intro <- renderUI({
+    addResourcePath("dirIntro", XDATA$dirIntro)
+    fLocal <- paste0(XDATA$dirIntro,"/",input$language,".html")
+    fServer <- paste0("dirIntro/",input$language,".html")
+    validate(
+      need(file.exists(fLocal), translate["introPageMissing",input$language])
+    )
+    tags$iframe(src=fServer, height=400, width="100%")
   })
 
   output$stoichiometry <- renderText({

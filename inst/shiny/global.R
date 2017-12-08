@@ -46,6 +46,8 @@ translate <- rbind(
   identifier = c(EN="Short name", DE="Bezeichnung"),
   initialValues = c(EN="Initial values", DE="Anfangswerte"),
   introduction = c(EN="Introduction", DE="Einführung"),
+  introPageMissing = c(EN="Introduction page not available",
+                       DE="Einstiegsseite nicht verfügbar"),
   invalidUserInput = c(EN="Invalid user input", DE="Ungültige Eingabe"),
   invalidVectorOfTimes = c(EN="Invalid specification of time period and/or time step",
     DE="Ungültige Spezifikation von Zeitfenster und/oder Zeitschritt"),
