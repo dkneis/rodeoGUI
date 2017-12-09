@@ -4,18 +4,17 @@
 \alias{showDynamic}
 \title{Default dynamics plots}
 \usage{
-showDynamic(sim, labelScenario, labelTime)
+showDynamic(sim, prm, lang)
 }
 \arguments{
 \item{sim}{Numeric array with three dimensions
-(time, item, scenario). The names of the scenario dimension are
-integers starting from 1.}
+(time, item, scenario).}
 
-\item{labelScenario}{Word 'scenario' translated to target language
-for use in the legend. Character string.}
+\item{prm}{Numeric matrix (rows: parameters, columns: scenarios).
+This is available just for the case that the parameter values are
+needed for visualization.}
 
-\item{labelTime}{Word 'time' translated to target language
-for use as x-asis label. Character string.}
+\item{lang}{Identifier of selected language (character string).}
 }
 \value{
 A data frame with two columns 'label' and 'content'. The

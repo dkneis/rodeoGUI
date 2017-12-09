@@ -105,10 +105,12 @@ shinyServer <- function(input, output) {
   output$uiElem.tShow <- renderUI({ tagList(textInput(inputId='tShow',
     label=translate["tShow",input$language], value=0)) })
   # Item to be displayed
-  output$uiElem.itemDyn <- renderUI({ tagList(selectInput(inputId="itemDyn",
-    label=NULL, multiple=FALSE,
-    choices=if(is.data.frame(sim[["dyn"]])) sim[["dyn"]][,"label"] else "?",
-    selected=if(is.data.frame(sim[["dyn"]])) sim[["dyn"]][1,"label"] else "?", selectize=FALSE)) })
+  output$uiElem.itemDyn <- renderUI({
+    tagList(selectInput(inputId="itemDyn",
+      label=NULL, multiple=FALSE,
+      choices=if(is.data.frame(sim[["dyn"]])) sim[["dyn"]][,"label"] else "?",
+      selected=lastShown[["dyn"]], selectize=FALSE))
+  })
   # Run button
   output$uiElem.runDyn <- renderUI({ tagList(actionButton(inputId="runDyn",
     translate["run",input$language],
@@ -119,10 +121,12 @@ shinyServer <- function(input, output) {
   ##############################################################################
 
   # Item to be displayed
-  output$uiElem.itemStd <- renderUI({ tagList(selectInput(inputId="itemStd",
-    label=NULL, multiple=FALSE,
-    choices=if(is.data.frame(sim[["std"]])) sim[["std"]][,"label"] else "?",
-    selected=if(is.data.frame(sim[["std"]])) sim[["std"]][1,"label"] else "?", selectize=FALSE)) })
+  output$uiElem.itemStd <- renderUI({
+    tagList(selectInput(inputId="itemStd",
+      label=NULL, multiple=FALSE,
+      choices=if(is.data.frame(sim[["std"]])) sim[["std"]][,"label"] else "?",
+      selected=lastShown[["std"]], selectize=FALSE))
+  })
   # Run button
   output$uiElem.runStd <- renderUI({ tagList( actionButton(inputId="runStd",
     translate["run",input$language],
@@ -148,10 +152,12 @@ shinyServer <- function(input, output) {
   output$uiElem.effMultiply <- renderUI({ tagList(checkboxInput(inputId="effMultiply",
     label=translate["useAsMultipliers",input$language], value=TRUE)) })
   # Item to be displayed
-  output$uiElem.itemEff <- renderUI({ tagList(selectInput(inputId="itemEff",
-    label=NULL, multiple=FALSE,
-    choices=if(is.data.frame(sim[["eff"]])) sim[["eff"]][,"label"] else "?",
-    selected=if(is.data.frame(sim[["eff"]])) sim[["eff"]][1,"label"] else "?", selectize=FALSE)) })
+  output$uiElem.itemEff <- renderUI({
+    tagList(selectInput(inputId="itemEff",
+      label=NULL, multiple=FALSE,
+      choices=if(is.data.frame(sim[["eff"]])) sim[["eff"]][,"label"] else "?",
+      selected=lastShown[["eff"]], selectize=FALSE))
+  })
   # Run button
   output$uiElem.runEff <- renderUI({ tagList( actionButton(inputId="runEff",
     translate["run",input$language],
@@ -199,32 +205,59 @@ shinyServer <- function(input, output) {
   observeEvent(input$runEff, { tryCatch({ sim$eff <- computeEffect() },
     error = function(e) { sim$eff <- as.character(e) }) })
 
-  # Dynamics and steady state: Invalidate outputs if inputs were changed
-  inputs_dyn_std <- reactive({
-#    tmp <- unlist(reactiveValuesToList(input))
-#    tmp[grepl(x=names(tmp), pattern="^scenDefaultId[.][0123456789]+$")]
-    # possibly one can use the leading dot with reactiveValuesToList
+  # Dynamics: Invalidate outputs if inputs were changed
+  inputs_dyn <- reactive({
     # THIS IS A WORKAROUND: TO BE ON THE SAVE SIDE, WE QUERY THE SETTINGS FOR
-    # MORE SCENARIOS THAN THE USER CAN ACTUALLY SELECT
-    c(input$nScen,
+    # MORE SCENARIOS THAN THE USER CAN ACTUALLY SELECT;
+    # possibly one can use the leading dot with reactiveValuesToList
+    c(input$language,
+      input$nScen,
+      input$scenDefaultId.1,input$scenDefaultId.2,input$scenDefaultId.3,
+      input$scenDefaultId.4,input$scenDefaultId.5,input$scenDefaultId.6,
+      input$scenEdits.1,input$scenEdits.2,input$scenEdits.3,
+      input$scenEdits.4,input$scenEdits.5,input$scenEdits.6,
+      input$tStart,
+      input$tFinal,
+      input$tStep,
+      input$tShow
+    )
+  })
+  observeEvent(inputs_dyn(), { sim$dyn <- NULL })
+
+  # Dynamics: Invalidate outputs if inputs were changed
+  inputs_std <- reactive({
+    # THIS IS A WORKAROUND: TO BE ON THE SAVE SIDE, WE QUERY THE SETTINGS FOR
+    # MORE SCENARIOS THAN THE USER CAN ACTUALLY SELECT;
+    # possibly one can use the leading dot with reactiveValuesToList
+    c(input$language,
+      input$nScen,
       input$scenDefaultId.1,input$scenDefaultId.2,input$scenDefaultId.3,
       input$scenDefaultId.4,input$scenDefaultId.5,input$scenDefaultId.6,
       input$scenEdits.1,input$scenEdits.2,input$scenEdits.3,
       input$scenEdits.4,input$scenEdits.5,input$scenEdits.6
     )
   })
-  observeEvent(inputs_dyn_std(), {
-    sim$dyn <- NULL
-    sim$std <- NULL
-  })
+  observeEvent(inputs_std(), { sim$std <- NULL })
   
   # Effect analysis: Invalidate outputs if inputs were changed
   inputs_eff <- reactive({
-    c(input$effScen, input$effItem, input$effValues, input$effMultiply)
+    c(input$language,
+      input$effScen,
+      input$effItem,
+      input$effValues,
+      input$effMultiply
+    )
   })
-  observeEvent(inputs_eff(), {
-    sim$eff <- NULL
-  })
+  observeEvent(inputs_eff(), { sim$eff <- NULL })
+  
+  ##############################################################################
+  # Remember last item selected for plotting
+  ##############################################################################
+  
+  lastShown <- reactiveValues(dyn=NULL, std=NULL, eff=NULL)
+  observeEvent(input$itemDyn, { if (input$itemDyn != "?") lastShown[["dyn"]] <- input$itemDyn })
+  observeEvent(input$itemStd, { if (input$itemStd != "?") lastShown[["std"]] <- input$itemStd })
+  observeEvent(input$itemEff, { if (input$itemEff != "?") lastShown[["eff"]] <- input$itemEff })
 
   ##############################################################################
   # Dynamic computation / results
@@ -234,6 +267,7 @@ shinyServer <- function(input, output) {
   computeDynamic <- function() {
     dyn.load(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- NULL
+    prm <- NULL
     for (is in 1:input$nScen) {
       # get inputs for current scenario
       inp <- reactiveValuesToList(input)
@@ -272,6 +306,8 @@ shinyServer <- function(input, output) {
       this <- cbind(scenario=rep(is, nrow(this)) ,this)
       # add to results of other scenarios
       out <- rbind(out, this)
+      prm <- cbind(prm, XDATA$model$getPars())
+      colnames(prm)[ncol(prm)] <- paste(translate["scenario",input$language],is)
     }
     dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- out[out[,"time"] >= min(as.numeric(input$tShow), max(out[,"time"])), ,drop=FALSE]
@@ -279,8 +315,9 @@ shinyServer <- function(input, output) {
     out <- melt(data=as.data.frame(out), id.vars=c("scenario","time"),
       variable.name="variable", value.name="value")
     out <- acast(data=out, formula=time~variable~scenario, value.var="value")
-    showDynamic(out, labelScenario=translate["scenario",input$language],
-      labelTime=translate["time",input$language])
+    dimnames(out)[[3]] <- paste(translate["scenario",input$language], 1:input$nScen)
+    rownames(prm) <- XDATA$model$namesPars()
+    showDynamic(out, prm, input$language)
   }
 
   # Render dynamic results
@@ -305,6 +342,7 @@ shinyServer <- function(input, output) {
   computeSteady <- function() {
     dyn.load(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- NULL
+    prm <- NULL
     for (is in 1:input$nScen) {
       # get inputs for current scenario
       inp <- reactiveValuesToList(input)
@@ -319,8 +357,10 @@ shinyServer <- function(input, output) {
       # run model
       tryCatch({
         this <- rootSolve::runsteady(y=XDATA$model$getVars(), times=c(0,Inf), func=XDATA$model$libFunc(),
-          parms=XDATA$model$getPars(), dllname=basename(XDATA$lib), nout=XDATA$model$lenPros(),
-          outnames=XDATA$model$namesPros())
+          parms=XDATA$model$getPars(), dllname=basename(XDATA$lib),
+          nout=XDATA$model$lenPros(),       # works for 0D model only
+          outnames=XDATA$model$namesPros()  # works for 0D model only
+        )
       }, error = function(e) {
         stop(paste0(translate["failedToComputeSolutionFor",input$language],
           " ",translate["scenario",input$language]," ",is,"."))
@@ -333,10 +373,13 @@ shinyServer <- function(input, output) {
       # add to results of other scenarios
       out <- cbind(out, this)
       colnames(out)[ncol(out)] <- paste(translate["scenario",input$language],is)
+      prm <- cbind(prm, XDATA$model$getPars())
+      colnames(prm)[ncol(prm)] <- paste(translate["scenario",input$language],is)
     }
     dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
     rownames(out) <- c(XDATA$model$namesVars(), XDATA$model$namesPros())
-    showSteady(out)
+    rownames(prm) <- XDATA$model$namesPars()
+    showSteady(out, prm, input$language)
   }
   
   # Render steady state results
@@ -383,8 +426,10 @@ shinyServer <- function(input, output) {
       # run model
       tryCatch({
         this <- rootSolve::runsteady(y=XDATA$model$getVars(), times=c(0,Inf), func=XDATA$model$libFunc(),
-          parms=XDATA$model$getPars(), dllname=basename(XDATA$lib), nout=XDATA$model$lenPros(),
-          outnames=XDATA$model$namesPros())
+          parms=XDATA$model$getPars(), dllname=basename(XDATA$lib),
+          nout=XDATA$model$lenPros(),       # works for 0D model only
+          outnames=XDATA$model$namesPros()  # works for 0D model only
+        )
       }, error = function(e) {
         stop(paste0(translate["failedToComputeSolutionFor",input$language]," ",input$effItem,"=",values[i],"."))
       })
@@ -399,7 +444,7 @@ shinyServer <- function(input, output) {
     }
     dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
     rownames(out) <- c(XDATA$model$namesVars(), XDATA$model$namesPros())
-    showEffect(out)
+    showEffect(out, input$language)
   }
 
   # Render effect results

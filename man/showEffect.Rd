@@ -4,11 +4,13 @@
 \alias{showEffect}
 \title{Default effect plots}
 \usage{
-showEffect(sim)
+showEffect(sim, lang)
 }
 \arguments{
 \item{sim}{Numeric matrix (rows: output items, colums: values of
 the input item whose effect was studied).}
+
+\item{lang}{Identifier of selected language (character string).}
 }
 \value{
 A data frame with two columns 'label' and 'content'. The

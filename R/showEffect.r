@@ -5,6 +5,7 @@
 #'
 #' @param sim Numeric matrix (rows: output items, colums: values of
 #'   the input item whose effect was studied).
+#' @param lang Identifier of selected language (character string).
 #'
 #' @return A data frame with two columns 'label' and 'content'. The
 #'   latter column holds HTML or SVG code.
@@ -13,7 +14,7 @@
 #'
 #' @export
 
-showEffect <- function (sim) {
+showEffect <- function (sim, lang) {
   out <- NULL
   for (item in rownames(sim)) {
     content <- svgstring(width=8, height=6, standalone=FALSE)

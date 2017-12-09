@@ -169,7 +169,7 @@ preGUI <- function(
 #' preGUI(
 #'   dirRodeo=system.file("examples/tank2/rodeo", package="rodeoGUI"),
 #'   dirScenarios=system.file("examples/tank2/scenarios", package="rodeoGUI"),
-#'   dirIntro= =system.file("examples/tank2/intro", package="rodeoGUI"),
+#'   dirIntro=system.file("examples/tank2/intro", package="rodeoGUI"),
 #'   colsep="\t"
 #' )
 #' runGUI()

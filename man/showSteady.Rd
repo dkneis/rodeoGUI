@@ -4,10 +4,16 @@
 \alias{showSteady}
 \title{Default steady-state visualization}
 \usage{
-showSteady(sim)
+showSteady(sim, prm, lang)
 }
 \arguments{
 \item{sim}{Numeric matrix (rows: output items, colums: scenarios).}
+
+\item{prm}{Numeric matrix (rows: parameters, columns: scenarios).
+This is available just for the case that the parameter values are
+needed for visualization.}
+
+\item{lang}{Identifier of selected language (character string).}
 }
 \value{
 A data frame with two columns 'label' and 'content'. The

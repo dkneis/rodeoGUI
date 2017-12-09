@@ -12,7 +12,7 @@ preGUI(dirRodeo = "./rodeo", dirScenarios = "./scenarios",
 
 \item{dirScenarios}{Directory containing scenario definitions. See notes.}
 
-\item{dirIntro}{A local or web directory containing material for the
+\item{dirIntro}{Directory containing material for the
 model's introduction pages. See notes.}
 
 \item{colsep}{Column separator used in delimited text files.}

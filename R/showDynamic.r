@@ -5,12 +5,11 @@
 #' the respective time series for all scenarios.
 #'
 #' @param sim Numeric array with three dimensions
-#'   (time, item, scenario). The names of the scenario dimension are
-#'   integers starting from 1.
-#' @param labelScenario Word 'scenario' translated to target language
-#'   for use in the legend. Character string.
-#' @param labelTime Word 'time' translated to target language
-#'   for use as x-asis label. Character string.
+#'   (time, item, scenario).
+#' @param prm Numeric matrix (rows: parameters, columns: scenarios).
+#'   This is available just for the case that the parameter values are
+#'   needed for visualization.
+#' @param lang Identifier of selected language (character string).
 #'
 #' @return A data frame with two columns 'label' and 'content'. The
 #'   latter column holds HTML or SVG code.
@@ -19,7 +18,7 @@
 #'
 #' @export
 
-showDynamic <- function (sim, labelScenario, labelTime) {
+showDynamic <- function (sim, prm, lang) {
   out <- NULL
   for (item in dimnames(sim)[[2]]) {
     content <- svgstring(width=8, height=6, standalone=FALSE)
@@ -29,10 +28,11 @@ showDynamic <- function (sim, labelScenario, labelTime) {
       clr <- colorRampPalette(c("royalblue4", "seagreen", "darkred"))(ncol(x))
       omar <- par("mar")
       par(mar=c(4.5,3,1,1))
+      xlab <- if (lang == "EN") "Time" else if (lang == "DE") "Zeit" else "t"
       matplot(as.numeric(rownames(x)), x[,1:ncol(x)], bty="L", type="l",
-        lty=1:ncol(x), col=clr, xlab=labelTime, ylab="")
+        lty=1:ncol(x), col=clr, xlab=xlab, ylab="")
       legend("right", bty="n", horiz=FALSE, lty=1:ncol(x), col=clr,
-        legend=paste(labelScenario, 1:ncol(x)))
+        legend=colnames(x))
       par(mar=omar)
     dev.off()
     out <- rbind(out,

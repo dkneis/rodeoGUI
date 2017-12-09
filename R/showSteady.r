@@ -5,6 +5,10 @@
 #' state variable or process rate) and one column for each scenario.
 #'
 #' @param sim Numeric matrix (rows: output items, colums: scenarios).
+#' @param prm Numeric matrix (rows: parameters, columns: scenarios).
+#'   This is available just for the case that the parameter values are
+#'   needed for visualization.
+#' @param lang Identifier of selected language (character string).
 #'
 #' @return A data frame with two columns 'label' and 'content'. The
 #'   latter column holds HTML or SVG code.
@@ -14,7 +18,7 @@
 #'
 #' @export
 
-showSteady <- function(sim) {
+showSteady <- function(sim, prm, lang) {
   if (ncol(sim) >= 2) {
     tmp <- sim
     tmp <- apply(tmp, 1:2, as.character)
