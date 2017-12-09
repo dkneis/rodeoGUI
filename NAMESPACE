@@ -3,6 +3,7 @@
 export(guiBlue)
 export(guiGrey)
 export(guiOrange)
+export(guiPink)
 export(preGUI)
 export(runGUI)
 export(showDynamic)

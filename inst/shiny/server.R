@@ -196,17 +196,29 @@ shinyServer <- function(input, output) {
 
   # Initialize model outputs
   sim <- reactiveValues(dyn=NULL, std=NULL, eff=NULL)
-
   # Update model outputs when run button was pressed
-  observeEvent(input$runDyn, { tryCatch({ sim$dyn <- computeDynamic() },
-      error = function(e) { sim$dyn <- as.character(e) }) })
-  observeEvent(input$runStd, { tryCatch({ sim$std <- computeSteady() },
-    error = function(e) { sim$std <- as.character(e) }) })
-  observeEvent(input$runEff, { tryCatch({ sim$eff <- computeEffect() },
-    error = function(e) { sim$eff <- as.character(e) }) })
+  observeEvent(input$runDyn, {
+    tryCatch({
+      sim[["dyn"]] <- computeDynamic()
+      up2date[["dyn"]] <- TRUE
+    }, error = function(e) { sim[["dyn"]] <- as.character(e) }) })
+  observeEvent(input$runStd, {
+    tryCatch({
+      sim[["std"]] <- computeSteady()
+      up2date[["std"]] <- TRUE
+    }, error = function(e) { sim[["std"]] <- as.character(e) }) })
+  observeEvent(input$runEff, {
+    tryCatch({
+      sim[["eff"]] <- computeEffect()
+      up2date[["eff"]] <- TRUE
+    },
+    error = function(e) { sim[["eff"]] <- as.character(e) }) })
 
+  # Detect whether results need update
+  up2date <- reactiveValues(dyn=FALSE, std=FALSE, eff=FALSE)
+  
   # Dynamics: Invalidate outputs if inputs were changed
-  inputs_dyn <- reactive({
+  up2date_dyn <- reactive({
     # THIS IS A WORKAROUND: TO BE ON THE SAVE SIDE, WE QUERY THE SETTINGS FOR
     # MORE SCENARIOS THAN THE USER CAN ACTUALLY SELECT;
     # possibly one can use the leading dot with reactiveValuesToList
@@ -222,10 +234,10 @@ shinyServer <- function(input, output) {
       input$tShow
     )
   })
-  observeEvent(inputs_dyn(), { sim$dyn <- NULL })
+  observeEvent(up2date_dyn(), { up2date[["dyn"]] <- FALSE })
 
   # Dynamics: Invalidate outputs if inputs were changed
-  inputs_std <- reactive({
+  up2date_std <- reactive({
     # THIS IS A WORKAROUND: TO BE ON THE SAVE SIDE, WE QUERY THE SETTINGS FOR
     # MORE SCENARIOS THAN THE USER CAN ACTUALLY SELECT;
     # possibly one can use the leading dot with reactiveValuesToList
@@ -237,10 +249,10 @@ shinyServer <- function(input, output) {
       input$scenEdits.4,input$scenEdits.5,input$scenEdits.6
     )
   })
-  observeEvent(inputs_std(), { sim$std <- NULL })
+  observeEvent(up2date_std(), { up2date[["std"]] <- FALSE })
   
   # Effect analysis: Invalidate outputs if inputs were changed
-  inputs_eff <- reactive({
+  up2date_eff <- reactive({
     c(input$language,
       input$effScen,
       input$effItem,
@@ -248,7 +260,7 @@ shinyServer <- function(input, output) {
       input$effMultiply
     )
   })
-  observeEvent(inputs_eff(), { sim$eff <- NULL })
+  observeEvent(up2date_eff(), { up2date[["eff"]] <- FALSE })
   
   ##############################################################################
   # Remember last item selected for plotting
@@ -329,6 +341,10 @@ shinyServer <- function(input, output) {
     } else {
       row <- match(item, sim[["dyn"]][,"label"])
       out <- sim[["dyn"]][row, "content"]
+      if (!up2date[["dyn"]])
+        out <- paste0("<p style='background-color:",guiPink(),
+          ";border:2px; border-style:solid; border-color:",guiGrey(dark=TRUE),"; padding:1em;'>",
+          translate["needsUpdate",input$language],"</p>", out)
     }
     out
   }
@@ -391,6 +407,10 @@ shinyServer <- function(input, output) {
     } else {
       row <- match(item, sim[["std"]][,"label"])
       out <- sim[["std"]][row, "content"]
+      if (!up2date[["std"]])
+        out <- paste0("<p style='background-color:",guiPink(),
+          ";border:2px; border-style:solid; border-color:",guiGrey(dark=TRUE),"; padding:1em;'>",
+          translate["needsUpdate",input$language],"</p>", out)
     }
     out
   }
@@ -456,6 +476,10 @@ shinyServer <- function(input, output) {
     } else {
       row <- match(item, sim[["eff"]][,"label"])
       out <- sim[["eff"]][row, "content"]
+      if (!up2date[["eff"]])
+        out <- paste0("<p style='background-color:",guiPink(),
+          ";border:2px; border-style:solid; border-color:",guiGrey(dark=TRUE),"; padding:1em;'>",
+          translate["needsUpdate",input$language],"</p>", out)
     }
     out
   }

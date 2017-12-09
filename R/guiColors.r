@@ -45,3 +45,19 @@ guiOrange <- function (dark=FALSE) {
 guiGrey <- function (dark=FALSE) {
   ifelse(dark, "#7F7F7F", "#E5E5E5")
 }
+
+#' Pink colors
+#'
+#' Pink colors to be used with GUI.
+#'
+#' @param dark Switch between light and dark color. Logical.
+#'
+#' @return Character string representing a color.
+#'
+#' @author David Kneis \email{david.kneis@@tu-dresden.de}
+#'
+#' @export
+
+guiPink <- function (dark=FALSE) {
+  ifelse(dark, "#FFA5A5", "#FFD9D2")
+}
