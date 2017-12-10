@@ -25,8 +25,8 @@ shinyServer <- function(input, output) {
 
   output$uiElem.view <- renderUI({
     lst <- list(
-      overview= setNames(c("intro","pros","stoi"),
-        translate[c("introduction","processes","stoichiometry"),input$language]),
+      overview= setNames(c("intro","pros","stoi","funs"),
+        translate[c("introduction","processes","stoichiometry","functions"),input$language]),
       scenarios= setNames(c("scenDesc","scenPars","scenVars"),
         translate[c("description","parameters","initialValues"),input$language]),
       simulation= setNames(c("dyn","std","eff"),
@@ -63,6 +63,9 @@ shinyServer <- function(input, output) {
     tagList(selectInput(inputId="prosVar",
       label=translate["showStoichiometryFactorFor",input$language], multiple=FALSE,
       choices=XDATA$model$namesVars(), selected=XDATA$model$namesVars()[1], selectize=FALSE))
+  })
+  output$uiElem.prosHide <- renderUI({ tagList(checkboxInput(inputId="prosHide",
+    label=translate["hideInactiveProcesses",input$language], value=TRUE))
   })
   
   ##############################################################################
@@ -486,7 +489,7 @@ shinyServer <- function(input, output) {
   output$resultEff <- renderText({ resultEff(item=input$itemEff) })
 
   ##############################################################################
-  # Intro page, process table, stoichiometry matrix
+  # Intro page, process table, stoichiometry matrix, functions
   ##############################################################################
 
   output$intro <- renderUI({
@@ -510,9 +513,14 @@ shinyServer <- function(input, output) {
 
   output$processes <- renderText({
     v <- if(is.null(input$prosVar)) XDATA$model$namesVars()[1] else input$prosVar
-    prosTable(XDATA$model, selectedVar=v, lang=input$language)
+    h <- if(is.null(input$prosHide)) TRUE else input$prosHide
+    prosTable(XDATA$model, selectedVar=v, hide=h, lang=input$language)
   })
 
+  output$functions <- renderText({
+    funsTable(XDATA$model, lang=input$language)
+  })
+  
   ##############################################################################
   # Scenario descriptions
   ##############################################################################

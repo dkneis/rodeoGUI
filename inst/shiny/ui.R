@@ -151,9 +151,16 @@ shinyUI <- fluidPage(
   conditionalPanel(
     condition = "(input.view == 'pros') && (output.showHelp == false)",
     uiOutput("uiElem.prosVar"),
+    uiOutput("uiElem.prosHide"),
     htmlOutput("processes")
   ),
   
+  ##############################################################################
+  conditionalPanel(
+    condition = "(input.view == 'funs') && (output.showHelp == false)",
+    htmlOutput("functions")
+  ),
+
   ##############################################################################
   conditionalPanel(
     condition = "(input.view == 'scenDesc') && (output.showHelp == false)",

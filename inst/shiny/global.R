@@ -43,6 +43,9 @@ translate <- rbind(
   factor = c(EN="Factor", DE="Faktor"),
   failedToSetModelInputsForScenario = c(EN="Failed to set input values for scenario", DE="Fehler beim Setzen der Eingangsdaten für Szenario"),
   failedToComputeSolutionFor = c(EN="Failed to compute solution for", DE="Fehler beim Berechnen für"),
+  function_ = c(EN="Function", DE="Funktion"),
+  functions = c(EN="Functions", DE="Funktionen"),
+  hideInactiveProcesses = c(EN="Hide inactive processes", DE="Inaktive Prozesse ausblenden"),
   identifier = c(EN="Short name", DE="Bezeichnung"),
   initialValues = c(EN="Initial values", DE="Anfangswerte"),
   introduction = c(EN="Introduction", DE="Einführung"),
@@ -164,7 +167,7 @@ stoiAsHTML <- function(model, selectedVars, selectedPros, lang) {
 ########################################################################
 # Returns the process rates as a HTML table including stoi. factors for a single variable
 
-prosTable <- function(model, selectedVar, lang) {
+prosTable <- function(model, selectedVar, hide, lang) {
   if (!lang %in% names(model$getProsTable()))
     stop(paste0("missing column for language ",lang))
   tbl <- merge(x=model$getProsTable()[,c("name","unit",lang,"expression")],
@@ -174,6 +177,16 @@ prosTable <- function(model, selectedVar, lang) {
   italic <- function(x) {paste0('<div style="font-style:italic;">',
     x,'</div>')}
   tbl <- data.frame(lapply(tbl, as.character),stringsAsFactors=FALSE)
+  if (hide) {
+    tmp <- tbl[tbl[,"factor"] != "0",]
+    if (nrow(tmp) > 0) {
+      tbl <- tmp
+    } else {
+      tbl <- tbl[1,]
+      for (i in 1:ncol(tbl))
+        tbl[,i] <- "--"
+    }
+  }
   exportDF(x=tbl, tex=FALSE,
     width=setNames(c(15,10,30,30,15), c("name","unit",lang,"expression","factor")),
     align=setNames(rep("left", ncol(tbl)), colnames(tbl)),
@@ -183,6 +196,24 @@ prosTable <- function(model, selectedVar, lang) {
       c("name", "unit", lang, "expression", "factor")
     ),
     funCell= setNames(replicate(2, italic), c("expression", "factor"))
+  )
+}
+
+########################################################################
+# Returns the functions as a HTML table
+
+funsTable <- function(model, lang) {
+  if (!lang %in% names(model$getProsTable()))
+    stop(paste0("missing column for language ",lang))
+  tbl <- model$getFunsTable()[,c("name","unit",lang)]
+  tbl <- data.frame(lapply(tbl, as.character),stringsAsFactors=FALSE)
+  exportDF(x=tbl, tex=FALSE,
+    width=setNames(c(15,15,70), c("name","unit",lang)),
+    align=setNames(rep("left", ncol(tbl)), colnames(tbl)),
+    colnames= setNames(
+      c(translate["function_",lang], translate["unit",lang], translate["description",lang]),
+      c("name", "unit", lang)
+    )
   )
 }
 
@@ -265,6 +296,7 @@ help <- rbind(
   intro= sapply(langs, readHelp, "introduction"),
   stoi= sapply(langs, readHelp, "stoichiometry"),
   pros= sapply(langs, readHelp, "tableOfProcesses"),
+  funs= sapply(langs, readHelp, "tableOfFunctions"),
   scenDesc= sapply(langs, readHelp, "tableOfScenarios"),
   scenVars= sapply(langs, readHelp, "tableOfVariables"),
   scenPars= sapply(langs, readHelp, "tableOfParameters"),
