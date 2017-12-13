@@ -152,7 +152,7 @@ stoiAsHTML <- function(model, selectedVars, selectedPros, lang) {
       formatC(as.numeric(x), digits=2, format="e"),'</div>'))
     if (as.numeric(x) < 0) return(paste0('<div style="background-color:',guiBlue(),';">',
       formatC(as.numeric(x), digits=2, format="e"),'</div>'))
-    return("")
+    return("")  # zero not printed
   }
   m <- model$stoichiometry(box=1, time=0)[selectedPros,selectedVars,drop=FALSE]
   tbl <- cbind(data.frame(process=rownames(m), stringsAsFactors=FALSE),
