@@ -54,7 +54,14 @@ shinyServer <- function(input, output) {
   output$uiElem.stoiPros <- renderUI({ tagList(selectInput(inputId="stoiPros",
     label=translate["processes",input$language], multiple=TRUE, choices=XDATA$model$namesPros(),
     selected=XDATA$model$namesPros()[1:min(5:XDATA$model$lenPros())], selectize=FALSE)) })
+  output$uiElem.stoiUsePatterns <- renderUI({ tagList(checkboxInput(inputId="stoiUsePatterns",
+    label=translate["selectByPattern",input$language], value=FALSE)) })
+  output$uiElem.stoiPatternVars <- renderUI({ tagList(textInput(inputId='stoiPatternVars',
+    label=translate["patternToSelectVariables",input$language], value="^.+$")) })
+  output$uiElem.stoiPatternPros <- renderUI({ tagList(textInput(inputId='stoiPatternPros',
+    label=translate["patternToSelectProcesses",input$language], value="^.+$")) })
 
+  
   ##############################################################################
   # CONTROLS FOR THE PRESENTATION OF PROCESS RATES
   ##############################################################################
@@ -489,7 +496,7 @@ shinyServer <- function(input, output) {
   output$resultEff <- renderText({ resultEff(item=input$itemEff) })
 
   ##############################################################################
-  # Intro page, process table, stoichiometry matrix, functions
+  # Intro page
   ##############################################################################
 
   output$intro <- renderUI({
@@ -502,14 +509,34 @@ shinyServer <- function(input, output) {
     tags$iframe(src=fServer, height=400, width="100%")
   })
 
+  ##############################################################################
+  # Stoichiometry matrix
+  ##############################################################################
+
   output$stoichiometry <- renderText({
     # get inputs for current scenario
     updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
       scenDefaultId=input$stoiScen,  scenEdits="", lang=input$language)
-    v <- if(is.null(input$stoiVars)) XDATA$model$namesVars()[1] else input$stoiVars
-    p <- if(is.null(input$stoiPros)) XDATA$model$namesPros()[1] else input$stoiPros
+    # set variables and processes being displayed
+    if (is.null(input$stoiUsePatterns) || (!input$stoiUsePatterns)) {
+      v <- if(is.null(input$stoiVars)) XDATA$model$namesVars()[1] else input$stoiVars
+      p <- if(is.null(input$stoiPros)) XDATA$model$namesPros()[1] else input$stoiPros
+    } else {
+      tryCatch({
+        v <- XDATA$model$namesVars()[grepl(x=XDATA$model$namesVars(), pattern=input$stoiPatternVars)]
+        p <- XDATA$model$namesPros()[grepl(x=XDATA$model$namesPros(), pattern=input$stoiPatternPros)]
+      }, error = function(e) {
+        validate(translate["patternNotValid",input$language])
+      })
+      validate(need(length(v) > 0, translate["patternNotMatchingAnyVariable",input$language]))
+      validate(need(length(p) > 0, translate["patternNotMatchingAnyProcess",input$language]))
+    }
     stoiAsHTML(XDATA$model, selectedVars=v, selectedPros=p, lang=input$language)
   })
+
+  ##############################################################################
+  # Table of processes
+  ##############################################################################
 
   output$processes <- renderText({
     v <- if(is.null(input$prosVar)) XDATA$model$namesVars()[1] else input$prosVar
@@ -517,12 +544,16 @@ shinyServer <- function(input, output) {
     prosTable(XDATA$model, selectedVar=v, hide=h, lang=input$language)
   })
 
+  ##############################################################################
+  # Table of functions
+  ##############################################################################
+  
   output$functions <- renderText({
     funsTable(XDATA$model, lang=input$language)
   })
   
   ##############################################################################
-  # Scenario descriptions
+  # Table of scenarios
   ##############################################################################
 
   output$scenShowDesc <- renderText({
@@ -532,6 +563,11 @@ shinyServer <- function(input, output) {
     colnames(x) <- translate[c("identifier","description"), input$language]
     exportDF(x, width=setNames(c(25,75), names(x)), tex=FALSE)
   })
+
+  ##############################################################################
+  # Tables of parameters and initial values
+  ##############################################################################
+  
   output$scenShowVars <- renderText({
     scenDescrTable(XDATA$scenTitles, XDATA$scenDefaults, XDATA$model, lang=input$language, what="variable")
   })

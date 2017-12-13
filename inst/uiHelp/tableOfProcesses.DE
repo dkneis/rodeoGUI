@@ -1,3 +1,5 @@
 <h3>Erläuterung der Tabelle</h3>
 
 <p>In der Tabelle werden alle im Modell abgebildeten Prozesse mit den zugehörigen mathematischen Ausdrücken dargestellt. Zusätzlich werden für eine ausgewählte Variable (einstellbar über die Auswahlliste) die Stöchiometriefaktoren angezeigt. Das Produkt aus Prozessrate und Stöchiometriefaktor entspricht der rechten Seite der Differentialgleichung für die ausgewählte Variable bzgl. des jeweiligen Prozesses.</p>
+
+<p>Optional lassen sich alle Zeilen ausblenden, wo der Wert des Stöchiometriefaktors Null ist. Es werden dann lediglich jene Prozesse angezeigt, die tatsächlich auf die ausgewählte Zustandsvariable <em>in direkter Weise</em> wirken.</p>

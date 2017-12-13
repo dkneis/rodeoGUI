@@ -4,7 +4,9 @@
 
 <h3>Choosing displayed processes and state variables</h3>
 
-<p>The stoichiometry matrix of complex models consists of many rows and columns (1 row for each process, 1 column per variable). Therefore, the actually displayed rows and columns must be chosen from the drop down menu. Use the shift and control keys to select multiple rows and/or columns.</p>
+<p>The stoichiometry matrix of complex models consists of many rows and columns (1 row for each process, 1 column per variable). It is, therefore, quite common to display the matrix for a subset of variables and processes only. If the pattern-based selection is <em>deactivated</em>, the actually displayed variables and processes must be chosen from drop down menus. Use the shift and control keys to select multiple items of the respective category.</p>
+
+<p> If the pattern-based selection is <em>activated</em>, variables and processes are selected through regular expressions. The latter are a powerful means to scan character strings for the occurrence of patterns. The use of regular expressions requires some experience as well as <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html">&#8594;basic knowledge</a>.</p>
 
 <h3>Interpretation of the output matrix</h3>
 

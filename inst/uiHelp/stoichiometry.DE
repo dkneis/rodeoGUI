@@ -4,7 +4,9 @@
 
 <h3>Auswahl von Prozessen und Zustandsvariablen</h3>
 
-<p>Im Fall komplexer Modelle kann die Stöchiometriematrix viele Zeilen (1 Zeile pro Prozess) bzw. Spalten (1 Spalte je Variable) umfassen. Die tatsächlich anzuzeigenden Zeilen bzw. Spalten müssen daher über die entsprechenden Auswahllisten festgelegt werden. Eine Mehrfachauswahl ist mit Hilfe der Shift- und Strg-Tasten möglich.</p>
+<p>Im Fall komplexer Modelle kann die Stöchiometriematrix viele Zeilen (1 Zeile pro Prozess) bzw. Spalten (1 Spalte je Variable) umfassen. Es ist daher oft hilfreich, nur bestimmte Zeilen und Spalten darzustellen. Ist die Auswahl per Muster <em>deaktiviert</em>, lassen sich Variablen und Prozesse manuell aus Listen auswählen. Eine Mehrfachauswahl ist mit Hilfe der Shift- und Strg-Tasten möglich.</p>
+
+<p> Ist die Auswahl per Muster <em>aktiviert</em>, lassen sich Variablen und Prozesse mittels regulärer Ausdrücke auswählen. Letztere sind ein mächtiges Werkzeug, um Muster in Zeichenketten zu erkennen. Der Einsatz erfordert jedoch etwas Übung und <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html">&#8594;Grundwissen</a>.</p>
 
 <h3>Interpretationshilfe</h3>
 

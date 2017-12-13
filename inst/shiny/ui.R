@@ -139,8 +139,17 @@ shinyUI <- fluidPage(
     condition = "(input.view == 'stoi') && (output.showHelp == false)",
     column(widthSide,
       uiOutput("uiElem.stoiScen"),
-      uiOutput("uiElem.stoiVars"),
-      uiOutput("uiElem.stoiPros")
+      uiOutput("uiElem.stoiUsePatterns"),
+      conditionalPanel(
+        condition = "input.stoiUsePatterns == true",
+        uiOutput("uiElem.stoiPatternVars"),
+        uiOutput("uiElem.stoiPatternPros")
+      ),
+      conditionalPanel(
+        condition = "input.stoiUsePatterns == false",
+        uiOutput("uiElem.stoiVars"),
+        uiOutput("uiElem.stoiPros")
+      )
     ),
     column(widthMain,
       htmlOutput("stoichiometry")

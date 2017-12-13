@@ -59,12 +59,18 @@ translate <- rbind(
   numberOfScenarios = c(EN="Number of scenarios", DE="Anzahl Szenarios"),
   overview = c(EN="Overview", DE="Übersicht"),
   parameter = c(EN="Parameter", DE="Parameter"),
-  parameters = c(EN="Parameters", DE="Parameter"),  
+  parameters = c(EN="Parameters", DE="Parameter"),
+  patternNotMatchingAnyVariable = c(EN="Pattern does not match any variable name", DE="Kein Variablenname entspricht diesem Muster"),
+  patternNotMatchingAnyProcess = c(EN="Pattern does not match any process name", DE="Kein Prozessname entspricht diesem Muster"),
+  patternToSelectVariables = c(EN="Variable name matches pattern", DE="Variablenname folgt Muster"),
+  patternToSelectProcesses = c(EN="Process name matches pattern", DE="Prozessname folgt Muster"),
+  patternNotValid = c(EN="Pattern is not a valid regular expression.", DE="Muster ist kein gültiger regulärer Ausdruck."),
   process = c(EN="Process", DE="Prozess"),
   processes = c(EN="Processes", DE="Prozesse"),
   run = c(EN="Compute", DE="Berechnen"),
   scenario = c(EN="Scenario", DE="Szenario"),
   scenarios = c(EN="Scenarios", DE="Szenarios"),
+  selectByPattern = c(EN="Select by pattern", DE="Selektiere nach Muster"),
   selectView = c(EN="Select view", DE="Ansicht wählen"),
   showStoichiometryFactorFor = c(EN="Show stoichiometric factor for", DE="Zeige Stöchiometriefaktor für"),  
   simulation = c(EN="Simulation", DE="Simulation"),
@@ -169,8 +175,10 @@ stoiAsHTML <- function(model, selectedVars, selectedPros, lang) {
 
 prosTable <- function(model, selectedVar, hide, lang) {
   if (!lang %in% names(model$getProsTable()))
-    stop(paste0("missing column for language ",lang))
-  tbl <- merge(x=model$getProsTable()[,c("name","unit",lang,"expression")],
+    descrCol <- "description"
+  else
+    descrCol <- lang
+  tbl <- merge(x=model$getProsTable()[,c("name","unit",descrCol,"expression")],
     y=data.frame(process=rownames(model$stoichiometry()),
       factor=model$stoichiometry()[,selectedVar], stringsAsFactors=FALSE),
     by.x="name", by.y="process")
@@ -188,12 +196,12 @@ prosTable <- function(model, selectedVar, hide, lang) {
     }
   }
   exportDF(x=tbl, tex=FALSE,
-    width=setNames(c(15,10,30,30,15), c("name","unit",lang,"expression","factor")),
+    width=setNames(c(15,10,30,30,15), c("name","unit",descrCol,"expression","factor")),
     align=setNames(rep("left", ncol(tbl)), colnames(tbl)),
     colnames= setNames(
       c(translate["process",lang], translate["unit",lang], translate["description",lang],
        translate["expression",lang], translate["factor",lang]),
-      c("name", "unit", lang, "expression", "factor")
+      c("name", "unit", descrCol, "expression", "factor")
     ),
     funCell= setNames(replicate(2, italic), c("expression", "factor"))
   )
@@ -203,16 +211,18 @@ prosTable <- function(model, selectedVar, hide, lang) {
 # Returns the functions as a HTML table
 
 funsTable <- function(model, lang) {
-  if (!lang %in% names(model$getProsTable()))
-    stop(paste0("missing column for language ",lang))
-  tbl <- model$getFunsTable()[,c("name","unit",lang)]
+  if (!lang %in% names(model$getFunsTable()))
+    descrCol <- "description"
+  else
+    descrCol <- lang
+  tbl <- model$getFunsTable()[,c("name","unit",descrCol)]
   tbl <- data.frame(lapply(tbl, as.character),stringsAsFactors=FALSE)
   exportDF(x=tbl, tex=FALSE,
-    width=setNames(c(15,15,70), c("name","unit",lang)),
+    width=setNames(c(15,15,70), c("name","unit",descrCol)),
     align=setNames(rep("left", ncol(tbl)), colnames(tbl)),
     colnames= setNames(
       c(translate["function_",lang], translate["unit",lang], translate["description",lang]),
-      c("name", "unit", lang)
+      c("name", "unit", descrCol)
     )
   )
 }
@@ -231,8 +241,10 @@ scenDescrTable <- function(scenTitles, scenDefaults, model, lang, what=c("variab
     stop("inappropriate value passed to 'what'")
   }
   if (!lang %in% names(tbl))
-    stop(paste0("missing column for language ",lang))
-  out <- tbl[match(items, tbl[,"name"]), c("name","unit",lang)]
+    descrCol <- "description"
+  else
+    descrCol <- lang
+  out <- tbl[match(items, tbl[,"name"]), c("name","unit",descrCol)]
   val <- as.data.frame(scenDefaults[items,,drop=FALSE])
   val <- data.frame(lapply(val, as.character),stringsAsFactors=FALSE)
   whichDiffer <- which(apply(val, 1, function(x){!all(x == x[1])}))
