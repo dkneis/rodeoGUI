@@ -345,16 +345,14 @@ shinyServer <- function(input, output) {
   # Render dynamic results
   resultDyn <- function(item) {
     if (is.null(sim[["dyn"]])) {
-      out <- translate["needsUpdate",input$language]
+      out <- framedMessage(translate["needsUpdate",input$language])
     } else if (is.character(sim[["dyn"]])) {
       validate(lastErrMsg())
     } else {
       row <- match(item, sim[["dyn"]][,"label"])
       out <- sim[["dyn"]][row, "content"]
       if (!up2date[["dyn"]])
-        out <- paste0("<p style='background-color:",guiPink(),
-          ";border:2px; border-style:solid; border-color:",guiGrey(dark=TRUE),"; padding:1em;'>",
-          translate["needsUpdate",input$language],"</p>", out)
+        out <- paste0(framedMessage(translate["needsUpdate",input$language]), out)
     }
     out
   }
@@ -411,16 +409,14 @@ shinyServer <- function(input, output) {
   # Render steady state results
   resultStd <- function(item) {
     if (is.null(sim[["std"]])) {
-      out <- translate["needsUpdate",input$language]
+      out <- framedMessage(translate["needsUpdate",input$language])
     } else if (is.character(sim[["std"]])) {
       validate(lastErrMsg())
     } else {
       row <- match(item, sim[["std"]][,"label"])
       out <- sim[["std"]][row, "content"]
       if (!up2date[["std"]])
-        out <- paste0("<p style='background-color:",guiPink(),
-          ";border:2px; border-style:solid; border-color:",guiGrey(dark=TRUE),"; padding:1em;'>",
-          translate["needsUpdate",input$language],"</p>", out)
+        out <- paste0(framedMessage(translate["needsUpdate",input$language]), out)
     }
     out
   }
@@ -480,16 +476,14 @@ shinyServer <- function(input, output) {
   # Render effect results
   resultEff <- function(item) {
     if (is.null(sim[["eff"]])) {
-      out <- translate["needsUpdate",input$language]
+      out <- framedMessage(translate["needsUpdate",input$language])
     } else if (is.character(sim[["eff"]])) {
       validate(lastErrMsg())
     } else {
       row <- match(item, sim[["eff"]][,"label"])
       out <- sim[["eff"]][row, "content"]
       if (!up2date[["eff"]])
-        out <- paste0("<p style='background-color:",guiPink(),
-          ";border:2px; border-style:solid; border-color:",guiGrey(dark=TRUE),"; padding:1em;'>",
-          translate["needsUpdate",input$language],"</p>", out)
+        out <- paste0(framedMessage(translate["needsUpdate",input$language]), out)
     }
     out
   }

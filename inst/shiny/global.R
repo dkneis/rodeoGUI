@@ -35,6 +35,7 @@ translate <- rbind(
   description = c(EN="Description", DE="Beschreibung"),
   dynamics = c(EN="Dynamics", DE="Dynamik"),
   effectOnSteadyState = c(EN="Effect on steady st.", DE="Effekt auf Gleichgew."),
+  everything = c(EN="Everything", DE="Alles"),
   expectingNamedVector = c(EN="Expecting assignment statement like 'pi = 3.1415' or a comma delimited list of such statements",
                            DE="Erwarte Zuweisung der Form 'pi = 3.1415' oder eine durch Komma getrennte Liste solcher Zuweisungen"),
   expectingUnnamedVector = c(EN="Expecting a comma delimited list of numeric values",
@@ -98,6 +99,12 @@ translate <- rbind(
 
 lastErrMsg <- function(msg) {
   gsub(x=geterrmessage(), pattern="Error in [^:]+: ", replacement="")
+}
+
+framedMessage <- function(msg) {
+  paste0("<p style='background-color:",guiPink(),
+    ";border:2px; border-style:solid; border-color:",guiGrey(dark=TRUE),
+    "; padding:1em;'>",msg,"</p>")  
 }
 
 ########################################################################
