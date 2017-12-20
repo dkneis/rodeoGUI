@@ -506,7 +506,7 @@ shinyServer <- function(input, output) {
     validate(
       need(file.exists(fLocal), translate["introPageMissing",input$language])
     )
-    tags$iframe(src=fServer, height=400, width="100%")
+    tags$iframe(src=fServer, height="900px", width="100%", seamless="seamless")
   })
 
   ##############################################################################
