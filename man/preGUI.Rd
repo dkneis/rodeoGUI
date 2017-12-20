@@ -4,10 +4,13 @@
 \alias{preGUI}
 \title{Prepare files needed by the GUI}
 \usage{
-preGUI(dirRodeo = "./rodeo", dirScenarios = "./scenarios",
-  dirIntro = "./intro", colsep = "\\t", useTemp = TRUE)
+preGUI(appName = "rodeoGUI", dirRodeo = "./rodeo",
+  dirScenarios = "./scenarios", dirIntro = "./intro", colsep = "\\t",
+  useTemp = TRUE)
 }
 \arguments{
+\item{appName}{Application name displayed in top left corner of GUI.}
+
 \item{dirRodeo}{Directory containing the model definition. See notes.}
 
 \item{dirScenarios}{Directory containing scenario definitions. See notes.}

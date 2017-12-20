@@ -2,6 +2,7 @@
 #'
 #' Prepare files needed to run a rodeo-based model in the shiny GUI.
 #'
+#' @param appName Application name displayed in top left corner of GUI.
 #' @param dirRodeo Directory containing the model definition. See notes.
 #' @param dirScenarios Directory containing scenario definitions. See notes.
 #' @param dirIntro Directory containing material for the
@@ -37,6 +38,7 @@
 #' }
 
 preGUI <- function(
+  appName = "rodeoGUI",
   dirRodeo = "./rodeo",
   dirScenarios = "./scenarios",
   dirIntro = "./intro",
@@ -129,6 +131,7 @@ preGUI <- function(
     model= model,
     lib= if (useTemp) libFile else basename(libFile),
     rCode= rCode,
+    appName= appName,
     dirIntro= dirIntro,
     scenTitles= scenTitles,
     scenDescriptions= scenDescriptions,

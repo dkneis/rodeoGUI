@@ -36,7 +36,7 @@ shinyUI <- fluidPage(
   
   fluidRow(
     column(6,
-      HTML("<h2> rodeoGUI </h2>"),
+      HTML("<h2>",XDATA$appName,"</h2>"),
       htmlOutput("uiHTML.usedPackages")
     ),
     conditionalPanel(
