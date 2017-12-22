@@ -1,4 +1,5 @@
 library(rodeo)
+library(rodeoGUI)
 library(deSolve)
 library(rootSolve)
 #library(xtable)
@@ -8,7 +9,7 @@ library(svglite)
 ########################################################################
 
 # Load XDATA list object from file with expected name
-dirs <- c(".",gsub(pattern="\\", replacement="/", x=tempdir(), fixed=TRUE))
+dirs <- c(".", "shiny.app", gsub(pattern="\\", replacement="/", x=tempdir(), fixed=TRUE))
 f <- "rodeoGuiData.rda"
 loaded <- FALSE
 for (d in dirs) {

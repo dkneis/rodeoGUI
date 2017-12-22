@@ -1,3 +1,5 @@
+source("common.R")
+
 styleDefs <- paste0('
   table, th, td {
     padding: 2px;
