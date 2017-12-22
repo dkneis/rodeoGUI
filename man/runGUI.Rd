@@ -22,7 +22,13 @@ Locally run a rodeo-based model in a specialized shiny GUI.
 \dontrun{
 library(rodeoGUI)
 preGUI(
-  dirRodeo=system.file("examples/tank2/rodeo", package="rodeoGUI"),
+  vars=system.file("examples/tank2/rodeo/vars.txt", package="rodeoGUI"),
+  pars=system.file("examples/tank2/rodeo/pars.txt", package="rodeoGUI"),
+  funs=system.file("examples/tank2/rodeo/funs.txt", package="rodeoGUI"),
+  pros=system.file("examples/tank2/rodeo/pros.txt", package="rodeoGUI"),
+  stoi=system.file("examples/tank2/rodeo/stoi.txt", package="rodeoGUI"),
+  sourcesR=system.file("examples/tank2/rodeo/functions.r", package="rodeoGUI"),
+  sourcesF=system.file("examples/tank2/rodeo/functions.f95", package="rodeoGUI"),
   dirScenarios=system.file("examples/tank2/scenarios", package="rodeoGUI"),
   dirIntro=system.file("examples/tank2/intro", package="rodeoGUI"),
   colsep="\\t"

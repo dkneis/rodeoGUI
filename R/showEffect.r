@@ -17,13 +17,13 @@
 showEffect <- function (sim, lang) {
   out <- NULL
   for (item in rownames(sim)) {
-    content <- svgstring(width=8, height=6, standalone=FALSE)
-      omar <- par("mar")
-      par(mar=c(4.5,3,1,1))
-      barplot(height=as.vector(sim[item,]), names.arg=colnames(sim),
+    content <- svglite::svgstring(width=8, height=6, standalone=FALSE)
+      omar <- graphics::par("mar")
+      graphics::par(mar=c(4.5,3,1,1))
+      graphics::barplot(height=as.vector(sim[item,]), names.arg=colnames(sim),
         col=guiGrey(), border="black")
-      par(mar=omar)
-    dev.off()
+      graphics::par(mar=omar)
+    grDevices::dev.off()
     out <- rbind(out,
       data.frame(label=item, content=as.character(content()), stringsAsFactors=FALSE))
   }

@@ -4,14 +4,28 @@
 \alias{preGUI}
 \title{Prepare files needed by the GUI}
 \usage{
-preGUI(appName = "rodeoGUI", dirRodeo = "./rodeo",
+preGUI(appName = "rodeoGUI", vars = "vars.txt", pars = "pars.txt",
+  funs = "funs.txt", pros = "pros.txt", stoi = "stoi.txt",
+  sourcesR = "functions.r", sourcesF = "functions.f95",
   dirScenarios = "./scenarios", dirIntro = "./intro", colsep = "\\t",
   useTemp = TRUE)
 }
 \arguments{
 \item{appName}{Application name displayed in top left corner of GUI.}
 
-\item{dirRodeo}{Directory containing the model definition. See notes.}
+\item{vars}{Input table.}
+
+\item{pars}{Input table.}
+
+\item{funs}{Input table.}
+
+\item{pros}{Input table.}
+
+\item{stoi}{Input table.}
+
+\item{sourcesR}{R source files.}
+
+\item{sourcesF}{Fortran source files.}
 
 \item{dirScenarios}{Directory containing scenario definitions. See notes.}
 
@@ -40,15 +54,7 @@ Prepare files needed to run a rodeo-based model in the shiny GUI.
 Detailed help text still missing.
 }
 \examples{
-\dontrun{
-library(rodeoGUI)
-preGUI(
-  dirRodeo=system.file("examples/tank2/rodeo", package="rodeoGUI"),
-  dirScenarios=system.file("examples/tank2/scenarios", package="rodeoGUI"),
-  dirIntro=system.file("examples/tank2/intro", package="rodeoGUI"),
-  colsep="\\t"
-)
-}
+# see 'runGUI'
 }
 \author{
 David Kneis \email{david.kneis@tu-dresden.de}

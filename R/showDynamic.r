@@ -21,20 +21,20 @@
 showDynamic <- function (sim, prm, lang) {
   out <- NULL
   for (item in dimnames(sim)[[2]]) {
-    content <- svgstring(width=8, height=6, standalone=FALSE)
+    content <- svglite::svgstring(width=8, height=6, standalone=FALSE)
       # cut out array slice as matrix (drop=FALSE doesn't help here)
       x <- matrix(sim[,item,], nrow=dim(sim)[1], ncol=dim(sim)[3],
         dimnames=list(dimnames(sim)[[1]], dimnames(sim)[[3]]))
-      clr <- colorRampPalette(c("royalblue4", "seagreen", "darkred"))(ncol(x))
-      omar <- par("mar")
-      par(mar=c(4.5,3,1,1))
+      clr <- grDevices::colorRampPalette(c("royalblue4", "seagreen", "darkred"))(ncol(x))
+      omar <- graphics::par("mar")
+      graphics::par(mar=c(4.5,3,1,1))
       xlab <- if (lang == "EN") "Time" else if (lang == "DE") "Zeit" else "t"
-      matplot(as.numeric(rownames(x)), x[,1:ncol(x)], bty="L", type="l",
+      graphics::matplot(as.numeric(rownames(x)), x[,1:ncol(x)], bty="L", type="l",
         lty=1:ncol(x), col=clr, xlab=xlab, ylab="")
-      legend("right", bty="n", horiz=FALSE, lty=1:ncol(x), col=clr,
+      graphics::legend("right", bty="n", horiz=FALSE, lty=1:ncol(x), col=clr,
         legend=colnames(x))
-      par(mar=omar)
-    dev.off()
+      graphics::par(mar=omar)
+    grDevices::dev.off()
     out <- rbind(out,
       data.frame(label=item, content=as.character(content()), stringsAsFactors=FALSE))
   }

@@ -3,7 +3,13 @@
 #' Prepare files needed to run a rodeo-based model in the shiny GUI.
 #'
 #' @param appName Application name displayed in top left corner of GUI.
-#' @param dirRodeo Directory containing the model definition. See notes.
+#' @param vars Input table.
+#' @param pars Input table.
+#' @param funs Input table.
+#' @param pros Input table.
+#' @param stoi Input table.
+#' @param sourcesR R source files.
+#' @param sourcesF Fortran source files.
 #' @param dirScenarios Directory containing scenario definitions. See notes.
 #' @param dirIntro Directory containing material for the
 #'   model's introduction pages. See notes.
@@ -27,68 +33,51 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' library(rodeoGUI)
-#' preGUI(
-#'   dirRodeo=system.file("examples/tank2/rodeo", package="rodeoGUI"),
-#'   dirScenarios=system.file("examples/tank2/scenarios", package="rodeoGUI"),
-#'   dirIntro=system.file("examples/tank2/intro", package="rodeoGUI"),
-#'   colsep="\t"
-#' )
-#' }
+#' # see 'runGUI'
 
 preGUI <- function(
   appName = "rodeoGUI",
-  dirRodeo = "./rodeo",
+  vars = "vars.txt",
+  pars = "pars.txt",
+  funs = "funs.txt",
+  pros = "pros.txt",
+  stoi = "stoi.txt",
+  sourcesR = "functions.r",
+  sourcesF = "functions.f95",
   dirScenarios = "./scenarios",
   dirIntro = "./intro",
   colsep="\t",
   useTemp = TRUE
 ) {
 
-  # Set/check file names
-  chkDir <- function(d) {
-    d <- gsub(pattern="\\", replacement="/", x=suppressWarnings(normalizePath(d)), fixed=TRUE)
-    if (!dir.exists(d))
-      stop(paste0("directory '",d,"' does not exist"))
-    d
-  }
-  dirRodeo <- chkDir(dirRodeo)
-  dirScenarios <- chkDir(dirScenarios)
-  dirIntro <- chkDir(dirIntro)
-
   # Function to read delimited text files
   rd <- function(f, ...) {
     if (!file.exists(f))
-      stop("input table '",f,"' not found")
+      stop("input file '",f,"' not found")
     utils::read.table(file=f, header=TRUE, sep=colsep, ...)
   }
 
-  # Set file names
-  vars <- paste0(dirRodeo, "/vars.txt")
-  pars <- paste0(dirRodeo, "/pars.txt")
-  funs <- paste0(dirRodeo, "/funs.txt")
-  pros <- paste0(dirRodeo, "/pros.txt")
-  stoi <- paste0(dirRodeo, "/stoi.txt")
-  funsR <- paste0(dirRodeo, "/functions.r")
-  funsF <- list.files(path=dirRodeo, pattern=".+[.]f95$", full.names=TRUE)
-
   # Check existence of function definitions
-  if (length(funsR) == 0)
-    stop("no file with R functions supplied, need a dummy file at least")
-  if (!file.exists(funsR))
-    stop("file with function definitions in R not found ('",funsR,"')")
-  rCode <- paste(readLines(funsR), collapse="\n")
+  if (length(sourcesR) == 0)
+    stop("no R source file supplied, need a dummy file at least")
+  rCode <- ""
+  for (f in sourcesR) {
+    if (!file.exists(f))
+      stop("R source file not found ('",f,"')")
+    rCode <- paste0(rCode, "\n", paste(readLines(f), collapse="\n"))
+  }
   tryCatch({
     parse(text=rCode)
   }, error = function(e) {
-    stop(paste("attempt to parse contents of file '",funsR,"' failed: ",e))
+    stop(paste("attempt to parse code from R source file(s) failed: ",e))
   })
-  if (length(funsF) == 0)
-    stop("no Fortran file supplied, need a dummy file with module 'functions' at least")
-  if (!all(file.exists(funsF)))
-    stop("file(s) with function definitions in Fortran not found ('",
-      paste(funsF, collapse="', "),"')")
+
+  if (length(sourcesF) == 0)
+    stop("no Fortran source file supplied, need a dummy file with module 'functions' at least")
+  for (f in sourcesF) {
+    if (!file.exists(f))
+      stop("Fortran source file not found ('",f,"')")
+  }
 
   # Create object
   model <- rodeo::rodeo$new(
@@ -102,8 +91,20 @@ preGUI <- function(
   } else {
     libFile <- tempfile(pattern="rodeo", tmpdir=".")
   }
-  model$compile(sources=funsF, lib=libFile)
+  model$compile(sources=sourcesF, lib=libFile)
 
+  ##############################################################################
+
+  # Set/check folder names
+  chkDir <- function(d) {
+    d <- gsub(pattern="\\", replacement="/", x=suppressWarnings(normalizePath(d)), fixed=TRUE)
+    if (!dir.exists(d))
+      stop(paste0("directory '",d,"' does not exist"))
+    d
+  }
+  dirScenarios <- chkDir(dirScenarios)
+  dirIntro <- chkDir(dirIntro)
+  
   ##############################################################################
 
   # Read scenario files
@@ -170,7 +171,13 @@ preGUI <- function(
 #' \dontrun{
 #' library(rodeoGUI)
 #' preGUI(
-#'   dirRodeo=system.file("examples/tank2/rodeo", package="rodeoGUI"),
+#'   vars=system.file("examples/tank2/rodeo/vars.txt", package="rodeoGUI"),
+#'   pars=system.file("examples/tank2/rodeo/pars.txt", package="rodeoGUI"),
+#'   funs=system.file("examples/tank2/rodeo/funs.txt", package="rodeoGUI"),
+#'   pros=system.file("examples/tank2/rodeo/pros.txt", package="rodeoGUI"),
+#'   stoi=system.file("examples/tank2/rodeo/stoi.txt", package="rodeoGUI"),
+#'   sourcesR=system.file("examples/tank2/rodeo/functions.r", package="rodeoGUI"),
+#'   sourcesF=system.file("examples/tank2/rodeo/functions.f95", package="rodeoGUI"),
 #'   dirScenarios=system.file("examples/tank2/scenarios", package="rodeoGUI"),
 #'   dirIntro=system.file("examples/tank2/intro", package="rodeoGUI"),
 #'   colsep="\t"
