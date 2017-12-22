@@ -9,6 +9,9 @@ Description: Generic, GUI for rodeo-based models using shiny technology.
 License: GPL (>= 2)
 Imports:
     rodeo,
+    deSolve,
+    rootSolve,
+    reshape2,
     svglite,
     shiny
 RoxygenNote: 6.0.1
