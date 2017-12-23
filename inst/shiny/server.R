@@ -1,4 +1,4 @@
-source("common.R")
+source(system.file("shiny/common.R", package="rodeoGUI"))
 
 shinyServer <- function(input, output) {
 

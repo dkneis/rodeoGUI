@@ -1,4 +1,4 @@
-source("common.R")
+source(system.file("shiny/common.R", package="rodeoGUI"))
 
 styleDefs <- paste0('
   table, th, td {
