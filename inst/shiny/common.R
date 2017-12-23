@@ -1,8 +1,7 @@
 library(rodeo)
-library(rodeoGUI)
+# library(rodeoGUI)  # don't load here as this would prevent function overloading
 library(deSolve)
 library(rootSolve)
-#library(xtable)
 library(reshape2)
 library(svglite)
 
