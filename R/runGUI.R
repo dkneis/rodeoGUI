@@ -97,7 +97,7 @@ preGUI <- function(
 
   # Set/check folder names
   chkDir <- function(d) {
-    d <- gsub(pattern="\\", replacement="/", x=suppressWarnings(normalizePath(d)), fixed=TRUE)
+    d <- gsub(pattern="\\", replacement="/", x=d, fixed=TRUE)
     if (!dir.exists(d))
       stop(paste0("directory '",d,"' does not exist"))
     d
