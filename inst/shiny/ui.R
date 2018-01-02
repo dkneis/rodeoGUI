@@ -26,8 +26,8 @@ styleDefs <- paste0('
   }
 ')
 
-widthSide <- 3
-widthMain <- 9
+widthSide = 3   # width of margin with input elements (1...12)
+widthMain = 9   # width of main display area (1...12)
 
 shinyUI <- fluidPage(
   HTML(paste0("<style>",styleDefs,"</style>")),
@@ -74,69 +74,25 @@ shinyUI <- fluidPage(
   hr(),
 
   ##############################################################################
-  conditionalPanel(
-    condition = "(input.view == 'dyn' || input.view == 'std') && (output.showHelp == false)" ,
-    column(widthSide,
-      uiOutput("uiElem.nScen"),
-      uiOutput("uiElem.scenSpecs"),
-      conditionalPanel(
-        condition = "input.view == 'dyn'",
-        uiOutput("uiElem.tStart"),
-        uiOutput("uiElem.tFinal"),
-        uiOutput("uiElem.tStep"),
-        uiOutput("uiElem.tShow"),
-        uiOutput("uiElem.runDyn")
-      ),
-      conditionalPanel(
-        condition = "input.view == 'std'",
-        uiOutput("uiElem.runStd")
-      )
-    )
-  ),
-  
+  # INPUTS AND OUTPUTS FOR THE USER-SELECTED VIEWS
   ##############################################################################
-  conditionalPanel(
-    condition = "(input.view == 'dyn') && (output.showHelp == false)",
-    column(widthMain,
-      fluidRow(column(8, NULL), column(4, uiOutput("uiElem.itemDyn"))),
-      fluidRow(style="vertical-align:top;", column(12, htmlOutput("resultDyn")))
-    )
-  ),
 
   ##############################################################################
+  # help page for currently selected view
   conditionalPanel(
-    condition = "(input.view == 'std') && (output.showHelp == false)",
-    column(widthMain,
-      fluidRow(column(8, NULL), column(4, uiOutput("uiElem.itemStd"))),
-      fluidRow(column(12, htmlOutput("resultStd")))
-    )
+    condition = "output.showHelp == true",
+    fluidRow(column(12, htmlOutput("helpText")))
   ),
-
   ##############################################################################
-  conditionalPanel(
-    condition = "(input.view == 'eff') && (output.showHelp == false)",
-    column(widthSide,
-      uiOutput("uiElem.effScen"),
-      uiOutput("uiElem.effItem"),
-      uiOutput("uiElem.effValues"),
-      uiOutput("uiElem.effMultiply"),
-      uiOutput("uiElem.runEff")
-    ),
-    column(widthMain,
-      fluidRow(column(8, NULL), column(4, uiOutput("uiElem.itemEff"))),
-      fluidRow(column(12, htmlOutput("resultEff")))
-    )
-  ),
-
-  ##############################################################################
+  # welcome page
   conditionalPanel(
     condition = "(input.view == 'intro') && (output.showHelp == false)",
     fluidRow(
       column(12, uiOutput("intro"))
     )
   ),
-
   ##############################################################################
+  # stoichiometry
   conditionalPanel(
     condition = "(input.view == 'stoi') && (output.showHelp == false)",
     column(widthSide,
@@ -157,45 +113,77 @@ shinyUI <- fluidPage(
       htmlOutput("stoichiometry")
     )
   ),
-
   ##############################################################################
+  # processes
   conditionalPanel(
     condition = "(input.view == 'pros') && (output.showHelp == false)",
     uiOutput("uiElem.prosVar"),
     uiOutput("uiElem.prosHide"),
     htmlOutput("processes")
   ),
-  
   ##############################################################################
+  # functions
   conditionalPanel(
     condition = "(input.view == 'funs') && (output.showHelp == false)",
     htmlOutput("functions")
   ),
-
   ##############################################################################
+  # scenario descriptions
   conditionalPanel(
     condition = "(input.view == 'scenDesc') && (output.showHelp == false)",
     fluidRow(column(12, htmlOutput("scenShowDesc")))
   ),
-
-    ##############################################################################
+  ##############################################################################
+  # state variables
   conditionalPanel(
     condition = "(input.view == 'scenVars') && (output.showHelp == false)",
     fluidRow(column(12, htmlOutput("scenShowVars")))
   ),
-
   ##############################################################################
+  # parameters
   conditionalPanel(
     condition = "(input.view == 'scenPars') && (output.showHelp == false)",
     fluidRow(column(12, htmlOutput("scenShowPars")))
   ),
+  ##############################################################################
+  # simulation inputs
+  conditionalPanel(
+    condition = "(input.view == 'dyn' || input.view == 'std') && (output.showHelp == false)" ,
+    column(widthSide,
+      uiOutput("uiElem.nScen"),
+      uiOutput("uiElem.scenSpecs"),
+      conditionalPanel(
+        condition = "input.view == 'dyn'",
+        uiOutput("uiElem.tStart"),
+        uiOutput("uiElem.tFinal"),
+        uiOutput("uiElem.tStep"),
+        uiOutput("uiElem.tShow"),
+        uiOutput("uiElem.runDyn")
+      ),
+      conditionalPanel(
+        condition = "input.view == 'std'",
+        uiOutput("uiElem.runStd")
+      )
+    )
+  ),
+  ##############################################################################
+  # dynamic simulation outputs
+  conditionalPanel(
+    condition = "(input.view == 'dyn') && (output.showHelp == false)",
+    column(widthMain,
+      fluidRow(column(8, NULL), column(4, uiOutput("uiElem.itemDyn"))),
+      fluidRow(style="vertical-align:top;", column(12, htmlOutput("resultDyn")))
+    )
+  ),
 
   ##############################################################################
-  # Show help page for the currently selected view
+  # steady-state simulation outputs
   conditionalPanel(
-    condition = "output.showHelp == true",
-    fluidRow(column(12, htmlOutput("helpText")))
+    condition = "(input.view == 'std') && (output.showHelp == false)",
+    column(widthMain,
+      fluidRow(column(8, NULL), column(4, uiOutput("uiElem.itemStd"))),
+      fluidRow(column(12, htmlOutput("resultStd")))
+    )
   )
   
-
 )

@@ -31,8 +31,8 @@ shinyServer <- function(input, output) {
         translate[c("introduction","processes","stoichiometry","functions"),input$language]),
       scenarios= setNames(c("scenDesc","scenPars","scenVars"),
         translate[c("description","parameters","initialValues"),input$language]),
-      simulation= setNames(c("dyn","std","eff"),
-        translate[c("dynamics", "steadystate", "effectOnSteadyState"),input$language])
+      simulation= setNames(c("dyn","std"),
+        translate[c("dynamics", "steadystate"),input$language])
     )
     for (n in names(lst))
       names(lst)[names(lst)==n] <- translate[n,input$language]
@@ -83,7 +83,8 @@ shinyServer <- function(input, output) {
 
   # Generate input fields for number of scenarios in dynamic/steady comp.
   output$uiElem.nScen <- renderUI({ tagList(numericInput(inputId='nScen',
-    label=translate["numberOfScenarios",input$language], value=1, min=1, max=3, step=1)) })
+    label=translate["numberOfScenarios",input$language], value=1, min=1,
+    max=XDATA$maxNumberOfScenarios, step=1)) })
 
   # Generate input fields for scenarios in dynamic/steady comp.
   output$uiElem.scenSpecs <- renderUI({
@@ -109,13 +110,13 @@ shinyServer <- function(input, output) {
 
   # Time control
   output$uiElem.tStart <- renderUI({ tagList(textInput(inputId='tStart',
-    label=translate["tStart",input$language], value=0)) })
+    label=translate["tStart",input$language], value=XDATA$tStart)) })
   output$uiElem.tFinal <- renderUI({ tagList(textInput(inputId='tFinal',
-    label=translate["tFinal",input$language], value=10))})
+    label=translate["tFinal",input$language], value=XDATA$tFinal))})
   output$uiElem.tStep <- renderUI({ tagList(textInput(inputId='tStep',
-    label=translate["tStep",input$language], value=.1)) })
+    label=translate["tStep",input$language], value=XDATA$tStep)) })
   output$uiElem.tShow <- renderUI({ tagList(textInput(inputId='tShow',
-    label=translate["tShow",input$language], value=0)) })
+    label=translate["tShow",input$language], value=XDATA$tShow)) })
   # Item to be displayed
   output$uiElem.itemDyn <- renderUI({
     tagList(selectInput(inputId="itemDyn",
@@ -147,35 +148,6 @@ shinyServer <- function(input, output) {
   })
 
   ##############################################################################
-  # CONTROLS FOR EFFECT ANALYSIS
-  ##############################################################################
-  
-  # Scenario, varied item, list of values
-  output$uiElem.effScen <- renderUI({ tagList(selectInput(inputId="effScen",
-    label=translate["scenario",input$language], multiple=FALSE,
-    choices=setNames(rownames(XDATA$scenTitles),XDATA$scenTitles[,input$language]),
-    selected=rownames(XDATA$scenTitles)[1], selectize=FALSE)) })
-  output$uiElem.effItem <- renderUI({ tagList(selectInput(inputId="effItem",
-    label=translate["variedItem",input$language], multiple=FALSE,
-    choices=c(XDATA$model$namesPars(), XDATA$model$namesVars()),
-    selected=XDATA$model$namesPars()[1], selectize=FALSE)) })
-  output$uiElem.effValues <- renderUI({ tagList(textInput(inputId="effValues",
-    label=translate["values",input$language], value="0.5, 1, 2")) })
-  output$uiElem.effMultiply <- renderUI({ tagList(checkboxInput(inputId="effMultiply",
-    label=translate["useAsMultipliers",input$language], value=TRUE)) })
-  # Item to be displayed
-  output$uiElem.itemEff <- renderUI({
-    tagList(selectInput(inputId="itemEff",
-      label=NULL, multiple=FALSE,
-      choices=if(is.data.frame(sim[["eff"]])) sim[["eff"]][,"label"] else "?",
-      selected=lastShown[["eff"]], selectize=FALSE))
-  })
-  # Run button
-  output$uiElem.runEff <- renderUI({ tagList( actionButton(inputId="runEff",
-    translate["run",input$language],
-    style=paste0("color: white; background-color: ",guiBlue(dark=TRUE)))) })
-  
-  ##############################################################################
   # CONTROLS TO SHOW/HIDE HELP
   ##############################################################################
   
@@ -203,12 +175,16 @@ shinyServer <- function(input, output) {
   ##############################################################################
 
   ##############################################################################
-  # Compute / invalidate model outputs
+  # Initialize model outputs
   ##############################################################################
 
-  # Initialize model outputs
-  sim <- reactiveValues(dyn=NULL, std=NULL, eff=NULL)
-  # Update model outputs when run button was pressed
+  sim <- reactiveValues(dyn=NULL, std=NULL)
+  up2date <- reactiveValues(dyn=FALSE, std=FALSE)
+
+  ##############################################################################
+  # Update model outputs when run buttons were pressed
+  ##############################################################################
+
   observeEvent(input$runDyn, {
     tryCatch({
       sim[["dyn"]] <- computeDynamic()
@@ -219,21 +195,23 @@ shinyServer <- function(input, output) {
       sim[["std"]] <- computeSteady()
       up2date[["std"]] <- TRUE
     }, error = function(e) { sim[["std"]] <- as.character(e) }) })
-  observeEvent(input$runEff, {
-    tryCatch({
-      sim[["eff"]] <- computeEffect()
-      up2date[["eff"]] <- TRUE
-    },
-    error = function(e) { sim[["eff"]] <- as.character(e) }) })
 
-  # Detect whether results need update
-  up2date <- reactiveValues(dyn=FALSE, std=FALSE, eff=FALSE)
+  ##############################################################################
+  # Invalidate results if inputs were changed
+  ##############################################################################
+
+  # NOTE: We query the inputs for more scenarios than the user can actually
+  #       select, just to be on the save side when the upper limit is changed
+  #       somewhere else in the code. There seems to be no simple way to make
+  #       this code dynamic (TODO: check whether the issue can be solved using
+  #       the leading dot with 'reactiveValuesToList').
+
+  if (XDATA$maxNumberOfScenarios > 6) {
+    stop("max. number of scenarios passed via XDATA cannot be handled by current code")
+    # Note: Code in rodeoGUI::preGUI() should make sure that this message never appears
+  }
   
-  # Dynamics: Invalidate outputs if inputs were changed
-  up2date_dyn <- reactive({
-    # THIS IS A WORKAROUND: TO BE ON THE SAVE SIDE, WE QUERY THE SETTINGS FOR
-    # MORE SCENARIOS THAN THE USER CAN ACTUALLY SELECT;
-    # possibly one can use the leading dot with reactiveValuesToList
+  invalidate_dyn <- reactive({
     c(input$language,
       input$nScen,
       input$scenDefaultId.1,input$scenDefaultId.2,input$scenDefaultId.3,
@@ -246,13 +224,9 @@ shinyServer <- function(input, output) {
       input$tShow
     )
   })
-  observeEvent(up2date_dyn(), { up2date[["dyn"]] <- FALSE })
+  observeEvent(invalidate_dyn(), { up2date[["dyn"]] <- FALSE })
 
-  # Dynamics: Invalidate outputs if inputs were changed
-  up2date_std <- reactive({
-    # THIS IS A WORKAROUND: TO BE ON THE SAVE SIDE, WE QUERY THE SETTINGS FOR
-    # MORE SCENARIOS THAN THE USER CAN ACTUALLY SELECT;
-    # possibly one can use the leading dot with reactiveValuesToList
+  invalidate_std <- reactive({
     c(input$language,
       input$nScen,
       input$scenDefaultId.1,input$scenDefaultId.2,input$scenDefaultId.3,
@@ -261,37 +235,40 @@ shinyServer <- function(input, output) {
       input$scenEdits.4,input$scenEdits.5,input$scenEdits.6
     )
   })
-  observeEvent(up2date_std(), { up2date[["std"]] <- FALSE })
-  
-  # Effect analysis: Invalidate outputs if inputs were changed
-  up2date_eff <- reactive({
-    c(input$language,
-      input$effScen,
-      input$effItem,
-      input$effValues,
-      input$effMultiply
-    )
-  })
-  observeEvent(up2date_eff(), { up2date[["eff"]] <- FALSE })
+  observeEvent(invalidate_std(), { up2date[["std"]] <- FALSE })
   
   ##############################################################################
   # Remember last item selected for plotting
   ##############################################################################
   
-  lastShown <- reactiveValues(dyn=NULL, std=NULL, eff=NULL)
+  lastShown <- reactiveValues(dyn=NULL, std=NULL)
   observeEvent(input$itemDyn, { if (input$itemDyn != "?") lastShown[["dyn"]] <- input$itemDyn })
   observeEvent(input$itemStd, { if (input$itemStd != "?") lastShown[["std"]] <- input$itemStd })
-  observeEvent(input$itemEff, { if (input$itemEff != "?") lastShown[["eff"]] <- input$itemEff })
 
   ##############################################################################
-  # Dynamic computation / results
+  # Dynamic simulation
   ##############################################################################
-  
-  # Compute dynamics when button was pressed
+
+  # Computation  
   computeDynamic <- function() {
     dyn.load(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- NULL
     prm <- NULL
+    # get time settings
+    tryCatch({
+      t0 <- as.numeric(input$tStart)
+      t1 <- as.numeric(input$tFinal)
+      dt <-as.numeric(input$tStep)
+      stopifnot(t1 > t0)
+      stopifnot(dt > 0)
+      times <- seq(from=t0, to=t1, by=dt)
+    }, error = function(e) {
+      stop(paste0(translate["invalidVectorOfTimes",input$language],"."))
+    })
+    if ((length(times) - 1) > XDATA$maxNumberOfTimeSteps)
+      stop(paste0(translate["numberOfTimeStepsExceedsLimitOf",input$language],
+        " ",XDATA$maxNumberOfTimeSteps,"."))
+    # process scenarios
     for (is in 1:input$nScen) {
       # get inputs for current scenario
       inp <- reactiveValuesToList(input)
@@ -304,16 +281,6 @@ shinyServer <- function(input, output) {
         stop(paste0(e, "\n", translate["failedToSetModelInputsForScenario",input$language]," ",is,"."))
       })
       # run model
-      tryCatch({
-        t0 <- as.numeric(input$tStart)
-        t1 <- as.numeric(input$tFinal)
-        dt <-as.numeric(input$tStep)
-        stopifnot(t1 > t0)
-        stopifnot(dt > 0)
-        times <- seq(from=t0, to=t1, by=dt)
-      }, error = function(e) {
-        stop(paste0(translate["invalidVectorOfTimes",input$language],"."))
-      })
       tryCatch({
         this <- deSolve::ode(y=XDATA$model$getVars(), parms=XDATA$model$getPars(),
           times=times,
@@ -344,7 +311,7 @@ shinyServer <- function(input, output) {
     showDynamic(out, prm, input$language)
   }
 
-  # Render dynamic results
+  # Presentation
   resultDyn <- function(item) {
     if (is.null(sim[["dyn"]])) {
       out <- framedMessage(translate["needsUpdate",input$language])
@@ -361,14 +328,15 @@ shinyServer <- function(input, output) {
   output$resultDyn <- renderText({ resultDyn(item=input$itemDyn) })
 
   ##############################################################################
-  # Steady state computation / results
+  # Steady state simulation
   ##############################################################################
   
-  # Compute steady state when button was pressed
+  # Computation
   computeSteady <- function() {
     dyn.load(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- NULL
     prm <- NULL
+    # process scenarios
     for (is in 1:input$nScen) {
       # get inputs for current scenario
       inp <- reactiveValuesToList(input)
@@ -408,7 +376,7 @@ shinyServer <- function(input, output) {
     showSteady(out, prm, input$language)
   }
   
-  # Render steady state results
+  # Presentation
   resultStd <- function(item) {
     if (is.null(sim[["std"]])) {
       out <- framedMessage(translate["needsUpdate",input$language])
@@ -424,72 +392,6 @@ shinyServer <- function(input, output) {
   }
   output$resultStd <- renderText({ resultStd(item=input$itemStd) })
 
-  ##############################################################################
-  # Single-effect computation / results
-  ##############################################################################
-  
-  # Compute effect of parameter on steady state when button was pressed
-  computeEffect <- function() {
-    dyn.load(paste0(XDATA$lib, .Platform$dynlib.ext))
-    out <- NULL
-    tryCatch({
-      values <- strsplit(input$effValues, split=",", fixed=TRUE)[[1]]
-      stopifnot(length(values) >= 1)
-      values <- as.numeric(values)
-      stopifnot(all(is.finite(values)))
-      if (input$effMultiply) {
-        values <- values * eval(parse(text=XDATA$scenDefaults[input$effItem, input$effScen]))
-      }
-    }, error = function(e) {
-      stop(paste0(translate["invalidUserInput",input$language],": '",input$effValues,
-        "'. ",translate["expectingUnnamedVector",input$language]))
-    })
-    for (i in 1:length(values)) {
-      # get inputs for current scenario
-      inp <- reactiveValuesToList(input)
-      updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
-        scenDefaultId=input$effScen,
-        scenEdits=paste0(input$effItem,"=",values[i]),
-        lang=input$language)
-      # run model
-      tryCatch({
-        this <- rootSolve::runsteady(y=XDATA$model$getVars(), times=c(0,Inf), func=XDATA$model$libFunc(),
-          parms=XDATA$model$getPars(), dllname=basename(XDATA$lib),
-          nout=XDATA$model$lenPros(),       # works for 0D model only
-          outnames=XDATA$model$namesPros()  # works for 0D model only
-        )
-      }, error = function(e) {
-        stop(paste0(translate["failedToComputeSolutionFor",input$language]," ",input$effItem,"=",values[i],"."))
-      })
-      if (!attr(this, "steady")) {
-        this <- rep(NA,length(this$y)+length(this[[2]]))
-      } else {
-        this <- signif(c(this$y, this[[2]]), 3)
-      }
-      # add to results
-      out <- cbind(out, this)
-      colnames(out)[ncol(out)] <- as.character(values[i])
-    }
-    dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
-    rownames(out) <- c(XDATA$model$namesVars(), XDATA$model$namesPros())
-    showEffect(out, input$language)
-  }
-
-  # Render effect results
-  resultEff <- function(item) {
-    if (is.null(sim[["eff"]])) {
-      out <- framedMessage(translate["needsUpdate",input$language])
-    } else if (is.character(sim[["eff"]])) {
-      validate(lastErrMsg())
-    } else {
-      row <- match(item, sim[["eff"]][,"label"])
-      out <- sim[["eff"]][row, "content"]
-      if (!up2date[["eff"]])
-        out <- paste0(framedMessage(translate["needsUpdate",input$language]), out)
-    }
-    out
-  }
-  output$resultEff <- renderText({ resultEff(item=input$itemEff) })
 
   ##############################################################################
   # Intro page
@@ -565,10 +467,12 @@ shinyServer <- function(input, output) {
   ##############################################################################
   
   output$scenShowVars <- renderText({
-    scenDescrTable(XDATA$scenTitles, XDATA$scenDefaults, XDATA$model, lang=input$language, what="variable")
+    scenDescrTable(XDATA$scenTitles, XDATA$scenDefaults, XDATA$model,
+      lang=input$language, what="variable")
   })
   output$scenShowPars <- renderText({
-    scenDescrTable(XDATA$scenTitles, XDATA$scenDefaults, XDATA$model, lang=input$language, what="parameter")
+    scenDescrTable(XDATA$scenTitles, XDATA$scenDefaults, XDATA$model,
+      lang=input$language, what="parameter")
   })
   
   ##############################################################################

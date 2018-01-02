@@ -18,6 +18,16 @@
 #'   the session's temporary folder. If \code{FALSE}, the files are creared in
 #'   the current working directory (which is rarely useful if the GUI is to be
 #'   run on the local machine).
+#' @param maxNumberOfScenarios Maximum number of scenarios that can be active
+#'   at a time. Reasonable values are between 2 and 4.
+#' @param maxNumberOfTimeSteps Maximum allowed number of time steps in
+#'   dynamic simulations. The chosen value should take into account the
+#'   resources of the machine as well as the number of parallel sessions in a
+#'   multi-user environment.
+#' @param tStart Start of dynamic simulation period. Default value.
+#' @param tFinal End of dynamic simulation period. Default value.
+#' @param tStep Time step for dynamic simulation. Default value.
+#' @param tShow Time after which dynamic results are displayed. Default value.
 #'
 #' @return The function does not return anything but it creates two files in the
 #'   current working directory. The first file with the fixed name
@@ -47,7 +57,13 @@ preGUI <- function(
   dirScenarios = "./scenarios",
   dirIntro = "./intro",
   colsep="\t",
-  useTemp = TRUE
+  useTemp = TRUE,
+  maxNumberOfScenarios= 3,
+  maxNumberOfTimeSteps= 10000,
+  tStart= 0,
+  tFinal= 10,
+  tStep= 0.1,
+  tShow= 0
 ) {
 
   # Function to read delimited text files
@@ -121,9 +137,38 @@ preGUI <- function(
   # Check contents of scenario files
   if (!identical(sort(rownames(scenTitles)), sort(rownames(scenDescriptions))) || 
     !identical(sort(colnames(scenTitles)), sort(colnames(scenDescriptions))))
-    stop("Matrix of scenario titles doesn't match with matrix of scenario descriptions")
+    stop("matrix of scenario titles doesn't match with matrix of scenario descriptions")
   if (!identical(sort(rownames(scenTitles)), sort(colnames(scenDefaults))))
-    stop("Matrix of scenario titles doesn't match with matrix of scenario default values")
+    stop("matrix of scenario titles doesn't match with matrix of scenario default values")
+
+  # Check user-specified limits
+  tryCatch({
+    maxNumberOfScenarios <- as.integer(maxNumberOfScenarios)
+    stopifnot(maxNumberOfScenarios > 0)
+    stopifnot(maxNumberOfScenarios < 6)
+  }, error = function(x) {
+    stop("max. number of scenarios is invalid or outside reasonable range")
+  })
+  tryCatch({
+    maxNumberOfTimeSteps <- as.integer(maxNumberOfTimeSteps)
+    stopifnot(maxNumberOfTimeSteps > 0)
+    stopifnot(maxNumberOfTimeSteps <= 1e7)
+  }, error = function(x) {
+    stop("max. number of time steps is invalid or outside reasonable range")
+  })
+
+  # Check user-specified time settings
+  tryCatch({
+    tStart <- as.numeric(tStart)
+    tFinal <- as.numeric(tFinal)
+    tStep <- as.numeric(tStep)
+    tShow <- as.numeric(tShow)
+    stopifnot(tStart < tFinal)
+    stopifnot(length(seq(from=tStart, to=tFinal, by=tStep)) >= 2)
+    stopifnot((tShow >= tStart) && (tShow < tFinal))
+  }, error = function(x) {
+    stop("bad specification of dynamic simulation period")
+  })
 
   ##############################################################################
   
@@ -136,7 +181,13 @@ preGUI <- function(
     dirIntro= dirIntro,
     scenTitles= scenTitles,
     scenDescriptions= scenDescriptions,
-    scenDefaults= scenDefaults
+    scenDefaults= scenDefaults,
+    maxNumberOfScenarios= maxNumberOfScenarios,
+    maxNumberOfTimeSteps= maxNumberOfTimeSteps,
+    tStart= tStart,
+    tFinal= tFinal,
+    tStep= tStep,
+    tShow= tShow
   )
 
   # NOTE: File name must be consistent with path at top of 'global.R'

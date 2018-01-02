@@ -8,7 +8,8 @@ preGUI(appName = "rodeoGUI", vars = "vars.txt", pars = "pars.txt",
   funs = "funs.txt", pros = "pros.txt", stoi = "stoi.txt",
   sourcesR = "functions.r", sourcesF = "functions.f95",
   dirScenarios = "./scenarios", dirIntro = "./intro", colsep = "\\t",
-  useTemp = TRUE)
+  useTemp = TRUE, maxNumberOfScenarios = 3, maxNumberOfTimeSteps = 10000,
+  tStart = 0, tFinal = 10, tStep = 0.1, tShow = 0)
 }
 \arguments{
 \item{appName}{Application name displayed in top left corner of GUI.}
@@ -38,6 +39,22 @@ model's introduction pages. See notes.}
 the session's temporary folder. If \code{FALSE}, the files are creared in
 the current working directory (which is rarely useful if the GUI is to be
 run on the local machine).}
+
+\item{maxNumberOfScenarios}{Maximum number of scenarios that can be active
+at a time. Reasonable values are between 2 and 4.}
+
+\item{maxNumberOfTimeSteps}{Maximum allowed number of time steps in
+dynamic simulations. The chosen value should take into account the
+resources of the machine as well as the number of parallel sessions in a
+multi-user environment.}
+
+\item{tStart}{Start of dynamic simulation period. Default value.}
+
+\item{tFinal}{End of dynamic simulation period. Default value.}
+
+\item{tStep}{Time step for dynamic simulation. Default value.}
+
+\item{tShow}{Time after which dynamic results are displayed. Default value.}
 }
 \value{
 The function does not return anything but it creates two files in the

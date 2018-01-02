@@ -34,12 +34,9 @@ translate <- rbind(
     DE="Wertzuweisung nicht möglich da Parameter oder Variable unbekannt"),
   description = c(EN="Description", DE="Beschreibung"),
   dynamics = c(EN="Dynamics", DE="Dynamik"),
-  effectOnSteadyState = c(EN="Effect on steady st.", DE="Effekt auf Gleichgew."),
   everything = c(EN="Everything", DE="Alles"),
   expectingNamedVector = c(EN="Expecting assignment statement like 'pi = 3.1415' or a comma delimited list of such statements",
                            DE="Erwarte Zuweisung der Form 'pi = 3.1415' oder eine durch Komma getrennte Liste solcher Zuweisungen"),
-  expectingUnnamedVector = c(EN="Expecting a comma delimited list of numeric values",
-                           DE="Erwarte eine durch Komma getrennte Liste numerischer Werte"),
   expression = c(EN="Expression", DE="Ausdruck"),
   factor = c(EN="Factor", DE="Faktor"),
   failedToSetModelInputsForScenario = c(EN="Failed to set input values for scenario", DE="Fehler beim Setzen der Eingangsdaten für Szenario"),
@@ -58,6 +55,8 @@ translate <- rbind(
   needsUpdate = c(EN="Press the 'Compute' button to update results!",
     DE="Drücke 'Berechnen' um das Ergebnis zu aktualisieren!"),
   numberOfScenarios = c(EN="Number of scenarios", DE="Anzahl Szenarios"),
+  numberOfTimeStepsExceedsLimitOf = c(EN="Number of time steps exceeds upper limit of",
+    DE="Anzahl der Zeitschritte überschreitet Obergrenze von"),
   overview = c(EN="Overview", DE="Übersicht"),
   parameter = c(EN="Parameter", DE="Parameter"),
   parameters = c(EN="Parameters", DE="Parameter"),
@@ -83,12 +82,9 @@ translate <- rbind(
   tStep = c(EN="Time step", DE="Zeitschritt"),
   tShow = c(EN="Display from", DE="Zeige ab"),
   unit = c(EN="Unit", DE="Einheit"),
-  useAsMultipliers = c(EN="Multiply with default", DE="Multipliziere mit Standard"),
   usesTheRPackages = c(EN="uses the R-packages", DE="nutzt die R-Pakete"),
-  values = c(EN="Values", DE="Werte"),
   variable = c(EN="Variable", DE="Variable"),
-  variables = c(EN="Variables", DE="Variablen"),
-  variedItem = c(EN="Varied item", DE="Variierte Größe")
+  variables = c(EN="Variables", DE="Variablen")
 )
 
 ########################################################################
@@ -320,6 +316,5 @@ help <- rbind(
   scenVars= sapply(langs, readHelp, "tableOfVariables"),
   scenPars= sapply(langs, readHelp, "tableOfParameters"),
   dyn= sapply(langs, readHelp, c("defineScenarios","startComputation","detailsDynamic")),
-  std= sapply(langs, readHelp, c("defineScenarios","startComputation","detailsSteady")),
-  eff= sapply(langs, readHelp, "effects")
+  std= sapply(langs, readHelp, c("defineScenarios","startComputation","detailsSteady"))
 )
