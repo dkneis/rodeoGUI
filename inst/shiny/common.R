@@ -68,6 +68,8 @@ translate <- rbind(
   process = c(EN="Process", DE="Prozess"),
   processes = c(EN="Processes", DE="Prozesse"),
   run = c(EN="Compute", DE="Berechnen"),
+  runningDynamicSimulation = c(EN="Computing dynamics", DE="Berechne Dynamik"),
+  runningSteadySimulation = c(EN="Computing steady state", DE="Berechne Gleichgewicht"),
   scenario = c(EN="Scenario", DE="Szenario"),
   scenarios = c(EN="Scenarios", DE="Szenarios"),
   scenarioModifications = c(EN="Overwrite parameters (optional)",   DE="Überschreibe Parameter (optional)"),

@@ -270,37 +270,43 @@ shinyServer <- function(input, output) {
       stop(paste0(translate["numberOfTimeStepsExceedsLimitOf",input$language],
         " ",XDATA$maxNumberOfTimeSteps,"."))
     # process scenarios
-    for (is in 1:input$nScen) {
-      # get inputs for current scenario
-      inp <- reactiveValuesToList(input)
-      tryCatch({
-        updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
-          scenDefaultId=inp[[paste0("scenDefaultId.",is)]],
-          scenEdits=inp[[paste0("scenEdits.",is)]],
-          lang=input$language)
-      }, error = function(e) {
-        stop(paste0(e, "\n", translate["failedToSetModelInputsForScenario",input$language]," ",is,"."))
-      })
-      # run model
-      tryCatch({
-        this <- deSolve::ode(y=XDATA$model$getVars(), parms=XDATA$model$getPars(),
-          times=times,
-          hmax=as.numeric(input$tStep),
-          func=XDATA$model$libFunc(),
-          dllname=basename(XDATA$lib),
-          nout=XDATA$model$lenPros(),          # works for 0D model only
-          outnames=XDATA$model$namesPros()     # works for 0D model only
-        )
-      }, error = function(e) {
-        stop(paste0(translate["failedToComputeSolutionFor",input$language]," ",
-          translate["scenario",input$language]," ",is,"."))
-      })
-      this <- cbind(scenario=rep(is, nrow(this)) ,this)
-      # add to results of other scenarios
-      out <- rbind(out, this)
-      prm <- cbind(prm, XDATA$model$getPars())
-      colnames(prm)[ncol(prm)] <- paste(translate["scenario",input$language],is)
-    }
+    withProgress(message=translate["runningDynamicSimulation",input$language], value = 0, {
+      for (is in 1:input$nScen) {
+        incProgress(1/input$nScen, detail = paste(translate["scenario",input$language], is))
+        # get inputs for current scenario
+        inp <- reactiveValuesToList(input)
+        tryCatch({
+          updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
+            scenDefaultId=inp[[paste0("scenDefaultId.",is)]],
+            scenEdits=inp[[paste0("scenEdits.",is)]],
+            lang=input$language)
+        }, error = function(e) {
+          stop(paste0(e, "\n", translate["failedToSetModelInputsForScenario",input$language]," ",is,"."))
+        })
+        # run model
+        tryCatch({
+          this <- deSolve::ode(y=XDATA$model$getVars(), parms=XDATA$model$getPars(),
+            times=times,
+            hmax=as.numeric(input$tStep),
+            func=XDATA$model$libFunc(),
+            dllname=basename(XDATA$lib),
+            nout=XDATA$model$lenPros(),          # works for 0D model only
+            outnames=XDATA$model$namesPros()     # works for 0D model only
+          )
+        }, warning = function(x) {
+          stop(paste0(translate["failedToComputeSolutionFor",input$language]," ",
+            translate["scenario",input$language]," ",is,"."))
+        }, error = function(x) {
+          stop(paste0(translate["failedToComputeSolutionFor",input$language]," ",
+            translate["scenario",input$language]," ",is,"."))
+        })
+        this <- cbind(scenario=rep(is, nrow(this)) ,this)
+        # add to results of other scenarios
+        out <- rbind(out, this)
+        prm <- cbind(prm, XDATA$model$getPars())
+        colnames(prm)[ncol(prm)] <- paste(translate["scenario",input$language],is)
+      }
+    })
     dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
     out <- out[out[,"time"] >= min(as.numeric(input$tShow), max(out[,"time"])), ,drop=FALSE]
     # turn into array (dim1 = time, dim2 = variables, dim3 = scenarios)
@@ -338,39 +344,45 @@ shinyServer <- function(input, output) {
     out <- NULL
     prm <- NULL
     # process scenarios
-    for (is in 1:input$nScen) {
-      # get inputs for current scenario
-      inp <- reactiveValuesToList(input)
-      tryCatch({
-        updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
-          scenDefaultId=inp[[paste0("scenDefaultId.",is)]],
-          scenEdits=inp[[paste0("scenEdits.",is)]],
-          lang=input$language)
-      }, error = function(e) {
-        stop(paste0(e, "\n", translate["failedToSetModelInputsForScenario",input$language]," ",is,"."))
-      })
-      # run model
-      tryCatch({
-        this <- rootSolve::runsteady(y=XDATA$model$getVars(), times=c(0,Inf), func=XDATA$model$libFunc(),
-          parms=XDATA$model$getPars(), dllname=basename(XDATA$lib),
-          nout=XDATA$model$lenPros(),       # works for 0D model only
-          outnames=XDATA$model$namesPros()  # works for 0D model only
-        )
-      }, error = function(e) {
-        stop(paste0(translate["failedToComputeSolutionFor",input$language],
-          " ",translate["scenario",input$language]," ",is,"."))
-      })
-      if (!attr(this, "steady")) {
-        this <- rep(NA,length(this$y)+length(this[[2]]))
-      } else {
-        this <- signif(c(this$y, this[[2]]), 3)
+    withProgress(message=translate["runningSteadySimulation",input$language], value = 0, {    
+      for (is in 1:input$nScen) {
+        incProgress(1/input$nScen, detail = paste(translate["scenario",input$language], is))
+        # get inputs for current scenario
+        inp <- reactiveValuesToList(input)
+        tryCatch({
+          updateInputs(XDATA$model, scenDefaults=XDATA$scenDefaults,
+            scenDefaultId=inp[[paste0("scenDefaultId.",is)]],
+            scenEdits=inp[[paste0("scenEdits.",is)]],
+            lang=input$language)
+        }, error = function(e) {
+          stop(paste0(e, "\n", translate["failedToSetModelInputsForScenario",input$language]," ",is,"."))
+        })
+        # run model
+        tryCatch({
+          this <- rootSolve::runsteady(y=XDATA$model$getVars(), times=c(0,Inf), func=XDATA$model$libFunc(),
+            parms=XDATA$model$getPars(), dllname=basename(XDATA$lib),
+            nout=XDATA$model$lenPros(),       # works for 0D model only
+            outnames=XDATA$model$namesPros()  # works for 0D model only
+          )
+        }, warning = function(x) {
+          stop(paste0(translate["failedToComputeSolutionFor",input$language],
+            " ",translate["scenario",input$language]," ",is,"."))
+        }, error = function(x) {
+          stop(paste0(translate["failedToComputeSolutionFor",input$language],
+            " ",translate["scenario",input$language]," ",is,"."))
+        })
+        if (!attr(this, "steady")) {
+          this <- rep(NA,length(this$y)+length(this[[2]]))
+        } else {
+          this <- signif(c(this$y, this[[2]]), 3)
+        }
+        # add to results of other scenarios
+        out <- cbind(out, this)
+        colnames(out)[ncol(out)] <- paste(translate["scenario",input$language],is)
+        prm <- cbind(prm, XDATA$model$getPars())
+        colnames(prm)[ncol(prm)] <- paste(translate["scenario",input$language],is)
       }
-      # add to results of other scenarios
-      out <- cbind(out, this)
-      colnames(out)[ncol(out)] <- paste(translate["scenario",input$language],is)
-      prm <- cbind(prm, XDATA$model$getPars())
-      colnames(prm)[ncol(prm)] <- paste(translate["scenario",input$language],is)
-    }
+    })
     dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
     rownames(out) <- c(XDATA$model$namesVars(), XDATA$model$namesPros())
     rownames(prm) <- XDATA$model$namesPars()
