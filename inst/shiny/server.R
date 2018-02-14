@@ -321,14 +321,14 @@ shinyServer <- function(input, output) {
   # Presentation
   resultDyn <- function(item) {
     if (is.null(sim[["dyn"]])) {
-      out <- framedMessage(translate["needsUpdate",input$language])
+      out <- framedMessage(translate["resultsMissing",input$language])
     } else if (is.character(sim[["dyn"]])) {
       validate(lastErrMsg())
     } else {
       row <- match(item, sim[["dyn"]][,"label"])
       out <- sim[["dyn"]][row, "content"]
       if (!up2date[["dyn"]])
-        out <- paste0(framedMessage(translate["needsUpdate",input$language]), out)
+        out <- paste0(framedMessage(translate["resultsOutdated",input$language]), out)
     }
     out
   }
@@ -392,14 +392,14 @@ shinyServer <- function(input, output) {
   # Presentation
   resultStd <- function(item) {
     if (is.null(sim[["std"]])) {
-      out <- framedMessage(translate["needsUpdate",input$language])
+      out <- framedMessage(translate["resultsMissing",input$language])
     } else if (is.character(sim[["std"]])) {
       validate(lastErrMsg())
     } else {
       row <- match(item, sim[["std"]][,"label"])
       out <- sim[["std"]][row, "content"]
       if (!up2date[["std"]])
-        out <- paste0(framedMessage(translate["needsUpdate",input$language]), out)
+        out <- paste0(framedMessage(translate["resultsOutdated",input$language]), out)
     }
     out
   }
