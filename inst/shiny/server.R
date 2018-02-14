@@ -96,7 +96,8 @@ shinyServer <- function(input, output) {
         "c(",paste(paste0("'",rownames(XDATA$scenTitles),"'"), collapse=","),"),",
         "c(",paste(paste0("'",XDATA$scenTitles[,input$language],"'"), collapse=","),")",
         "), selected='",rownames(XDATA$scenTitles)[min(i, nrow(XDATA$scenTitles))],"', selectize=FALSE),")
-      code <- paste0(code, "textInput(inputId=\'scenEdits.",i,"\', label=NULL, value=\'\')")
+      code <- paste0(code, "textInput(inputId=\'scenEdits.",i,"\', label=NULL,
+        value=\'\', placeholder=\'",translate["scenarioModifications",input$language],"\')")
       if (i < nScen)
         code <- paste0(code, ",")
     }

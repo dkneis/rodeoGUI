@@ -70,6 +70,7 @@ translate <- rbind(
   run = c(EN="Compute", DE="Berechnen"),
   scenario = c(EN="Scenario", DE="Szenario"),
   scenarios = c(EN="Scenarios", DE="Szenarios"),
+  scenarioModifications = c(EN="Overwrite parameters (optional)",   DE="Überschreibe Parameter (optional)"),
   selectByPattern = c(EN="Select by pattern", DE="Selektiere nach Muster"),
   selectView = c(EN="Select view", DE="Ansicht wählen"),
   showStoichiometryFactorFor = c(EN="Show stoichiometric factor for", DE="Zeige Stöchiometriefaktor für"),  
