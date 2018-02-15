@@ -39,7 +39,8 @@ showSteady <- function(sim, prm, lang) {
   tbl <- cbind(rownames(sim), data.frame(sim, check.names=FALSE))
   names(tbl)[1] <- " "
   data.frame(stringsAsFactors=FALSE,
-    label="", content=rodeo::exportDF(tbl,
+    label=if (lang == "EN") "All results" else if (lang == "DE") "Alle Ergebnisse" else "*",
+    content=rodeo::exportDF(tbl,
     align=stats::setNames(c("left", rep("right", ncol(tbl)-1)),names(tbl)),
     tex=FALSE))
 }
