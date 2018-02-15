@@ -172,7 +172,10 @@ shinyUI <- fluidPage(
     condition = "(input.view == 'dyn') && (output.showHelp == false)",
     column(widthMain,
       fluidRow(column(8, NULL), column(4, uiOutput("uiElem.itemDyn"))),
-      fluidRow(style="vertical-align:top;", column(12, htmlOutput("resultDyn")))
+      fluidRow(style="vertical-align:top;", column(12,
+        HTML("<div style='width:650px; margin:auto; float:left;'>"),
+        htmlOutput("resultDyn"),
+        HTML("</div>")))
     )
   ),
 
