@@ -77,6 +77,7 @@ translate <- rbind(
   selectView = c(EN="Select view", DE="Ansicht wählen"),
   showStoichiometryFactorFor = c(EN="Show stoichiometric factor for", DE="Zeige Stöchiometriefaktor für"),  
   simulation = c(EN="Simulation", DE="Simulation"),
+  sortAlphatecically = c(EN="Sort alphabetically", DE="Sortiere alphabetisch"),
   steadystate = c(EN="Steady state", DE="Gleichgewicht"),
   stoichiometry = c(EN="Stoichiometry", DE="Stöchiometrie"),
   time = c(EN="Time", DE="Zeit"),
@@ -236,7 +237,8 @@ funsTable <- function(model, lang) {
 ########################################################################
 # Creates scenario summary table in HTML for chosen item type
 
-scenDescrTable <- function(scenTitles, scenDefaults, model, lang, what=c("variable","parameter")) {
+scenDescrTable <- function(scenTitles, scenDefaults, model, lang,
+  what=c("variable","parameter"), sort=FALSE) {
   if (what == "variable") {
     items <- model$namesVars()
     tbl <- model$getVarsTable()
@@ -260,7 +262,7 @@ scenDescrTable <- function(scenTitles, scenDefaults, model, lang, what=c("variab
     }
   }
   val <- cbind(item=items, val)
-  out <- merge(x=out, y=val, by.x="name", by.y="item")
+  out <- merge(x=out, y=val, by.x="name", by.y="item", sort=sort)
   out <- data.frame(lapply(out, as.character),stringsAsFactors=FALSE)
   names(out)[1] <- translate[what,lang]
   names(out)[2:3] <- c(translate["unit",lang],translate["description",lang])

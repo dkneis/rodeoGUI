@@ -76,6 +76,17 @@ shinyServer <- function(input, output) {
   output$uiElem.prosHide <- renderUI({ tagList(checkboxInput(inputId="prosHide",
     label=translate["hideInactiveProcesses",input$language], value=TRUE))
   })
+
+  ##############################################################################
+  # CONTROLS FOR THE PRESENTATION OF PARAMETERS AND INITIAL VALUES
+  ##############################################################################
+
+  output$uiElem.sortVars <- renderUI({ tagList(checkboxInput(inputId="sortVars",
+    label=translate["sortAlphatecically",input$language], value=FALSE))
+  })
+  output$uiElem.sortPars <- renderUI({ tagList(checkboxInput(inputId="sortPars",
+    label=translate["sortAlphatecically",input$language], value=FALSE))
+  })
   
   ##############################################################################
   # COMMON CONTROLS FOR DYNAMIC AND STEADY STATE SIMULATION
@@ -481,11 +492,13 @@ shinyServer <- function(input, output) {
   
   output$scenShowVars <- renderText({
     scenDescrTable(XDATA$scenTitles, XDATA$scenDefaults, XDATA$model,
-      lang=input$language, what="variable")
+      lang=input$language, what="variable",
+      sort=if (is.null(input$sortVars)) FALSE else input$sortVars)
   })
   output$scenShowPars <- renderText({
     scenDescrTable(XDATA$scenTitles, XDATA$scenDefaults, XDATA$model,
-      lang=input$language, what="parameter")
+      lang=input$language, what="parameter",
+      sort=if (is.null(input$sortPars)) FALSE else input$sortPars)
   })
   
   ##############################################################################
