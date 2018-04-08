@@ -177,11 +177,29 @@ shinyUI <- fluidPage(
   conditionalPanel(
     condition = "(input.view == 'dyn') && (output.showHelp == false)",
     column(widthMain,
-      fluidRow(column(8, NULL), column(4, uiOutput("uiElem.itemDyn"))),
-      fluidRow(style="vertical-align:top;", column(12,
-        HTML("<div style='width:650px; margin:auto; float:left;'>"),
-        htmlOutput("resultDyn"),
-        HTML("</div>")))
+      fluidRow(
+        column(8, NULL),
+        column(4, uiOutput("uiElem.itemDynUpper"))
+      ),
+      fluidRow(style="vertical-align:top;",
+        column(12,
+          HTML("<div style='width:600px; margin:auto; float:left;'>"),
+          htmlOutput("resultDynUpper"),
+          HTML("</div>")
+        )
+      ),
+      hr(),
+      fluidRow(
+        column(8, NULL),
+        column(4, uiOutput("uiElem.itemDynLower"))
+      ),
+      fluidRow(style="vertical-align:top;",
+        column(12,
+          HTML("<div style='width:600px; margin:auto; float:left;'>"),
+          htmlOutput("resultDynLower"),
+          HTML("</div>")
+        )
+      )
     )
   ),
 

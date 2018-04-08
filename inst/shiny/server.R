@@ -130,11 +130,21 @@ shinyServer <- function(input, output) {
   output$uiElem.tShow <- renderUI({ tagList(textInput(inputId='tShow',
     label=translate["tShow",input$language], value=XDATA$tShow)) })
   # Item to be displayed
-  output$uiElem.itemDyn <- renderUI({
-    tagList(selectInput(inputId="itemDyn",
-      label=NULL, multiple=FALSE,
-      choices=if(is.data.frame(sim[["dyn"]])) sim[["dyn"]][,"label"] else "?",
-      selected=lastShown[["dyn"]], selectize=FALSE))
+  output$uiElem.itemDynUpper <- renderUI({
+    tagList(
+      selectInput(inputId="itemDynUpper",
+        label=NULL, multiple=FALSE,
+        choices=if(is.data.frame(sim[["dyn"]])) sim[["dyn"]][,"label"] else "?",
+        selected=lastShown[["dynUpper"]], selectize=FALSE)
+    )
+  })
+  output$uiElem.itemDynLower <- renderUI({
+    tagList(
+      selectInput(inputId="itemDynLower",
+        label=NULL, multiple=FALSE,
+        choices=if(is.data.frame(sim[["dyn"]])) sim[["dyn"]][,"label"] else "?",
+        selected=lastShown[["dynLower"]], selectize=FALSE)
+    )
   })
   # Run button
   output$uiElem.runDyn <- renderUI({ tagList(actionButton(inputId="runDyn",
@@ -253,8 +263,9 @@ shinyServer <- function(input, output) {
   # Remember last item selected for plotting
   ##############################################################################
   
-  lastShown <- reactiveValues(dyn=NULL, std=NULL)
-  observeEvent(input$itemDyn, { if (input$itemDyn != "?") lastShown[["dyn"]] <- input$itemDyn })
+  lastShown <- reactiveValues(dynUpper=NULL, dynLower=NULL, std=NULL)
+  observeEvent(input$itemDynUpper, { if (input$itemDynUpper != "?") lastShown[["dynUpper"]] <- input$itemDynUpper })
+  observeEvent(input$itemDynLower, { if (input$itemDynLower != "?") lastShown[["dynLower"]] <- input$itemDynLower })
   observeEvent(input$itemStd, { if (input$itemStd != "?") lastShown[["std"]] <- input$itemStd })
 
   ##############################################################################
@@ -343,7 +354,8 @@ shinyServer <- function(input, output) {
     }
     out
   }
-  output$resultDyn <- renderText({ resultDyn(item=input$itemDyn) })
+  output$resultDynUpper <- renderText({ resultDyn(item=input$itemDynUpper) })
+  output$resultDynLower <- renderText({ resultDyn(item=input$itemDynLower) })
 
   ##############################################################################
   # Steady state simulation
