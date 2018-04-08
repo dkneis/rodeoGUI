@@ -33,6 +33,8 @@ translate <- rbind(
   assignmentToUnknownName = c(EN="Cannot assign value to unknown parameter or variable",
     DE="Wertzuweisung nicht möglich da Parameter oder Variable unbekannt"),
   description = c(EN="Description", DE="Beschreibung"),
+  displayInUpperPanel = c(EN="Display in upper panel", DE="Zeige in oberer Grafik"),
+  displayInLowerPanel = c(EN="Display in lower panel", DE="Zeige in unterer Grafik"),
   dynamics = c(EN="Dynamics", DE="Dynamik"),
   everything = c(EN="Everything", DE="Alles"),
   expectingNamedVector = c(EN="Expecting assignment statement like 'pi = 3.1415' or a comma delimited list of such statements",

@@ -133,7 +133,7 @@ shinyServer <- function(input, output) {
   output$uiElem.itemDynUpper <- renderUI({
     tagList(
       selectInput(inputId="itemDynUpper",
-        label=NULL, multiple=FALSE,
+        label=translate["displayInUpperPanel",input$language], multiple=FALSE,
         choices=if(is.data.frame(sim[["dyn"]])) sim[["dyn"]][,"label"] else "?",
         selected=lastShown[["dynUpper"]], selectize=FALSE)
     )
@@ -141,7 +141,7 @@ shinyServer <- function(input, output) {
   output$uiElem.itemDynLower <- renderUI({
     tagList(
       selectInput(inputId="itemDynLower",
-        label=NULL, multiple=FALSE,
+        label=translate["displayInLowerPanel",input$language], multiple=FALSE,
         choices=if(is.data.frame(sim[["dyn"]])) sim[["dyn"]][,"label"] else "?",
         selected=lastShown[["dynLower"]], selectize=FALSE)
     )
