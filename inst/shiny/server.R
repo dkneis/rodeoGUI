@@ -81,11 +81,22 @@ shinyServer <- function(input, output) {
   # CONTROLS FOR THE PRESENTATION OF PARAMETERS AND INITIAL VALUES
   ##############################################################################
 
+  output$uiElem.filterVars <- renderUI({ tagList(selectInput(inputId="filterVars",
+    label=translate["group",input$language], multiple=FALSE,
+    choices=c("", unique(as.character(XDATA$model$getVarsTable()[,paste0("group.",input$language)]))),
+    selected="", selectize=FALSE))
+  })
+  output$uiElem.filterPars <- renderUI({ tagList(selectInput(inputId="filterPars",
+    label=translate["group",input$language], multiple=FALSE,
+    choices=c("", unique(as.character(XDATA$model$getParsTable()[,paste0("group.",input$language)]))),
+    selected="", selectize=FALSE))
+  })
+
   output$uiElem.sortVars <- renderUI({ tagList(checkboxInput(inputId="sortVars",
-    label=translate["sortAlphatecically",input$language], value=FALSE))
+    label=translate["sortAlphabetically",input$language], value=FALSE))
   })
   output$uiElem.sortPars <- renderUI({ tagList(checkboxInput(inputId="sortPars",
-    label=translate["sortAlphatecically",input$language], value=FALSE))
+    label=translate["sortAlphabetically",input$language], value=FALSE))
   })
   
   ##############################################################################
@@ -505,11 +516,13 @@ shinyServer <- function(input, output) {
   output$scenShowVars <- renderText({
     scenDescrTable(XDATA$scenTitles, XDATA$scenDefaults, XDATA$model,
       lang=input$language, what="variable",
+      group=if (is.null(input$filterVars)) "" else input$filterVars,
       sort=if (is.null(input$sortVars)) FALSE else input$sortVars)
   })
   output$scenShowPars <- renderText({
     scenDescrTable(XDATA$scenTitles, XDATA$scenDefaults, XDATA$model,
       lang=input$language, what="parameter",
+      group=if (is.null(input$filterPars)) "" else input$filterPars,
       sort=if (is.null(input$sortPars)) FALSE else input$sortPars)
   })
   

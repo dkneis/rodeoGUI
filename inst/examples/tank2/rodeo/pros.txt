@@ -1,4 +1,4 @@
-name	unit	description	expression	EN	DE
+name	unit	description	expression	descr.EN	descr.DE
 bLoadX2M	mg/hour	Bacteria import to main tank	qM * bX	Bacteria import to main tank	Bakterienimport Haupttank
 bLoadM2X	mg/hour	Bacteria export from main tank	qM * bM	Bacteria export from main tank	Bakterienexport Haupttank
 bLoadM2S	mg/hour	Bacteria import to sub-tank	qS * bM	Bacteria import to sub-tank	Bakterienimport Nebentank

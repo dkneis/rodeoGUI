@@ -138,6 +138,7 @@ shinyUI <- fluidPage(
   conditionalPanel(
     condition = "(input.view == 'scenVars') && (output.showHelp == false)",
     fluidRow(column(12,
+      uiOutput("uiElem.filterVars"),
       uiOutput("uiElem.sortVars"),
       htmlOutput("scenShowVars")
     ))
@@ -147,6 +148,7 @@ shinyUI <- fluidPage(
   conditionalPanel(
     condition = "(input.view == 'scenPars') && (output.showHelp == false)",
     fluidRow(column(12,
+      uiOutput("uiElem.filterPars"),
       uiOutput("uiElem.sortPars"),
       htmlOutput("scenShowPars")
     ))

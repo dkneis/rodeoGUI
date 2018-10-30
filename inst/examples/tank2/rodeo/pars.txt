@@ -1,10 +1,10 @@
-name	unit	description	EN	DE
-vol	ml	Total volume (main tank + sub-tank)	Total volume (main tank + sub-tank)	Gesamtvolumen (Haupt- und Nebentank)
-fS	-	Fraction of total volume assigned to sub-tank	Fraction of total volume assigned to sub-tank	Anteil des Nebentanks am gesamtvolumen
-qM	ml/hour	External in-/outflow to/from main tank	External in-/outflow to/from main tank	Externer Zu-/Abfluss in/von Haupttank
-qS	ml/hour	Flow rate in sub-tank branch	Flow rate in sub-tank branch	Flussrate in Tankverbindung
-bX	mg/ml	Concentration of bacteria in external inflow to main tank	Concentration of bacteria in external inflow to main tank	Bakterienkonz. in externem Zufluss
-sX	mg/ml	Concentration of substrate in external inflow to main tank	Concentration of substrate in external inflow to main tank	Substratkonz. in externem Zufluss
-mu	1/hour	Growth rate constant of bacteria	Growth rate constant of bacteria	Wachstumsrate der Bakterien
-yield	mg/mg	Yield coef. (bacteria produced per amount of substrate)	Yield coef. (bacteria produced per amount of substrate)	Wachstumseffizienz der Bakterien
-half	mg/ml	Half saturation conc. of sustrate for bacteria growth	Half saturation conc. of sustrate for bacteria growth	Halbsättigungskonzentration des Substrats
+name	unit	description	descr.EN	descr.DE	group.EN	group.DE
+vol	ml	Total volume (main tank + sub-tank)	Total volume (main tank + sub-tank)	Gesamtvolumen (Haupt- und Nebentank)	Dimensions	Dimensionen
+fS	-	Fraction of total volume assigned to sub-tank	Fraction of total volume assigned to sub-tank	Anteil des Nebentanks am gesamtvolumen	Dimensions	Dimensionen
+qM	ml/hour	External in-/outflow to/from main tank	External in-/outflow to/from main tank	Externer Zu-/Abfluss in/von Haupttank	Flow rates	Flussraten
+qS	ml/hour	Flow rate in sub-tank branch	Flow rate in sub-tank branch	Flussrate in Tankverbindung	Flow rates	Flussraten
+bX	mg/ml	Concentration of bacteria in external inflow to main tank	Concentration of bacteria in external inflow to main tank	Bakterienkonz. in externem Zufluss	Forcings	Randbedingungen
+sX	mg/ml	Concentration of substrate in external inflow to main tank	Concentration of substrate in external inflow to main tank	Substratkonz. in externem Zufluss	Forcings	Randbedingungen
+mu	1/hour	Growth rate constant of bacteria	Growth rate constant of bacteria	Wachstumsrate der Bakterien	Growth parameter	Wachstumsparameter
+yield	mg/mg	Yield coef. (bacteria produced per amount of substrate)	Yield coef. (bacteria produced per amount of substrate)	Wachstumseffizienz der Bakterien	Growth parameter	Wachstumsparameter
+half	mg/ml	Half saturation conc. of sustrate for bacteria growth	Half saturation conc. of sustrate for bacteria growth	Halbsättigungskonzentration des Substrats	Growth parameter	Wachstumsparameter

@@ -45,6 +45,7 @@ translate <- rbind(
   failedToComputeSolutionFor = c(EN="Failed to compute solution for", DE="Fehler beim Berechnen für"),
   function_ = c(EN="Function", DE="Funktion"),
   functions = c(EN="Functions", DE="Funktionen"),
+  group = c(EN="Group", DE="Gruppe"),
   hideInactiveProcesses = c(EN="Hide inactive processes", DE="Inaktive Prozesse ausblenden"),
   identifier = c(EN="Short name", DE="Bezeichnung"),
   initialValues = c(EN="Initial values", DE="Anfangswerte"),
@@ -79,7 +80,7 @@ translate <- rbind(
   selectView = c(EN="Select view", DE="Ansicht wählen"),
   showStoichiometryFactorFor = c(EN="Show stoichiometric factor for", DE="Zeige Stöchiometriefaktor für"),  
   simulation = c(EN="Simulation", DE="Simulation"),
-  sortAlphatecically = c(EN="Sort alphabetically", DE="Sortiere alphabetisch"),
+  sortAlphabetically = c(EN="Sort alphabetically", DE="Sortiere alphabetisch"),
   steadystate = c(EN="Steady state", DE="Gleichgewicht"),
   stoichiometry = c(EN="Stoichiometry", DE="Stöchiometrie"),
   time = c(EN="Time", DE="Zeit"),
@@ -183,10 +184,10 @@ stoiAsHTML <- function(model, selectedVars, selectedPros, lang) {
 # Returns the process rates as a HTML table including stoi. factors for a single variable
 
 prosTable <- function(model, selectedVar, hide, lang) {
-  if (!lang %in% names(model$getProsTable()))
+  if (!paste0("descr.",lang) %in% names(model$getProsTable()))
     descrCol <- "description"
   else
-    descrCol <- lang
+    descrCol <- paste0("descr.",lang)
   tbl <- merge(x=model$getProsTable()[,c("name","unit",descrCol,"expression")],
     y=data.frame(process=rownames(model$stoichiometry()),
       factor=model$stoichiometry()[,selectedVar], stringsAsFactors=FALSE),
@@ -220,10 +221,10 @@ prosTable <- function(model, selectedVar, hide, lang) {
 # Returns the functions as a HTML table
 
 funsTable <- function(model, lang) {
-  if (!lang %in% names(model$getFunsTable()))
+  if (!paste0("descr.",lang) %in% names(model$getFunsTable()))
     descrCol <- "description"
   else
-    descrCol <- lang
+    descrCol <- paste0("descr.",lang)
   tbl <- model$getFunsTable()[,c("name","unit",descrCol)]
   tbl <- data.frame(lapply(tbl, as.character),stringsAsFactors=FALSE)
   exportDF(x=tbl, tex=FALSE,
@@ -240,7 +241,7 @@ funsTable <- function(model, lang) {
 # Creates scenario summary table in HTML for chosen item type
 
 scenDescrTable <- function(scenTitles, scenDefaults, model, lang,
-  what=c("variable","parameter"), sort=FALSE) {
+  what=c("variable","parameter"), group="", sort=FALSE) {
   if (what == "variable") {
     items <- model$namesVars()
     tbl <- model$getVarsTable()
@@ -250,11 +251,17 @@ scenDescrTable <- function(scenTitles, scenDefaults, model, lang,
   } else {
     stop("inappropriate value passed to 'what'")
   }
-  if (!lang %in% names(tbl))
+  if (!paste0("descr.",lang) %in% names(tbl)) {
     descrCol <- "description"
-  else
-    descrCol <- lang
-  out <- tbl[match(items, tbl[,"name"]), c("name","unit",descrCol)]
+  } else {
+    descrCol <- paste0("descr.",lang)
+  }
+  if (!paste0("group.",lang) %in% names(tbl)) {
+    groupCol <- "group"
+  } else {
+    groupCol <- paste0("group.",lang)
+  }
+  out <- tbl[match(items, tbl[,"name"]), c("name","unit",descrCol,groupCol)]
   val <- as.data.frame(scenDefaults[items,,drop=FALSE])
   val <- data.frame(lapply(val, as.character),stringsAsFactors=FALSE)
   whichDiffer <- which(apply(val, 1, function(x){!all(x == x[1])}))
@@ -268,12 +275,19 @@ scenDescrTable <- function(scenTitles, scenDefaults, model, lang,
   out <- data.frame(lapply(out, as.character),stringsAsFactors=FALSE)
   names(out)[1] <- translate[what,lang]
   names(out)[2:3] <- c(translate["unit",lang],translate["description",lang])
-  exportDF(out,
-    width=setNames(c(15, 15, 100-15-ncol(scenDefaults)*10-15, rep(10, ncol(scenDefaults))), names(out)),
-    align=setNames(c(rep("left",3), rep("right", ncol(scenDefaults))), names(out)),
-    colnames=scenTitles[colnames(scenDefaults),lang],
-    tex=FALSE
-  )
+  # filter by group
+  if (group != "")
+    out <- out[out[,groupCol] == group,]
+  out <- out[, names(out) != groupCol]
+  
+  if (nrow(out) > 0) { # check avoids warning when language is changed while group selection is active
+    exportDF(out,
+      width=setNames(c(15, 15, 100-15-ncol(scenDefaults)*10-15, rep(10, ncol(scenDefaults))), names(out)),
+      align=setNames(c(rep("left",3), rep("right", ncol(scenDefaults))), names(out)),
+      colnames=scenTitles[colnames(scenDefaults),lang],
+      tex=FALSE
+    )
+  }
 }
 
 ########################################################################
