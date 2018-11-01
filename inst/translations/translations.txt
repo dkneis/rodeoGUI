@@ -1,0 +1,59 @@
+item	EN	DE
+and	and	und
+assignmentToUnknownName	Cannot assign value to unknown parameter or variable	Wertzuweisung nicht möglich da Parameter oder Variable unbekannt
+description	Description	Beschreibung
+displayInUpperPanel	Display in upper panel	Zeige in oberer Grafik
+displayInLowerPanel	Display in lower panel	Zeige in unterer Grafik
+dynamics	Dynamics	Dynamik
+everything	Everything	Alles
+expectingNamedVector	Expecting assignment statement like 'pi = 3.1415' or a comma delimited list of such statements	Erwarte Zuweisung der Form 'pi = 3.1415' oder eine durch Komma getrennte Liste solcher Zuweisungen
+expression	Expression	Ausdruck
+factor	Factor	Faktor
+failedToSetModelInputsForScenario	Failed to set input values for scenario	Fehler beim Setzen der Eingangsdaten für Szenario
+failedToComputeSolutionFor	Failed to compute solution for	Fehler beim Berechnen für
+function_	Function	Funktion
+functions	Functions	Funktionen
+group	Group	Gruppe
+hideInactiveProcesses	Hide inactive processes	Inaktive Prozesse ausblenden
+identifier	Short name	Bezeichnung
+initialValues	Initial values	Anfangswerte
+introduction	Introduction	Einführung
+introPageMissing	Introduction page not available	Einstiegsseite nicht verfügbar
+invalidUserInput	Invalid user input	Ungültige Eingabe
+invalidVectorOfTimes	Invalid specification of time period and/or time step	Ungültige Spezifikation von Zeitfenster und/oder Zeitschritt
+numberOfScenarios	Number of scenarios	Anzahl Szenarios
+numberOfTimeStepsExceedsLimitOf	Number of time steps exceeds upper limit of	Anzahl der Zeitschritte überschreitet Obergrenze von
+overview	Overview	Übersicht
+parameter	Parameter	Parameter
+parameters	Parameters	Parameter
+patternNotMatchingAnyVariable	Pattern does not match any variable name	Kein Variablenname entspricht diesem Muster
+patternNotMatchingAnyProcess	Pattern does not match any process name	Kein Prozessname entspricht diesem Muster
+patternToSelectVariables	Variable name matches pattern	Variablenname folgt Muster
+patternToSelectProcesses	Process name matches pattern	Prozessname folgt Muster
+patternNotValid	Pattern is not a valid regular expression.	Muster ist kein gültiger regulärer Ausdruck.
+process	Process	Prozess
+processes	Processes	Prozesse
+resultsMissing	Computation not started yet.	Noch kein Ergebnis berechnet.
+resultsOutdated	Results not up to date.	Ergebnis nicht aktuell.
+run	Compute	Berechnen
+runningDynamicSimulation	Computing dynamics	Berechne Dynamik
+runningSteadySimulation	Computing steady state	Berechne Gleichgewicht
+scenario	Scenario	Szenario
+scenarios	Scenarios	Szenarios
+scenarioModifications	Overwrite parameters (optional)	Überschreibe Parameter (optional)
+selectByPattern	Select by pattern	Selektiere nach Muster
+selectView	Select view	Ansicht wählen
+showStoichiometryFactorFor	Show stoichiometric factor for	Zeige Stöchiometriefaktor für
+simulation	Simulation	Simulation
+sortAlphabetically	Sort alphabetically	Sortiere alphabetisch
+steadystate	Steady state	Gleichgewicht
+stoichiometry	Stoichiometry	Stöchiometrie
+time	Time	Zeit
+tStart	From time	Beginn
+tFinal	To time	Ende
+tStep	Time step	Zeitschritt
+tShow	Display from	Zeige ab
+unit	Unit	Einheit
+usesTheRPackages	uses the R-packages	nutzt die R-Pakete
+variable	Variable	Variable
+variables	Variables	Variablen
