@@ -1,59 +1,59 @@
-item	EN	DE
-and	and	und
-assignmentToUnknownName	Cannot assign value to unknown parameter or variable	Wertzuweisung nicht möglich da Parameter oder Variable unbekannt
-description	Description	Beschreibung
-displayInUpperPanel	Display in upper panel	Zeige in oberer Grafik
-displayInLowerPanel	Display in lower panel	Zeige in unterer Grafik
-dynamics	Dynamics	Dynamik
-everything	Everything	Alles
-expectingNamedVector	Expecting assignment statement like 'pi = 3.1415' or a comma delimited list of such statements	Erwarte Zuweisung der Form 'pi = 3.1415' oder eine durch Komma getrennte Liste solcher Zuweisungen
-expression	Expression	Ausdruck
-factor	Factor	Faktor
-failedToSetModelInputsForScenario	Failed to set input values for scenario	Fehler beim Setzen der Eingangsdaten für Szenario
-failedToComputeSolutionFor	Failed to compute solution for	Fehler beim Berechnen für
-function_	Function	Funktion
-functions	Functions	Funktionen
-group	Group	Gruppe
-hideInactiveProcesses	Hide inactive processes	Inaktive Prozesse ausblenden
-identifier	Short name	Bezeichnung
-initialValues	Initial values	Anfangswerte
-introduction	Introduction	Einführung
-introPageMissing	Introduction page not available	Einstiegsseite nicht verfügbar
-invalidUserInput	Invalid user input	Ungültige Eingabe
-invalidVectorOfTimes	Invalid specification of time period and/or time step	Ungültige Spezifikation von Zeitfenster und/oder Zeitschritt
-numberOfScenarios	Number of scenarios	Anzahl Szenarios
-numberOfTimeStepsExceedsLimitOf	Number of time steps exceeds upper limit of	Anzahl der Zeitschritte überschreitet Obergrenze von
-overview	Overview	Übersicht
-parameter	Parameter	Parameter
-parameters	Parameters	Parameter
-patternNotMatchingAnyVariable	Pattern does not match any variable name	Kein Variablenname entspricht diesem Muster
-patternNotMatchingAnyProcess	Pattern does not match any process name	Kein Prozessname entspricht diesem Muster
-patternToSelectVariables	Variable name matches pattern	Variablenname folgt Muster
-patternToSelectProcesses	Process name matches pattern	Prozessname folgt Muster
-patternNotValid	Pattern is not a valid regular expression.	Muster ist kein gültiger regulärer Ausdruck.
-process	Process	Prozess
-processes	Processes	Prozesse
-resultsMissing	Computation not started yet.	Noch kein Ergebnis berechnet.
-resultsOutdated	Results not up to date.	Ergebnis nicht aktuell.
-run	Compute	Berechnen
-runningDynamicSimulation	Computing dynamics	Berechne Dynamik
-runningSteadySimulation	Computing steady state	Berechne Gleichgewicht
-scenario	Scenario	Szenario
-scenarios	Scenarios	Szenarios
-scenarioModifications	Overwrite parameters (optional)	Überschreibe Parameter (optional)
-selectByPattern	Select by pattern	Selektiere nach Muster
-selectView	Select view	Ansicht wählen
-showStoichiometryFactorFor	Show stoichiometric factor for	Zeige Stöchiometriefaktor für
-simulation	Simulation	Simulation
-sortAlphabetically	Sort alphabetically	Sortiere alphabetisch
-steadystate	Steady state	Gleichgewicht
-stoichiometry	Stoichiometry	Stöchiometrie
-time	Time	Zeit
-tStart	From time	Beginn
-tFinal	To time	Ende
-tStep	Time step	Zeitschritt
-tShow	Display from	Zeige ab
-unit	Unit	Einheit
-usesTheRPackages	uses the R-packages	nutzt die R-Pakete
-variable	Variable	Variable
-variables	Variables	Variablen
+﻿item	EN	DE	UA
+and	and	und	і
+assignmentToUnknownName	Cannot assign value to unknown parameter or variable	Wertzuweisung nicht möglich da Parameter oder Variable unbekannt	Неможливо присвоїти значення невідомим параметрам або змінним
+description	Description	Beschreibung	Опис
+displayInUpperPanel	Display in upper panel	Zeige in oberer Grafik	Дисплей у верхній панелі
+displayInLowerPanel	Display in lower panel	Zeige in unterer Grafik	Дисплей у нижній панелі
+dynamics	Dynamics	Dynamik	Динаміка
+everything	Everything	Alles	Все
+expectingNamedVector	Expecting assignment statement like 'pi = 3.1415' or a comma delimited list of such statements	Erwarte Zuweisung der Form 'pi = 3.1415' oder eine durch Komma getrennte Liste solcher Zuweisungen	Очікуємо заяву про присвоєння, наприклад, 'pi = 3.1415' або список обмежених комами таких тверджень
+expression	Expression	Ausdruck	Вираз
+factor	Factor	Faktor	Фактор
+failedToSetModelInputsForScenario	Failed to set input values for scenario	Fehler beim Setzen der Eingangsdaten für Szenario	Не вдалося встановити вхідні значення для сценарію
+failedToComputeSolutionFor	Failed to compute solution for	Fehler beim Berechnen für	Не вдалося обчислити рішення для
+function_	Function	Funktion	Функція
+functions	Functions	Funktionen	Функції
+group	Group	Gruppe	Група
+hideInactiveProcesses	Hide inactive processes	Inaktive Prozesse ausblenden	Сховати неактивні процеси
+identifier	Short name	Bezeichnung	Коротке ім'я
+initialValues	Initial values	Anfangswerte	Початкові значення
+introduction	Introduction	Einführung	Вступ
+introPageMissing	Introduction page not available	Einstiegsseite nicht verfügbar	Вступна сторінка недоступна
+invalidUserInput	Invalid user input	Ungültige Eingabe	Недійсний користувацький ввід
+invalidVectorOfTimes	Invalid specification of time period and/or time step	Ungültige Spezifikation von Zeitfenster und/oder Zeitschritt	Недійсна специфікація етапу часу та / або часу
+numberOfScenarios	Number of scenarios	Anzahl Szenarios	Кількість сценаріїв
+numberOfTimeStepsExceedsLimitOf	Number of time steps exceeds upper limit of	Anzahl der Zeitschritte überschreitet Obergrenze von	Кількість етапів часу перевищує верхню межу
+overview	Overview	Übersicht	Огляд
+parameter	Parameter	Parameter	Параметр
+parameters	Parameters	Parameter	Параметри
+patternNotMatchingAnyVariable	Pattern does not match any variable name	Kein Variablenname entspricht diesem Muster	Шаблон не збігається з іменем змінної
+patternNotMatchingAnyProcess	Pattern does not match any process name	Kein Prozessname entspricht diesem Muster	Шаблон не відповідає жодному назву процесу
+patternToSelectVariables	Variable name matches pattern	Variablenname folgt Muster	Змінне ім'я відповідає шаблону
+patternToSelectProcesses	Process name matches pattern	Prozessname folgt Muster	Назва процесу відповідає шаблону
+patternNotValid	Pattern is not a valid regular expression.	Muster ist kein gültiger regulärer Ausdruck.	Шаблон не є правильним регулярним виразом.
+process	Process	Prozess	Процес
+processes	Processes	Prozesse	Процеси
+resultsMissing	Computation not started yet.	Noch kein Ergebnis berechnet.	Обчислення ще не розпочато.
+resultsOutdated	Results not up to date.	Ergebnis nicht aktuell.	Результати не актуальні.
+run	Compute	Berechnen	Обчислити
+runningDynamicSimulation	Computing dynamics	Berechne Dynamik	Обчислювальна динаміка
+runningSteadySimulation	Computing steady state	Berechne Gleichgewicht	Обчислення стійкого стану
+scenario	Scenario	Szenario	Сценарій
+scenarios	Scenarios	Szenarios	Сценарії
+scenarioModifications	Overwrite parameters (optional)	Überschreibe Parameter (optional)	Параметри перезапису (необов'язково)
+selectByPattern	Select by pattern	Selektiere nach Muster	Вибрати за шаблоном
+selectView	Select view	Ansicht wählen	Виберіть вид
+showStoichiometryFactorFor	Show stoichiometric factor for	Zeige Stöchiometriefaktor für	Показати стехіометричний коефіцієнт для
+simulation	Simulation	Simulation	Моделювання
+sortAlphabetically	Sort alphabetically	Sortiere alphabetisch	Сортувати за алфавітом
+steadystate	Steady state	Gleichgewicht	Сталий стан
+stoichiometry	Stoichiometry	Stöchiometrie	Стехіометрія
+time	Time	Zeit	Час
+tStart	From time	Beginn	З часом
+tFinal	To time	Ende	До часу
+tStep	Time step	Zeitschritt	Часовий крок
+tShow	Display from	Zeige ab	Дисплей від
+unit	Unit	Einheit	Підрозділ
+usesTheRPackages	uses the R-packages	nutzt die R-Pakete	використовує R-пакети
+variable	Variable	Variable	Змінна
+variables	Variables	Variablen	Змінні

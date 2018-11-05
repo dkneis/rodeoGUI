@@ -112,14 +112,25 @@ shinyServer <- function(input, output) {
   output$uiElem.scenSpecs <- renderUI({
     nScen <- if (is.null(input$nScen)) 1 else input$nScen
     code <- ""
+#    for (i in 1:nScen) {
+#      code <- paste0(code, "selectInput(inputId=\'scenDefaultId.",i,"\', label=\'",
+#        translate["scenario",input$language]," ",i,"\', multiple=FALSE, choices=setNames(",
+#        "c(",paste(paste0("'",rownames(XDATA$scenTitles),"'"), collapse=","),"),",
+#        "c(",paste(paste0("'",XDATA$scenTitles[,input$language],"'"), collapse=","),")",
+#        "), selected='",rownames(XDATA$scenTitles)[min(i, nrow(XDATA$scenTitles))],"', selectize=FALSE),")
+#      code <- paste0(code, "textInput(inputId=\'scenEdits.",i,"\', label=NULL,
+#        value=\'\', placeholder=\'",translate["scenarioModifications",input$language],"\')")
+#      if (i < nScen)
+#        code <- paste0(code, ",")
+#    }
     for (i in 1:nScen) {
-      code <- paste0(code, "selectInput(inputId=\'scenDefaultId.",i,"\', label=\'",
-        translate["scenario",input$language]," ",i,"\', multiple=FALSE, choices=setNames(",
-        "c(",paste(paste0("'",rownames(XDATA$scenTitles),"'"), collapse=","),"),",
-        "c(",paste(paste0("'",XDATA$scenTitles[,input$language],"'"), collapse=","),")",
-        "), selected='",rownames(XDATA$scenTitles)[min(i, nrow(XDATA$scenTitles))],"', selectize=FALSE),")
-      code <- paste0(code, "textInput(inputId=\'scenEdits.",i,"\', label=NULL,
-        value=\'\', placeholder=\'",translate["scenarioModifications",input$language],"\')")
+      code <- paste0(code, "selectInput(inputId=\"scenDefaultId.",i,"\", label=\"",
+        translate["scenario",input$language]," ",i,"\", multiple=FALSE, choices=setNames(",
+        "c(",paste(paste0("\"",rownames(XDATA$scenTitles),"\""), collapse=","),"),",
+        "c(",paste(paste0("\"",XDATA$scenTitles[,input$language],"\""), collapse=","),")",
+        "), selected=\"",rownames(XDATA$scenTitles)[min(i, nrow(XDATA$scenTitles))],"\", selectize=FALSE),")
+      code <- paste0(code, "textInput(inputId=\"scenEdits.",i,"\", label=NULL,
+        value=\"\", placeholder=\"",translate["scenarioModifications",input$language],"\")")
       if (i < nScen)
         code <- paste0(code, ",")
     }

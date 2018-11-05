@@ -70,7 +70,7 @@ preGUI <- function(
   rd <- function(f, ...) {
     if (!file.exists(f))
       stop("input file '",f,"' not found")
-    utils::read.table(file=f, header=TRUE, sep=colsep, ...)
+    utils::read.table(file=f, header=TRUE, sep=colsep, quote="", ...)
   }
 
   # Check existence of function definitions

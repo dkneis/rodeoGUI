@@ -29,7 +29,7 @@ eval(parse(text=XDATA$rCode))
 
 # Labels of GUI in multiple languages
 translate <- as.matrix(read.table(system.file("translations/translations.txt",
-  package="rodeoGUI"), sep="\t", header=TRUE, colClasses="character", row.names=1))
+  package="rodeoGUI"), sep="\t", header=TRUE, colClasses="character", quote="", row.names=1))
 
 ########################################################################
 ########################################################################
@@ -259,12 +259,13 @@ readHelp <- function(lang, topics) {
   out
 }
 
-langs <- c("EN","DE")
+langs <- c("EN","DE","UA")
 
 help <- rbind(
   missing= c(
     EN="A help page is currently not available for the selected view.",
-    DE="Für die gewählte Ansicht ist noch keine Hilfe verfügbar."
+    DE="Für die gewählte Ansicht ist noch keine Hilfe verfügbar.",
+    UA="Сторінка довідки наразі не доступна для вибраного представлення даних."
   ),
   intro= sapply(langs, readHelp, "introduction"),
   stoi= sapply(langs, readHelp, "stoichiometry"),
