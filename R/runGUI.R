@@ -98,7 +98,7 @@ preGUI <- function(
   # Create object
   model <- rodeo::rodeo$new(
     vars=rd(vars), pars=rd(pars), funs=rd(funs), pros=rd(pros),
-    stoi=as.matrix(rd(stoi, row.names=1)), asMatrix=TRUE,
+    stoi=as.matrix(rd(stoi, row.names=1, colClasses="character")), asMatrix=TRUE,
     dim=c(1))  # GUI handles 0D models only
 
   # Build library
