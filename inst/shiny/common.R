@@ -133,7 +133,7 @@ prosTable <- function(model, selectedVar, hide, lang) {
     x,'</div>')}
   tbl <- data.frame(lapply(tbl, as.character),stringsAsFactors=FALSE)
   if (hide) {
-    tmp <- tbl[tbl[,"factor"] != "0",]
+    tmp <- tbl[as.character(tbl[,"factor"]) != "0",]
     if (nrow(tmp) > 0) {
       tbl <- tmp
     } else {
