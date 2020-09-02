@@ -31,7 +31,7 @@ preGUI(
   sourcesF=system.file("examples/tank2/rodeo/functions.f95", package="rodeoGUI"),
   dirScenarios=system.file("examples/tank2/scenarios", package="rodeoGUI"),
   dirIntro=system.file("examples/tank2/intro", package="rodeoGUI"),
-  colsep="\\t"
+  colsep="\t"
 )
 runGUI()
 }

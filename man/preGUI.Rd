@@ -4,12 +4,26 @@
 \alias{preGUI}
 \title{Prepare files needed by the GUI}
 \usage{
-preGUI(appName = "rodeoGUI", vars = "vars.txt", pars = "pars.txt",
-  funs = "funs.txt", pros = "pros.txt", stoi = "stoi.txt",
-  sourcesR = "functions.r", sourcesF = "functions.f95",
-  dirScenarios = "./scenarios", dirIntro = "./intro", colsep = "\\t",
-  useTemp = TRUE, maxNumberOfScenarios = 3, maxNumberOfTimeSteps = 10000,
-  tStart = 0, tFinal = 10, tStep = 0.1, tShow = 0)
+preGUI(
+  appName = "rodeoGUI",
+  vars = "vars.txt",
+  pars = "pars.txt",
+  funs = "funs.txt",
+  pros = "pros.txt",
+  stoi = "stoi.txt",
+  sourcesR = "functions.r",
+  sourcesF = "functions.f95",
+  dirScenarios = "./scenarios",
+  dirIntro = "./intro",
+  colsep = "\\t",
+  useTemp = TRUE,
+  maxNumberOfScenarios = 3,
+  maxNumberOfTimeSteps = 10000,
+  tStart = 0,
+  tFinal = 10,
+  tStep = 0.1,
+  tShow = 0
+)
 }
 \arguments{
 \item{appName}{Application name displayed in top left corner of GUI.}
