@@ -196,10 +196,14 @@ shinyServer <- function(input, output) {
   ##############################################################################
   
   # Generate help open/close buttons
+#  output$uiElem.helpOpen <- renderUI({ tagList(actionLink(inputId="helpOpen",
+#    label=HTML(symbolHelpOpen))) })
+#  output$uiElem.helpClose <- renderUI({ tagList(actionLink(inputId="helpClose",
+#    label=HTML(symbolHelpClose))) })
   output$uiElem.helpOpen <- renderUI({ tagList(actionLink(inputId="helpOpen",
-    label=HTML(symbolHelpOpen))) })
+    label=HTML("<b>",translate["helpOpen",input$language],"</b>"))) })
   output$uiElem.helpClose <- renderUI({ tagList(actionLink(inputId="helpClose",
-    label=HTML(symbolHelpClose))) })
+    label=HTML("<b>",translate["helpClose",input$language],"</b>"))) })
 
   # Controls display of help pages using conditionalPanel
   # https://stackoverflow.com/questions/38895710/passing-reactive-values-to-conditionalpanel-condition
@@ -207,7 +211,7 @@ shinyServer <- function(input, output) {
     if (is.null(input$helpClose) || is.null(input$helpOpen))
       return(FALSE)
     else
-      return(input$helpOpen > input$helpClose)
+      return(input$helpOpen != input$helpClose)
   })
   outputOptions(output, "showHelp", suspendWhenHidden = FALSE)
 

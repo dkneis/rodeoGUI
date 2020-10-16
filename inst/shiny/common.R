@@ -231,20 +231,20 @@ scenDescrTable <- function(scenTitles, scenDefaults, model, lang,
 # SVG icons used by GUI
 
 # Help open/close button
-symbolHelpOpen <- paste0('
-  <svg viewBox="0 0 110 110" height="25px">
-    <circle cx="55" cy="55" r="50" style="fill:',guiBlue(dark=TRUE),
-      '; stroke:',guiBlue(dark=TRUE),'; stroke-width:5;"/>
-    <text x="37" y="77" style="font-size:70px; fill:white;">?</text>
-  </svg>
-')
-symbolHelpClose <- paste0('
-  <svg viewBox="0 0 110 110" height="25px">
-    <circle cx="55" cy="55" r="50" style="fill:',guiBlue(dark=TRUE),
-      '; stroke:',guiBlue(dark=TRUE),'; stroke-width:5;"/>
-  <path d="M 20,55 75,30 75,80 z" style="fill:white; stroke:none"/>
-  </svg>
-')
+#symbolHelpOpen <- paste0('
+#  <svg viewBox="0 0 110 110" height="25px">
+#    <circle cx="55" cy="55" r="50" style="fill:',guiBlue(dark=TRUE),
+#      '; stroke:',guiBlue(dark=TRUE),'; stroke-width:5;"/>
+#    <text x="37" y="77" style="font-size:70px; fill:white;">?</text>
+#  </svg>
+#')
+#symbolHelpClose <- paste0('
+#  <svg viewBox="0 0 110 110" height="25px">
+#    <circle cx="55" cy="55" r="50" style="fill:',guiBlue(dark=TRUE),
+#      '; stroke:',guiBlue(dark=TRUE),'; stroke-width:5;"/>
+#  <path d="M 20,55 75,30 75,80 z" style="fill:white; stroke:none"/>
+#  </svg>
+#')
 
 ########################################################################
 # Read help pages
