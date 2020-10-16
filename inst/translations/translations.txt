@@ -1,4 +1,4 @@
-﻿item	EN	DE	UA
+item	EN	DE	UA
 and	and	und	і
 assignmentToUnknownName	Cannot assign value to unknown parameter or variable	Wertzuweisung nicht möglich da Parameter oder Variable unbekannt	Неможливо присвоїти значення невідомим параметрам або змінним
 description	Description	Beschreibung	Опис
@@ -14,6 +14,8 @@ failedToComputeSolutionFor	Failed to compute solution for	Fehler beim Berechnen 
 function_	Function	Funktion	Функція
 functions	Functions	Funktionen	Функції
 group	Group	Gruppe	Група
+helpOpen	Help	Hilfe	Відкрита довідка
+helpClose	Exit help	Hilfe schließen	Закрийте довідка
 hideInactiveProcesses	Hide inactive processes	Inaktive Prozesse ausblenden	Сховати неактивні процеси
 identifier	Short name	Bezeichnung	Коротке ім'я
 initialValues	Initial values	Anfangswerte	Початкові значення
