@@ -28,6 +28,8 @@
 #' @param tFinal End of dynamic simulation period. Default value.
 #' @param tStep Time step for dynamic simulation. Default value.
 #' @param tShow Time after which dynamic results are displayed. Default value.
+#' @param header HTML code used as page header.
+#' @param footer HTML code used as page footer.
 #'
 #' @return The function does not return anything but it creates two files in the
 #'   current working directory. The first file with the fixed name
@@ -63,7 +65,9 @@ preGUI <- function(
   tStart= 0,
   tFinal= 10,
   tStep= 0.1,
-  tShow= 0
+  tShow= 0,
+  header = NULL,
+  footer = NULL
 ) {
 
   # Function to read delimited text files
@@ -187,7 +191,9 @@ preGUI <- function(
     tStart= tStart,
     tFinal= tFinal,
     tStep= tStep,
-    tShow= tShow
+    tShow= tShow,
+    header= header,
+    footer= footer
   )
 
   # NOTE: File name must be consistent with path at top of 'global.R'

@@ -22,7 +22,9 @@ preGUI(
   tStart = 0,
   tFinal = 10,
   tStep = 0.1,
-  tShow = 0
+  tShow = 0,
+  header = NULL,
+  footer = NULL
 )
 }
 \arguments{
@@ -69,6 +71,10 @@ multi-user environment.}
 \item{tStep}{Time step for dynamic simulation. Default value.}
 
 \item{tShow}{Time after which dynamic results are displayed. Default value.}
+
+\item{header}{HTML code used as page header.}
+
+\item{footer}{HTML code used as page footer.}
 }
 \value{
 The function does not return anything but it creates two files in the

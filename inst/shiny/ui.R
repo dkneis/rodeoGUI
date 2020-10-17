@@ -32,6 +32,13 @@ widthMain = 9   # width of main display area (1...12)
 shinyUI <- fluidPage(
   HTML(paste0("<style>",styleDefs,"</style>")),
   
+  # Page header
+  fluidRow(
+    column(12,
+      HTML(if (!is.null(XDATA$header)) XDATA$header else "")
+    )
+  ),
+
   ##############################################################################
   # HORIZONTAL PANEL AT TOP OF PAGE
   ##############################################################################
@@ -209,6 +216,13 @@ shinyUI <- fluidPage(
       fluidRow(column(8, NULL), column(4, uiOutput("uiElem.itemStd"))),
       fluidRow(column(12, htmlOutput("resultStd")))
     )
-  )
+  ),
   
+  ##############################################################################
+  # footer
+  fluidRow(
+    column(12,
+      HTML(if (!is.null(XDATA$footer)) XDATA$footer else "")
+    )
+  )
 )
