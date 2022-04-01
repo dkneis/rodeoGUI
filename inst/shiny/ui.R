@@ -193,7 +193,7 @@ shinyUI <- fluidPage(
       fluidRow(style="vertical-align:top;",
         column(12,
           HTML("<div style='width:600px; margin:auto; float:left;'>"),
-          htmlOutput("resultDynUpper"),
+          htmlOutput("displayDynUpper"),
           HTML("</div>")
         )
       ),
@@ -201,9 +201,12 @@ shinyUI <- fluidPage(
       fluidRow(style="vertical-align:top;",
         column(12,
           HTML("<div style='width:600px; margin:auto; float:left;'>"),
-          htmlOutput("resultDynLower"),
+          htmlOutput("displayDynLower"),
           HTML("</div>")
         )
+      ),
+      fluidRow(
+        column(8, NULL), column(4,downloadButton("downloadDyn", "Download"))
       )
     )
   ),
@@ -214,7 +217,8 @@ shinyUI <- fluidPage(
     condition = "(input.view == 'std') && (output.showHelp == false)",
     column(widthMain,
       fluidRow(column(8, NULL), column(4, uiOutput("uiElem.itemStd"))),
-      fluidRow(column(12, htmlOutput("resultStd")))
+      fluidRow(column(12, htmlOutput("displayStd"))),
+      fluidRow(column(8, NULL), column(4,downloadButton("downloadStd", "Download")))
     )
   ),
   

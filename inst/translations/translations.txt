@@ -4,6 +4,7 @@ assignmentToUnknownName	Cannot assign value to unknown parameter or variable	Wer
 description	Description	Beschreibung	Опис
 displayInUpperPanel	Display in upper panel	Zeige in oberer Grafik	Дисплей у верхній панелі
 displayInLowerPanel	Display in lower panel	Zeige in unterer Grafik	Дисплей у нижній панелі
+download	Download	Herunterladen	Завантажити
 dynamics	Dynamics	Dynamik	Динаміка
 everything	Everything	Alles	Все
 expectingNamedVector	Expecting assignment statement like 'pi = 3.1415' or a comma delimited list of such statements	Erwarte Zuweisung der Form 'pi = 3.1415' oder eine durch Komma getrennte Liste solcher Zuweisungen	Очікуємо заяву про присвоєння, наприклад, 'pi = 3.1415' або список обмежених комами таких тверджень
@@ -57,5 +58,6 @@ tStep	Time step	Zeitschritt	Часовий крок
 tShow	Display from	Zeige ab	Дисплей від
 unit	Unit	Einheit	Підрозділ
 usesTheRPackages	uses the R-packages	nutzt die R-Pakete	використовує R-пакети
+value	Value	Wert	значення
 variable	Variable	Variable	Змінна
 variables	Variables	Variablen	Змінні

@@ -156,7 +156,7 @@ shinyServer <- function(input, output) {
     tagList(
       selectInput(inputId="itemDynUpper",
         label=translate["displayInUpperPanel",input$language], multiple=FALSE,
-        choices=if(is.data.frame(sim[["dyn"]])) sim[["dyn"]][,"label"] else "?",
+        choices=if(is.list(sim[["dyn"]])) sim[["dyn"]]$forDisplay[,"label"] else "?",
         selected=lastShown[["dynUpper"]], selectize=FALSE)
     )
   })
@@ -164,7 +164,7 @@ shinyServer <- function(input, output) {
     tagList(
       selectInput(inputId="itemDynLower",
         label=translate["displayInLowerPanel",input$language], multiple=FALSE,
-        choices=if(is.data.frame(sim[["dyn"]])) sim[["dyn"]][,"label"] else "?",
+        choices=if(is.list(sim[["dyn"]])) sim[["dyn"]]$forDisplay[,"label"] else "?",
         selected=lastShown[["dynLower"]], selectize=FALSE)
     )
   })
@@ -181,7 +181,7 @@ shinyServer <- function(input, output) {
   output$uiElem.itemStd <- renderUI({
     tagList(selectInput(inputId="itemStd",
       label=NULL, multiple=FALSE,
-      choices=if(is.data.frame(sim[["std"]])) sim[["std"]][,"label"] else "?",
+      choices=if(is.list(sim[["std"]])) sim[["std"]]$forDisplay[,"label"] else "?",
       selected=lastShown[["std"]], selectize=FALSE))
   })
   # Run button
@@ -360,29 +360,51 @@ shinyServer <- function(input, output) {
     # turn into array (dim1 = time, dim2 = variables, dim3 = scenarios)
     out <- melt(data=as.data.frame(out), id.vars=c("scenario","time"),
       variable.name="variable", value.name="value")
+    forDownload <- out
+    forDownload[,"value"] <- signif(forDownload[,"value"], 3)
+    names(forDownload)[names(forDownload) == "time"] <- translate["time",input$language]
+    names(forDownload)[names(forDownload) == "scenario"] <- translate["scenario",input$language]
+    names(forDownload)[names(forDownload) == "variable"] <- translate["variable",input$language]
+    names(forDownload)[names(forDownload) == "value"] <- translate["value",input$language]
     out <- acast(data=out, formula=time~variable~scenario, value.var="value")
     dimnames(out)[[3]] <- paste(translate["scenario",input$language], 1:input$nScen)
     rownames(prm) <- XDATA$model$namesPars()
-    showDynamic(out, prm, input$language)
+    list(forDisplay=showDynamic(out, prm, input$language), forDownload=forDownload)
   }
 
   # Presentation
-  resultDyn <- function(item) {
+  displayDyn <- function(item) {
     if (is.null(sim[["dyn"]])) {
       out <- framedMessage(translate["resultsMissing",input$language])
     } else if (is.character(sim[["dyn"]])) {
       validate(lastErrMsg())
     } else {
-      row <- match(item, sim[["dyn"]][,"label"])
-      out <- sim[["dyn"]][row, "content"]
+      row <- match(item, sim[["dyn"]]$forDisplay[,"label"])
+      out <- sim[["dyn"]]$forDisplay[row, "content"]
       if (!up2date[["dyn"]])
         out <- paste0(framedMessage(translate["resultsOutdated",input$language]), out)
     }
     out
   }
-  output$resultDynUpper <- renderText({ resultDyn(item=input$itemDynUpper) })
-  output$resultDynLower <- renderText({ resultDyn(item=input$itemDynLower) })
+  output$displayDynUpper <- renderText({ displayDyn(item=input$itemDynUpper) })
+  output$displayDynLower <- renderText({ displayDyn(item=input$itemDynLower) })
 
+  # Download
+  output$downloadDyn <- downloadHandler(
+    filename = "dynamics.tsv",
+    content = function(file) {
+      if (is.null(sim[["dyn"]])) {
+        out <- data.frame(message="No results available")
+      } else if (is.character(sim[["dyn"]])) {
+        out <- data.frame(message=lastErrMsg())
+      } else {
+        out <- sim[["dyn"]]$forDownload
+      }
+      write.table(out, file, sep="\t", quote=FALSE, col.names=TRUE, row.names=FALSE)
+    }
+  )
+  
+  
   ##############################################################################
   # Steady state simulation
   ##############################################################################
@@ -435,25 +457,41 @@ shinyServer <- function(input, output) {
     dyn.unload(paste0(XDATA$lib, .Platform$dynlib.ext))
     rownames(out) <- c(XDATA$model$namesVars(), XDATA$model$namesPros())
     rownames(prm) <- XDATA$model$namesPars()
-    showSteady(out, prm, input$language)
+    forDownload <- cbind(tmp=rownames(out), out)
+    colnames(forDownload)[1] <- translate["variable",input$language]
+    list(forDisplay=showSteady(out, prm, input$language), forDownload=forDownload)
   }
   
   # Presentation
-  resultStd <- function(item) {
+  displayStd <- function(item) {
     if (is.null(sim[["std"]])) {
       out <- framedMessage(translate["resultsMissing",input$language])
     } else if (is.character(sim[["std"]])) {
       validate(lastErrMsg())
     } else {
-      row <- match(item, sim[["std"]][,"label"])
-      out <- sim[["std"]][row, "content"]
+      row <- match(item, sim[["std"]]$forDisplay[,"label"])
+      out <- sim[["std"]]$forDisplay[row, "content"]
       if (!up2date[["std"]])
         out <- paste0(framedMessage(translate["resultsOutdated",input$language]), out)
     }
     out
   }
-  output$resultStd <- renderText({ resultStd(item=input$itemStd) })
+  output$displayStd <- renderText({ displayStd(item=input$itemStd) })
 
+  # Download
+  output$downloadStd <- downloadHandler(
+    filename = "steady.tsv",
+    content = function(file) {
+      if (is.null(sim[["std"]])) {
+        out <- data.frame(message="No results available")
+      } else if (is.character(sim[["std"]])) {
+        out <- data.frame(message=lastErrMsg())
+      } else {
+        out <- sim[["std"]]$forDownload
+      }
+      write.table(out, file, sep="\t", quote=FALSE, col.names=TRUE, row.names=FALSE)
+    }
+  )
 
   ##############################################################################
   # Intro page
