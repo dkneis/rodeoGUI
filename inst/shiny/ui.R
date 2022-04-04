@@ -173,11 +173,17 @@ shinyUI <- fluidPage(
         uiOutput("uiElem.tFinal"),
         uiOutput("uiElem.tStep"),
         uiOutput("uiElem.tShow"),
-        uiOutput("uiElem.runDyn")
+        fluidRow(
+          column(6, uiOutput("uiElem.runDyn")),
+          column(6, uiOutput("uiElem.downloadDyn"))
+        )
       ),
       conditionalPanel(
         condition = "input.view == 'std'",
-        uiOutput("uiElem.runStd")
+        fluidRow(
+          column(6, uiOutput("uiElem.runStd")),
+          column(6, uiOutput("uiElem.downloadStd"))
+        )
       )
     )
   ),
@@ -204,9 +210,6 @@ shinyUI <- fluidPage(
           htmlOutput("displayDynLower"),
           HTML("</div>")
         )
-      ),
-      fluidRow(
-        column(8, NULL), column(4,downloadButton("downloadDyn", "Download"))
       )
     )
   ),
@@ -216,9 +219,13 @@ shinyUI <- fluidPage(
   conditionalPanel(
     condition = "(input.view == 'std') && (output.showHelp == false)",
     column(widthMain,
-      fluidRow(column(8, NULL), column(4, uiOutput("uiElem.itemStd"))),
-      fluidRow(column(12, htmlOutput("displayStd"))),
-      fluidRow(column(8, NULL), column(4,downloadButton("downloadStd", "Download")))
+      fluidRow(
+        column(6, NULL),
+        column(6, uiOutput("uiElem.itemStd"))
+      ),
+      fluidRow(
+        column(12, htmlOutput("displayStd"))
+      )
     )
   ),
   

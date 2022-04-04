@@ -172,7 +172,17 @@ shinyServer <- function(input, output) {
   output$uiElem.runDyn <- renderUI({ tagList(actionButton(inputId="runDyn",
     translate["run",input$language],
     style=paste0("color: white; background-color: ",guiBlue(dark=TRUE)))) })
+  # Download button
+  output$uiElem.downloadDyn <- renderUI({
+    if (up2date[["dyn"]]) {
+      tagList(downloadButton(outputId="downloadDyn",
+        translate["download",input$language] ))
+    } else {
+      HTML("") 
+    }
+  })
 
+  
   ##############################################################################
   # SPECIFIC CONTROLS FOR STEADY STATE SIMULATION
   ##############################################################################
@@ -189,6 +199,15 @@ shinyServer <- function(input, output) {
     translate["run",input$language],
     style=paste0("color: white; background-color: ",guiBlue(dark=TRUE)))
     )
+  })
+  # Download button
+  output$uiElem.downloadStd <- renderUI({
+    if (up2date[["std"]]) {
+      tagList(downloadButton(outputId="downloadStd",
+        translate["download",input$language] ))
+    } else {
+      HTML("") 
+    }
   })
 
   ##############################################################################
